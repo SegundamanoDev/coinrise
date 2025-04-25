@@ -1,0 +1,43 @@
+import React from "react";
+import Navbar from "./components/Navbar";
+import DashboardLayout from "./components/Dashboard";
+import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
+import Home from "./components/Home";
+import Transactions from "./components/Transaction";
+import Deposit from "./components/Deposit";
+import Invest from "./components/Invest";
+import Profile from "./components/Profile";
+import Settings from "./components/Settings";
+import Withdraw from "./components/Withdraw";
+import ConfirmInvestment from "./components/ConfirmInvest";
+import SuccessModal from "./components/SuccMsg";
+import ViewInvestment from "./components/ViewInvestment";
+import ActivityOverview from "./components/ActivityOverview";
+const App = () => {
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<DashboardLayout />} />
+          <Route path="/transaction" element={<Transactions />} />
+          <Route path="/deposit" element={<Deposit />} />
+          <Route path="/invest" element={<Invest />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/confirm-success" element={<SuccessModal />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/withdraw" element={<Withdraw />} />
+          <Route path="/view-investment" element={<ViewInvestment />} />
+          <Route path="/activity-overview" element={<ActivityOverview />} />
+
+          <Route
+            path="/invest/confirm/:planId"
+            element={<ConfirmInvestment />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
+};
+
+export default App;
