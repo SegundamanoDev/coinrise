@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/I.9",
+      "source": "/(.*)",
       "destination": "/"
     }
   ]
