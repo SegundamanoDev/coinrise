@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/I.9",
+      "destination": "/"
+    }
+  ]
+}
