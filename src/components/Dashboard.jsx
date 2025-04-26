@@ -110,7 +110,6 @@ const DashboardLayout = () => {
             </button>
           </div>
 
-          {/* Dashboard Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]">
               <h3 className="text-lg font-semibold mb-2">Total Balance</h3>
