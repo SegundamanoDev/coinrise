@@ -63,7 +63,7 @@ const DashboardLayout = () => {
   return (
     <>
       <div
-        className={`md:flex justify-between h-screen font-sans text-[#f5f5f5] transition-opacity duration-300 ${
+        className={`md:flex justify-between font-sans text-[#f5f5f5] transition-opacity duration-300 ${
           isOpen ? "opacity-60 pointer-events-none" : "opacity-100"
         } bg-[#0d1117]`}
       >
