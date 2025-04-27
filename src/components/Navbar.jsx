@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "../assets/logo.png";
+import { Globe } from "lucide-react";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -33,6 +34,18 @@ export default function Navbar() {
           <li className="hover:text-yellow-400">Pricing</li>
           <li className="hover:text-yellow-400">Contact</li>
         </ul>
+
+        {/* Language selector with globe */}
+        <div className="flex items-center gap-2">
+          {/* Animated Globe */}
+          <Globe className="h-6 w-6 text-white animate-spin-slow" />
+
+          {/* Google Translate Dropdown */}
+          <div
+            id="google_translate_element"
+            className="translate-dropdown"
+          ></div>
+        </div>
       </nav>
 
       {/* Mobile Sidebar */}

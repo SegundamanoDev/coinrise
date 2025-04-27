@@ -6,7 +6,9 @@ module.exports = {
       fontFamily: {
         sans: ["Poppins", "Roboto", "sans-serif"],
       },
-
+      animation: {
+        "spin-slow": "spin 8s linear infinite",
+      },
       colors: {
         // Dashboard Colors
         dashboardBg: "#0D1117",
@@ -38,16 +40,6 @@ module.exports = {
         "4xl": "2.25rem",
         "5xl": "3rem",
         "6xl": "4rem",
-      },
-
-      animation: {
-        marquee: "marquee 60s linear infinite",
-      },
-      keyframes: {
-        marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-100%)" },
-        },
       },
     },
   },

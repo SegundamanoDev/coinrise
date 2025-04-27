@@ -31,6 +31,9 @@ const DashboardLayout = () => {
             <a href="/invest" className="hover:text-yellow-400">
               Invest
             </a>
+            <a href="/withdraw" className="text-white hover:text-yellow-400">
+              Withdraw
+            </a>
             <a href="/deposit" className="hover:text-yellow-400">
               Deposit
             </a>
@@ -118,6 +121,13 @@ const DashboardLayout = () => {
               onClick={() => setIsOpen(false)}
             >
               Deposit
+            </a>
+            <a
+              href="/withdraw"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
+              Withdraw
             </a>
             <a
               href="/invest"
