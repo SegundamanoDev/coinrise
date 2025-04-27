@@ -36,9 +36,12 @@ export default function Navbar() {
         </ul>
 
         {/* Language selector with globe */}
-        <div className="flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2">
           {/* Animated Globe */}
-          <Globe className="h-6 w-6 text-white animate-spin-slow" />
+          <Globe
+            className="h-5 w-5 text-white animate-spin-slow"
+            style={{ animation: "spin 8s linear infinite" }}
+          />
 
           {/* Google Translate Dropdown */}
           <div
@@ -67,6 +70,20 @@ export default function Navbar() {
           <li className="hover:text-yellow-400">Pricing</li>
           <li className="hover:text-yellow-400">Contact</li>
         </ul>
+
+        <div className="flex items-center gap-2 mt-6">
+          {/* Animated Globe */}
+          <Globe
+            className="h-5 w-5 text-gray-700 animate-spin-slow"
+            style={{ animation: "spin 8s linear infinite" }}
+          />
+
+          {/* Google Translate Dropdown */}
+          <div
+            id="google_translate_element_mobile"
+            className="translate-dropdown-mobile"
+          ></div>
+        </div>
       </div>
 
       {/* Backdrop */}
