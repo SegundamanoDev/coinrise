@@ -1,64 +1,10 @@
 import { Menu } from "lucide-react";
 import React from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+import LiveBinaryChart from "./LiveTradingChart";
+import CryptoTicker from "./CryptoTicker";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-
-  const forexData = {
-    labels: ["", "", "", "", "", "", ""],
-    datasets: [
-      {
-        label: "Live Forex",
-        data: [1.125, 1.13, 1.128, 1.135, 1.132, 1.138, 1.14],
-        borderColor: "#10b981",
-        backgroundColor: "rgba(16, 185, 129, 0.2)",
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
-
-  const forexOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      x: {
-        ticks: { color: "#9ca3af" },
-        grid: { color: "#374151" },
-      },
-      y: {
-        ticks: { color: "#9ca3af" },
-        grid: { color: "#374151" },
-      },
-    },
-  };
 
   return (
     <>
@@ -110,6 +56,7 @@ const DashboardLayout = () => {
             </button>
           </div>
 
+          <CryptoTicker />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]">
               <h3 className="text-lg font-semibold mb-2">Total Balance</h3>
@@ -130,13 +77,7 @@ const DashboardLayout = () => {
             </div>
           </div>
 
-          {/* Forex Chart */}
-          <div className="bg-[#1f2937] p-6 rounded-xl shadow-lg border border-[#374151] mb-6">
-            <h3 className="text-lg font-semibold text-yellow-400 mb-4">
-              Live Forex Trade
-            </h3>
-            <Line data={forexData} options={forexOptions} height={100} />
-          </div>
+          <LiveBinaryChart />
         </main>
       </div>
 
