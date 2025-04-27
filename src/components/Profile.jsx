@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import CryptoTicker from "./CryptoTicker";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const UserProfile = () => {
 
   return (
     <div className="p-6 bg-[#1f2937] text-white min-h-screen">
+      <CryptoTicker />
       {/* Profile Header */}
       <div className="flex items-center mb-6">
         <div className="w-20 h-20 rounded-full bg-gray-400 flex justify-center items-center text-2xl font-bold text-white">
