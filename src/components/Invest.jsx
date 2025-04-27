@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import CryptoTicker from "./CryptoTicker";
 
 const InvestComponent = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const InvestComponent = () => {
 
   return (
     <div className="p-6 bg-[#1f2937] text-white min-h-screen">
+      <CryptoTicker />
       <h2 className="text-3xl font-bold text-yellow-400 mb-6">
         Investment Plans
       </h2>

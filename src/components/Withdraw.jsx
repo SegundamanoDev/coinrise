@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import CryptoTicker from "./CryptoTicker";
 
 const WithdrawFunds = () => {
   const [amount, setAmount] = useState("");
@@ -25,6 +26,7 @@ const WithdrawFunds = () => {
 
   return (
     <div className="p-6 bg-[#1f2937] text-white min-h-screen">
+      <CryptoTicker />
       <h2 className="text-3xl font-bold text-yellow-400 mb-6">
         Withdraw Funds
       </h2>

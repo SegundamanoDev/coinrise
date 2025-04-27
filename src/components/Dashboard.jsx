@@ -91,25 +91,53 @@ const DashboardLayout = () => {
         <div className="w-64 bg-[#1f2937] h-full p-6 shadow-lg">
           <h2 className="text-xl font-bold text-yellow-400 mb-6">CryptoDash</h2>
           <nav className="flex flex-col gap-4">
-            <a href="/dashboard" className="text-white hover:text-yellow-400">
+            <a
+              href="/dashboard"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
               Dashboard
             </a>
-            <a href="/transaction" className="text-white hover:text-yellow-400">
+            <a
+              href="/transaction"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
               Transactions
             </a>
-            <a href="/wallet" className="text-white hover:text-yellow-400">
+            <a
+              href="/wallet"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
               Wallet
             </a>
-            <a href="/deposit" className="text-white hover:text-yellow-400">
+            <a
+              href="/deposit"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
               Deposit
             </a>
-            <a href="/invest" className="text-white hover:text-yellow-400">
+            <a
+              href="/invest"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
               Invest
             </a>
-            <a href="/profile" className="text-white hover:text-yellow-400">
+            <a
+              href="/profile"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
               Profile
             </a>
-            <a href="/settings" className="text-white hover:text-yellow-400">
+            <a
+              href="/settings"
+              className="text-white hover:text-yellow-400"
+              onClick={() => setIsOpen(false)}
+            >
               Settings
             </a>
           </nav>
