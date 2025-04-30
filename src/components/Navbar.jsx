@@ -1,24 +1,30 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "../assets/logo.png";
-import { Globe } from "lucide-react";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       {/* Top Navbar */}
-      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2">
-        <div className="text-lg font-sans font-bold">
-          {" "}
-          <img
-            className="w-[50px] h-auto bg-cover"
-            src={logo}
-            alt="logo"
-          />{" "}
+      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 relative">
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
+          <img className="w-[50px] h-auto bg-cover" src={logo} alt="logo" />
         </div>
 
-        {/* Hamburger for mobile */}
+        {/* Nav Links - centered (using absolute positioning) */}
+        <ul className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 font-sans">
+          <li className="hover:text-yellow-400">Home</li>
+          <li className="hover:text-yellow-400">About</li>
+          <li className="hover:text-yellow-400">Pricing</li>
+          <li className="hover:text-yellow-400">Contact</li>
+        </ul>
+
+        {/* Right - Google Translate on Desktop */}
+
+        {/* Hamburger Menu for Mobile */}
         <button
           className="md:hidden"
           onClick={() => setIsOpen(true)}
@@ -26,29 +32,6 @@ export default function Navbar() {
         >
           <Menu size={28} />
         </button>
-
-        {/* Desktop Links */}
-        <ul className="hidden font-sans md:flex space-x-6">
-          <li className="hover:text-yellow-400">Home</li>
-          <li className="hover:text-yellow-400">About</li>
-          <li className="hover:text-yellow-400">Pricing</li>
-          <li className="hover:text-yellow-400">Contact</li>
-        </ul>
-
-        {/* Language selector with globe */}
-        <div className="hidden md:flex items-center gap-2">
-          {/* Animated Globe */}
-          <Globe
-            className="h-5 w-5 text-white animate-spin-slow"
-            style={{ animation: "spin 8s linear infinite" }}
-          />
-
-          {/* Google Translate Dropdown */}
-          <div
-            id="google_translate_element"
-            className="translate-dropdown"
-          ></div>
-        </div>
       </nav>
 
       {/* Mobile Sidebar */}
@@ -64,26 +47,14 @@ export default function Navbar() {
           </button>
         </div>
 
-        <ul className="p-4 space-y-4">
+        <ul className="p-4 space-y-4 font-sans">
           <li className="hover:text-yellow-400">Home</li>
           <li className="hover:text-yellow-400">About</li>
           <li className="hover:text-yellow-400">Pricing</li>
           <li className="hover:text-yellow-400">Contact</li>
         </ul>
 
-        <div className="flex items-center gap-2 mt-6">
-          {/* Animated Globe */}
-          <Globe
-            className="h-5 w-5 text-gray-700 animate-spin-slow"
-            style={{ animation: "spin 8s linear infinite" }}
-          />
-
-          {/* Google Translate Dropdown */}
-          <div
-            id="google_translate_element_mobile"
-            className="translate-dropdown-mobile"
-          ></div>
-        </div>
+        {/* Translate shown under nav links */}
       </div>
 
       {/* Backdrop */}

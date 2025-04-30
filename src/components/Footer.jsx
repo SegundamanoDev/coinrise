@@ -12,23 +12,7 @@ const Footer = () => {
             alt="Logo"
             className="h-10 w-10 object-contain"
           />
-          <span className="text-xl font-bold">YourBrand</span>
-        </div>
-
-        {/* Center Section - Links */}
-        <div className="flex space-x-6 text-sm mb-6 md:mb-0">
-          <a href="#" className="hover:text-white transition">
-            Home
-          </a>
-          <a href="#" className="hover:text-white transition">
-            About
-          </a>
-          <a href="#" className="hover:text-white transition">
-            Services
-          </a>
-          <a href="#" className="hover:text-white transition">
-            Contact
-          </a>
+          <span className="text-xl font-bold">Coinrise</span>
         </div>
 
         {/* Right Section - Social Icons */}
@@ -50,7 +34,7 @@ const Footer = () => {
 
       {/* Bottom copyright */}
       <div className="mt-8 text-center text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} YourBrand. All rights reserved.
+        &copy; {new Date().getFullYear()} Coinrise. All rights reserved.
       </div>
     </footer>
   );

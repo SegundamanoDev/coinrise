@@ -29,7 +29,7 @@ const CryptoTicker = () => {
   }, []);
 
   return (
-    <div className="relative overflow-hidden bg-gray-900 py-4 mb-5">
+    <div className="relative overflow-hidden bg-gray-900 py-4 my-2">
       <div
         className=" whitespace-nowrap flex"
         style={{

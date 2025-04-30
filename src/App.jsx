@@ -13,12 +13,18 @@ import ConfirmInvestment from "./components/ConfirmInvest";
 import SuccessModal from "./components/SuccMsg";
 import ViewInvestment from "./components/ViewInvestment";
 import ActivityOverview from "./components/ActivityOverview";
+import MiningPool from "./components/MiningPool";
+import SignUp from "./components/SignUp";
+import SignIn from "./components/SignIn";
 const App = () => {
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/mining-pool" element={<MiningPool />} />
           <Route path="/dashboard" element={<DashboardLayout />} />
           <Route path="/transaction" element={<Transactions />} />
           <Route path="/deposit" element={<Deposit />} />
