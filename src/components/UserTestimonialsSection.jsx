@@ -30,8 +30,8 @@ const testimonials = [
     avatar: "https://randomuser.me/api/portraits/men/35.jpg",
   },
   {
-    name: "Chinwe E.",
-    country: "Nigeria",
+    name: "Mark Henderson.",
+    country: "UK",
     comment:
       "Support is top-notch and profits are consistent. I recommend this 100%.",
     avatar: "https://randomuser.me/api/portraits/women/65.jpg",

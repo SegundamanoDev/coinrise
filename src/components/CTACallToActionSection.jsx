@@ -14,7 +14,7 @@ const CallToAction = () => {
           every day.
         </p>
         <Link
-          to="/register"
+          to="/sign-up"
           className="inline-flex items-center bg-yellow-400 text-black px-6 py-3 font-semibold rounded-xl shadow hover:bg-yellow-500 transition"
         >
           Get Started Now <ArrowRight className="ml-2 w-5 h-5" />
