@@ -12,6 +12,9 @@ import UserTestimonialsSection from "./UserTestimonialsSection";
 import StatsCountersSection from "./StatsCountersSection";
 import FAQSection from "./FAQSection";
 import CTACallToActionSection from "./CTACallToActionSection";
+import TrustSection from "./Trust";
+import PartnerLogosSection from "./PartnerLogo";
+import StickySupportBar from "./SupportChat";
 
 const Home = () => {
   return (
@@ -19,14 +22,17 @@ const Home = () => {
       <Navbar />
       <CryptoTicker />
       <HeroSection />
+      <TrustSection />
       <HowItWorksSection />
       <WhyChooseUsSection />
       <RealTimeBtcChart />
+      <PartnerLogosSection />
       <InvestmentPlansSection />
       <UserTestimonialsSection />
       <StatsCountersSection />
       <FAQSection />
       <CTACallToActionSection />
+      <StickySupportBar />
       <Footer />
     </>
   );

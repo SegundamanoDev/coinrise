@@ -1,30 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "../assets/logo.png";
+import { useNavigate } from "react-router-dom";
+import TranslateComponent from "./GoogleTranslate";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
       {/* Top Navbar */}
-      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 relative">
+      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 relative sticky top-0 z-50">
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <img className="w-[50px] h-auto bg-cover" src={logo} alt="logo" />
         </div>
 
-        {/* Nav Links - centered (using absolute positioning) */}
+        {/* Nav Links - centered */}
         <ul className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 font-sans">
-          <li className="hover:text-yellow-400">Home</li>
-          <li className="hover:text-yellow-400">About</li>
-          <li className="hover:text-yellow-400">Mining-Pool</li>
-          <li className="hover:text-yellow-400">Contact</li>
+          <li
+            className="hover:text-yellow-400 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            Home
+          </li>
+          <li
+            className="hover:text-yellow-400 cursor-pointer"
+            onClick={() => navigate("/about")}
+          >
+            About
+          </li>
+          <li
+            className="hover:text-yellow-400 cursor-pointer"
+            onClick={() => navigate("/mining-pool")}
+          >
+            Mining-Pool
+          </li>
+          <li
+            className="hover:text-yellow-400 cursor-pointer"
+            onClick={() => navigate("/contact")}
+          >
+            Contact
+          </li>
+          <li className="hover:text-yellow-400 cursor-pointer">
+            <TranslateComponent />
+          </li>
         </ul>
 
-        {/* Right - Google Translate on Desktop */}
-
-        {/* Hamburger Menu for Mobile */}
+        {/* Hamburger Menu Button */}
         <button
           className="md:hidden"
           onClick={() => setIsOpen(true)}
@@ -48,13 +72,33 @@ export default function Navbar() {
         </div>
 
         <ul className="p-4 space-y-4 font-sans">
-          <li className="hover:text-yellow-400">Home</li>
-          <li className="hover:text-yellow-400">About</li>
-          <li className="hover:text-yellow-400">Mining-pool</li>
-          <li className="hover:text-yellow-400">Contact</li>
+          <li className="hover:text-yellow-400" onClick={() => navigate("/")}>
+            Home
+          </li>
+          <li
+            className="hover:text-yellow-400"
+            onClick={() => navigate("/about")}
+          >
+            About
+          </li>
+          <li
+            className="hover:text-yellow-400"
+            onClick={() => navigate("/mining-pool")}
+          >
+            Mining-pool
+          </li>
+          <li
+            className="hover:text-yellow-400"
+            onClick={() => navigate("/contact")}
+          >
+            Contact
+          </li>
         </ul>
 
-        {/* Translate shown under nav links */}
+        {/* Translate Dropdown on bottom (mobile) */}
+        <div className="p-4 border-t border-[#374151]">
+          <TranslateComponent />
+        </div>
       </div>
 
       {/* Backdrop */}
@@ -64,6 +108,30 @@ export default function Navbar() {
           onClick={() => setIsOpen(false)}
         />
       )}
+
+      {/* Clone the translate element into the mobile sidebar once loaded */}
+      {useEffect(() => {
+        const interval = setInterval(() => {
+          const desktopElement = document.getElementById(
+            "google_translate_element"
+          );
+          const mobileContainer = document.getElementById(
+            "google_translate_element_mobile"
+          );
+
+          if (
+            desktopElement?.children.length &&
+            mobileContainer?.children.length === 0
+          ) {
+            mobileContainer.appendChild(
+              desktopElement.firstChild.cloneNode(true)
+            );
+            clearInterval(interval);
+          }
+        }, 500);
+
+        return () => clearInterval(interval);
+      }, [])}
     </>
   );
 }

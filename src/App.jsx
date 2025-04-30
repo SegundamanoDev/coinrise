@@ -16,12 +16,16 @@ import ActivityOverview from "./components/ActivityOverview";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import MiningPoolPage from "./components/MiningPool";
+import About from "./components/About";
+import Contact from "./components/Contact";
 const App = () => {
   return (
     <>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/mining-pool" element={<MiningPoolPage />} />

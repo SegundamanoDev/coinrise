@@ -23,7 +23,7 @@ const MiningPoolPage = () => {
       </section>
 
       {/* What is a Mining Pool */}
-      <section className="py-16 px-6 md:px-20 grid md:grid-cols-2 gap-10 items-center">
+      <section className="py-16 px-6 md:px-20 grid md:grid-cols-2 gap-10 items-center bg-[#1f2937] text-white">
         <div>
           <h2 className="text-3xl font-bold mb-4">What is a Mining Pool?</h2>
           <p className="text-lg leading-relaxed">
@@ -65,7 +65,7 @@ const MiningPoolPage = () => {
       </section>
 
       {/* Pool Benefits */}
-      <section className="bg-gray-100 py-16 px-6 md:px-20 text-center">
+      <section className="bg-[#F3F4F6] py-16 px-6 md:px-20 text-center">
         <h2 className="text-3xl font-bold mb-12">Why Join Our Pool?</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {[
@@ -107,7 +107,7 @@ const MiningPoolPage = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="bg-gray-100 py-16 px-6 md:px-20 text-center">
+      <section className="bg-[#F3F4F6] py-16 px-6 md:px-20 text-center">
         <h2 className="text-3xl font-bold mb-12">What Our Members Say</h2>
         <div className="grid md:grid-cols-2 gap-6">
           {[
