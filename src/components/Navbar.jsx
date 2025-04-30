@@ -18,7 +18,7 @@ export default function Navbar() {
         <ul className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 font-sans">
           <li className="hover:text-yellow-400">Home</li>
           <li className="hover:text-yellow-400">About</li>
-          <li className="hover:text-yellow-400">Pricing</li>
+          <li className="hover:text-yellow-400">Mining-Pool</li>
           <li className="hover:text-yellow-400">Contact</li>
         </ul>
 
@@ -50,7 +50,7 @@ export default function Navbar() {
         <ul className="p-4 space-y-4 font-sans">
           <li className="hover:text-yellow-400">Home</li>
           <li className="hover:text-yellow-400">About</li>
-          <li className="hover:text-yellow-400">Pricing</li>
+          <li className="hover:text-yellow-400">Mining-pool</li>
           <li className="hover:text-yellow-400">Contact</li>
         </ul>
 
