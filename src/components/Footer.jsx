@@ -1,17 +1,13 @@
 import React from "react";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"; // social icons
-
+import logo from "../assets/logo.png";
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-10 pb-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
         {/* Left Section - Logo */}
         <div className="flex items-center space-x-3 mb-6 md:mb-0">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="h-10 w-10 object-contain"
-          />
+          <img className="w-[50px] h-auto bg-cover" src={logo} alt="logo" />
           <span className="text-xl font-bold">Coinrise</span>
         </div>
 

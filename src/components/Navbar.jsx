@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react"; // Added User icon
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import TranslateComponent from "./GoogleTranslate";
@@ -46,6 +46,13 @@ export default function Navbar() {
           <li className="hover:text-yellow-400 cursor-pointer">
             <TranslateComponent />
           </li>
+          {/* Avatar Icon for Desktop */}
+          <li
+            className="hover:text-yellow-400 cursor-pointer"
+            onClick={() => navigate("/dashboard")}
+          >
+            <User size={24} />
+          </li>
         </ul>
 
         {/* Hamburger Menu Button */}
@@ -64,6 +71,16 @@ export default function Navbar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out`}
       >
+        {/* Avatar Icon in Mobile Sidebar (at the top) */}
+        <div className="flex justify-center p-4">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="bg-yellow-400 p-2 rounded-full"
+          >
+            <User size={28} />
+          </button>
+        </div>
+
         <div className="flex justify-between items-center p-4 border-b border-[#374151]">
           <span className="text-xl font-semibold">Menu</span>
           <button onClick={() => setIsOpen(false)} aria-label="Close Menu">

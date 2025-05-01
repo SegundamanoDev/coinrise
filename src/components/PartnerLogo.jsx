@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const PartnerLogosSection = () => {
   return (
     <section className="bg-[#1f2937] text-white py-20 px-6">
-      <div className="max-w-6xl mx-auto text-center">
+      <div className="max-w-6xl mx-auto text-center" data-aos="fade-up">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Our Trusted Partners
         </h2>
@@ -11,19 +11,19 @@ const PartnerLogosSection = () => {
           These partners help power and verify Coinrise's platform
         </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 items-center justify-center">
+        <div
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 items-center justify-center"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
           {/* BitPay */}
           <a
             href="https://www.bitpay.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:opacity-75 transition duration-300"
+            className="hover:opacity-75 transition duration-300 text-center"
           >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/c/c7/BitPay_logo.svg"
-              alt="BitPay"
-              className="h-12 mx-auto"
-            />
+            <p className="text-sm text-gray-400 mt-2">BitPay</p>
           </a>
 
           {/* Trustpilot */}
@@ -31,13 +31,9 @@ const PartnerLogosSection = () => {
             href="https://www.trustpilot.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:opacity-75 transition duration-300"
+            className="hover:opacity-75 transition duration-300 text-center"
           >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Trustpilot_logo.svg"
-              alt="Trustpilot"
-              className="h-10 mx-auto"
-            />
+            <p className="text-sm text-gray-400 mt-2">Trustpilot</p>
           </a>
 
           {/* CoinGecko */}
@@ -45,13 +41,9 @@ const PartnerLogosSection = () => {
             href="https://www.coingecko.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:opacity-75 transition duration-300"
+            className="hover:opacity-75 transition duration-300 text-center"
           >
-            <img
-              src="https://cryptologos.cc/logos/coingecko-logo.svg"
-              alt="CoinGecko"
-              className="h-12 mx-auto"
-            />
+            <p className="text-sm text-gray-400 mt-2">CoinGecko</p>
           </a>
 
           {/* CoinMarketCap */}
@@ -59,13 +51,9 @@ const PartnerLogosSection = () => {
             href="https://www.coinmarketcap.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:opacity-75 transition duration-300"
+            className="hover:opacity-75 transition duration-300 text-center"
           >
-            <img
-              src="https://cryptologos.cc/logos/coinmarketcap-coinmarketcap-logo.svg"
-              alt="CoinMarketCap"
-              className="h-12 mx-auto"
-            />
+            <p className="text-sm text-gray-400 mt-2">CoinMarketCap</p>
           </a>
 
           {/* Blockchain.com */}
@@ -73,13 +61,9 @@ const PartnerLogosSection = () => {
             href="https://www.blockchain.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:opacity-75 transition duration-300"
+            className="hover:opacity-75 transition duration-300 text-center"
           >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/1/10/Blockchain.com_logo.svg"
-              alt="Blockchain.com"
-              className="h-8 mx-auto"
-            />
+            <p className="text-sm text-gray-400 mt-2">Blockchain.com</p>
           </a>
         </div>
       </div>

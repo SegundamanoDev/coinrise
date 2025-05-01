@@ -4,20 +4,20 @@ import { Users, Wallet, Clock, Headphones } from "lucide-react";
 const stats = [
   {
     label: "Active Investors",
-    value: 500,
+    value: 1000,
     suffix: "+",
     icon: <Users size={40} className="text-yellow-500" />,
   },
   {
     label: "Paid Out",
-    value: 2000000,
+    value: 20000000,
     prefix: "$",
     suffix: "+",
     icon: <Wallet size={40} className="text-green-600" />,
   },
   {
     label: "Years Experience",
-    value: 3,
+    value: 4,
     icon: <Clock size={40} className="text-blue-500" />,
   },
   {
@@ -68,6 +68,8 @@ const StatisticsCountersSection = () => {
           {stats.map((stat, i) => (
             <div
               key={i}
+              data-aos="fade-up"
+              data-aos-duration="1200"
               className="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center justify-center hover:shadow-lg transition"
             >
               <div className="mb-3">{stat.icon}</div>

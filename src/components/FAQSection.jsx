@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const faqs = [
@@ -13,7 +13,7 @@ const faqs = [
   },
   {
     question: "Is there a minimum investment?",
-    answer: "Yes, you can start investing with as little as $50.",
+    answer: "Yes, you can start investing with as little as $250.",
   },
 ];
 
@@ -28,7 +28,12 @@ const FAQSection = () => {
         </h2>
 
         {faqs.map((faq, index) => (
-          <div key={index} className="border-b border-gray-700 py-4">
+          <div
+            key={index}
+            className="border-b border-gray-700 py-4"
+            data-aos="fade-up"
+            data-aos-duration="1200"
+          >
             <button
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
               className="flex justify-between w-full items-center text-left focus:outline-none"
@@ -41,7 +46,9 @@ const FAQSection = () => {
               )}
             </button>
             {openIndex === index && (
-              <p className="mt-2 text-gray-400">{faq.answer}</p>
+              <p className="mt-2 text-gray-400" data-aos="fade-up">
+                {faq.answer}
+              </p>
             )}
           </div>
         ))}

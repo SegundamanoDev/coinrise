@@ -1,59 +1,149 @@
 import React, { useState } from "react";
-import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import AuthFormWrapper from "./AuthFormWrapper";
+import ReactFlagsSelect from "react-flags-select";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
+import CurrencyInput from "react-currency-input-field";
+import countries from "./countryCurrency";
 
 const SignUp = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    referralCode: "",
+    kyc: null,
+    agreeTerms: false,
+    ageConfirmed: false,
+  });
+
+  const [country, setCountry] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const [CountryCurrency, setCountryCurrency] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    setFormData({
+      ...formData,
+      [name]:
+        type === "checkbox" ? checked : type === "file" ? files[0] : value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Submitted:", formData);
+    // You can integrate API call or Firebase logic here
+  };
 
   return (
-    <AuthFormWrapper title="Create Account">
-      <form className="space-y-5">
-        <div className="relative">
-          <User className="absolute left-3 top-3 text-gray-400" />
+    <AuthFormWrapper title="Welcome Back">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-5"
+      >
+        <h2 className="text-2xl font-bold text-center">Create an Account</h2>
+        <input
+          name="fullName"
+          type="text"
+          placeholder="Full Name"
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Email Address"
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        />
+        <PhoneInput
+          placeholder="Enter phone number"
+          value={phone}
+          onChange={setPhone}
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        />
+        <input
+          name="confirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded"
+        />
+        <input
+          name="referralCode"
+          type="text"
+          placeholder="Referral Code (Optional)"
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+        <ReactFlagsSelect
+          selected={country}
+          onSelect={(code) => setCountry(code)}
+          placeholder="Select Language"
+          searchable
+          searchPlaceholder="Search countries"
+        />
+
+        <select
+          className="w-full"
+          onChange={(e) => setCountryCurrency(e.target.value)}
+        >
+          <option value="">Select Currency</option>
+          {countries.map((c, index) => (
+            <option key={index} value={c.currency}>
+              {c.countryName} ({c.currency})
+            </option>
+          ))}
+        </select>
+        <div>
+          <label className="block mb-1 font-medium">Upload KYC Document</label>
           <input
-            type="text"
-            placeholder="Full Name"
-            className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            name="kyc"
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
           />
         </div>
-
-        <div className="relative">
-          <Mail className="absolute left-3 top-3 text-gray-400" />
+        <label className="flex items-center space-x-2">
           <input
-            type="email"
-            placeholder="Email"
-            className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            name="agreeTerms"
+            type="checkbox"
+            checked={formData.agreeTerms}
+            onChange={handleChange}
+            required
           />
-        </div>
-
-        <div className="relative">
-          <Lock className="absolute left-3 top-3 text-gray-400" />
+          <span>I agree to the Terms & Conditions</span>
+        </label>
+        <label className="flex items-center space-x-2">
           <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            name="ageConfirmed"
+            type="checkbox"
+            checked={formData.ageConfirmed}
+            onChange={handleChange}
+            required
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-3 text-gray-400"
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
-
+          <span>I confirm I am 18 years or older</span>
+        </label>
         <button
           type="submit"
-          className="w-full bg-yellow-500 text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
         >
           Sign Up
         </button>
-        <p className="text-sm text-center mt-2 text-gray-600">
-          Already have an account?{" "}
-          <a href="/sign-in" className="text-yellow-600 font-medium">
-            Sign In
-          </a>
-        </p>
       </form>
     </AuthFormWrapper>
   );

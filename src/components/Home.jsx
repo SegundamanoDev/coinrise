@@ -14,7 +14,6 @@ import FAQSection from "./FAQSection";
 import CTACallToActionSection from "./CTACallToActionSection";
 import TrustSection from "./Trust";
 import PartnerLogosSection from "./PartnerLogo";
-import StickySupportBar from "./SupportChat";
 
 const Home = () => {
   return (
@@ -32,7 +31,7 @@ const Home = () => {
       <StatsCountersSection />
       <FAQSection />
       <CTACallToActionSection />
-      <StickySupportBar />
+
       <Footer />
     </>
   );

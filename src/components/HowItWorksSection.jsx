@@ -45,14 +45,29 @@ const HowItWorksSection = () => {
       id="how-it-works"
     >
       <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
-        <p className="text-gray-400 mb-12">Start investing in 5 easy steps</p>
+        <h2
+          className="text-3xl md:text-4xl font-bold mb-4"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
+          How It Works
+        </h2>
+        <p
+          className="text-gray-400 mb-12"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
+          Start investing in 5 easy steps
+        </p>
 
         <div className="grid gap-10 md:grid-cols-5">
           {steps.map((step, index) => (
             <div
               key={index}
               className="bg-[#1f2937] rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-xl transition duration-300"
+              data-aos="zoom-in"
+              data-aos-delay={index * 150}
+              data-aos-duration="800"
             >
               <div className="mb-4">{step.icon}</div>
               <h3 className="text-lg font-semibold text-white">{step.title}</h3>

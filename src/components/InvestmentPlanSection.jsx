@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Coins, Gem, Rocket } from "lucide-react";
 
 const plans = [
   {
     icon: <Coins className="w-8 h-8 text-yellow-400" />,
     title: "Starter Plan",
-    price: "$50 Minimum",
-    returnRate: "5% Daily for 7 Days",
+    price: "$250 Minimum",
+    returnRate: "7% Daily for 7 Days",
     features: ["Instant Activation", "24/7 Support", "Daily Profits"],
   },
   {
     icon: <Gem className="w-8 h-8 text-yellow-400" />,
     title: "Premium Plan",
     price: "$500 Minimum",
-    returnRate: "7% Daily for 14 Days",
+    returnRate: "10% Daily for 14 Days",
     features: ["Priority Support", "Higher Returns", "Instant Withdrawals"],
     recommended: true,
   },
@@ -21,7 +21,7 @@ const plans = [
     icon: <Rocket className="w-8 h-8 text-yellow-400" />,
     title: "Ultimate Plan",
     price: "$2000 Minimum",
-    returnRate: "10% Daily for 30 Days",
+    returnRate: "15% Daily for 30 Days",
     features: [
       "Top-Tier Returns",
       "Dedicated Account Manager",
@@ -33,7 +33,7 @@ const plans = [
 const InvestmentPlans = () => {
   return (
     <section className="bg-[#111827] py-20 px-6 text-gray-200">
-      <div className="max-w-6xl mx-auto text-center">
+      <div className="max-w-6xl mx-auto text-center" data-aos="fade-up">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
           Investment Plans
         </h2>
@@ -48,6 +48,8 @@ const InvestmentPlans = () => {
               className={`rounded-xl shadow-md p-8 bg-[#1f2937] hover:shadow-xl transition duration-300 relative ${
                 plan.recommended ? "border-2 border-yellow-400" : ""
               }`}
+              data-aos="zoom-in"
+              data-aos-delay={index * 150}
             >
               <div className="flex justify-center mb-4">{plan.icon}</div>
               <h3 className="text-xl font-semibold text-white">{plan.title}</h3>

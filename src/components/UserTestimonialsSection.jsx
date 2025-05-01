@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Quote } from "lucide-react";
 
 const testimonials = [
@@ -16,13 +16,7 @@ const testimonials = [
       "Super transparent system. I can see my returns grow daily and the dashboard is easy to use. Highly recommended.",
     avatar: "https://randomuser.me/api/portraits/men/45.jpg",
   },
-  {
-    name: "Sarah M.",
-    country: "Canada",
-    comment:
-      "I earned 20% returns in just 3 months! This platform is legit and reliable.",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-  },
+
   {
     name: "James B.",
     country: "USA",
@@ -48,7 +42,7 @@ const testimonials = [
 const TestimonialSection = () => {
   return (
     <section className="bg-[#1f2937] text-white py-20 px-6">
-      <div className="max-w-6xl mx-auto text-center">
+      <div className="max-w-6xl mx-auto text-center" data-aos="fade-up">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           What Our Users Say
         </h2>
@@ -59,6 +53,8 @@ const TestimonialSection = () => {
             <div
               key={index}
               className="bg-gray-800 rounded-xl p-6 shadow hover:shadow-lg transition"
+              data-aos="zoom-in"
+              data-aos-delay={index * 150}
             >
               <Quote className="text-yellow-400 mb-4 mx-auto" />
               <p className="text-gray-300 italic mb-4">"{t.comment}"</p>

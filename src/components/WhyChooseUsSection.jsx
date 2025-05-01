@@ -45,8 +45,18 @@ const WhyChooseUsSection = () => {
   return (
     <section className="bg-[#111827] py-20 px-6 text-gray-200">
       <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Us</h2>
-        <p className="text-gray-400 mb-12">
+        <h2
+          className="text-3xl md:text-4xl font-bold mb-4"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
+          Why Choose Us
+        </h2>
+        <p
+          className="text-gray-400 mb-12"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
           Powerful benefits that set us apart
         </p>
 
@@ -55,6 +65,9 @@ const WhyChooseUsSection = () => {
             <div
               key={index}
               className="bg-[#1f2937] rounded-xl shadow-sm p-6 hover:shadow-lg transition duration-300 text-center"
+              data-aos="flip-up"
+              data-aos-delay={index * 150}
+              data-aos-duration="800"
             >
               <div className="mb-4 flex justify-center">{feature.icon}</div>
               <h3 className="text-lg font-semibold text-white">

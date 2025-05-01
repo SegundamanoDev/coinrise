@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
+
 import {
   Chart as ChartJS,
   LineElement,
@@ -26,7 +27,6 @@ const RealTimeBtcChart = () => {
   useEffect(() => {
     const fetchBTCData = async () => {
       try {
-        // Price + daily change
         const priceRes = await axios.get(
           "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true"
         );
@@ -34,7 +34,6 @@ const RealTimeBtcChart = () => {
         setPrice(btc.usd);
         setChange(btc.usd_24h_change.toFixed(2));
 
-        // Historical data for chart (past 24 hours)
         const chartRes = await axios.get(
           "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1&interval=hourly"
         );
@@ -56,23 +55,21 @@ const RealTimeBtcChart = () => {
             },
           ],
         });
-
-        console.log(chartData);
       } catch (error) {
         console.error("Error fetching BTC data", error);
       }
     };
 
     fetchBTCData();
-    const interval = setInterval(fetchBTCData, 60000); // refresh every minute
+    const interval = setInterval(fetchBTCData, 60000);
     return () => clearInterval(interval);
   }, []);
 
   const isPositive = change && parseFloat(change) >= 0;
 
   return (
-    <section className="bg-gray-900 text-white py-16 px-6">
-      <div className="max-w-5xl mx-auto text-center">
+    <section className="bg-gray-900 text-white py-16 px-6" id="btc-market">
+      <div className="max-w-5xl mx-auto text-center" data-aos="fade-up">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           Live Bitcoin Market
         </h2>
@@ -81,7 +78,7 @@ const RealTimeBtcChart = () => {
         </p>
 
         {price !== null ? (
-          <div className="text-3xl font-bold mb-4">
+          <div className="text-3xl font-bold mb-4" data-aos="zoom-in">
             1 BTC = ${price.toLocaleString()} USD
             <p
               className={`mt-2 text-xl font-medium ${
@@ -96,7 +93,11 @@ const RealTimeBtcChart = () => {
         )}
 
         {chartData ? (
-          <div className="bg-white rounded-xl p-4 mt-6">
+          <div
+            className="bg-white rounded-xl p-4 mt-6"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
             <Line
               data={chartData}
               options={{
