@@ -20,6 +20,13 @@ import ActivityOverview from "./components/ActivityOverview";
 import StickySupportBar from "./components/SupportChat";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import Users from "./components/admin/User";
+import Investments from "./components/admin/Investment";
+import AdminTransactions from "./components/admin/Transaction";
+import Referrals from "./components/admin/Referral";
+import Logs from "./components/admin/Log";
+import Setting from "./components/admin/Settings";
 
 // Custom wrapper to check route
 const AppRoutes = () => {
@@ -50,6 +57,14 @@ const AppRoutes = () => {
         <Route path="/view-investment" element={<ViewInvestment />} />
         <Route path="/activity-overview" element={<ActivityOverview />} />
         <Route path="/invest/confirm/:planId" element={<ConfirmInvestment />} />
+
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/users" element={<Users />} />
+        <Route path="/admin/investments" element={<Investments />} />
+        <Route path="/admin/transactions" element={<AdminTransactions />} />
+        <Route path="/admin/referrals" element={<Referrals />} />
+        <Route path="/admin/logs" element={<Logs />} />
+        <Route path="/admin/settings" element={<Setting />} />
       </Routes>
 
       {/* Only show support on allowed pages */}
