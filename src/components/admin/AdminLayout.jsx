@@ -9,8 +9,6 @@ const AdminLayout = ({ children }) => {
     { name: "Dashboard", path: "/admin" },
     { name: "Users", path: "/admin/users" },
     { name: "Investments", path: "/admin/investments" },
-    { name: "Deposits", path: "/admin/deposits" },
-    { name: "Withdrawals", path: "/admin/withdrawals" },
     { name: "Referrals", path: "/admin/referrals" },
     { name: "Logs", path: "/admin/logs" },
     { name: "Settings", path: "/admin/settings" },

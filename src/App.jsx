@@ -27,6 +27,8 @@ import AdminTransactions from "./components/admin/Transaction";
 import Referrals from "./components/admin/Referral";
 import Logs from "./components/admin/Log";
 import Setting from "./components/admin/Settings";
+import ScrollToTop from "react-scroll-to-top";
+import ScrollToTops from "./components/ScrollToTop";
 
 // Custom wrapper to check route
 const AppRoutes = () => {
@@ -75,6 +77,26 @@ const AppRoutes = () => {
 
 const App = () => (
   <BrowserRouter>
+    <ScrollToTops />
+    <ScrollToTop
+      smooth
+      color="#fff"
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        backgroundColor: "#333",
+        borderRadius: "50%",
+        zIndex: 9999,
+        width: "50px",
+        height: "50px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    />
+
     <AppRoutes />
   </BrowserRouter>
 );

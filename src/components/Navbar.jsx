@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Menu, X, User } from "lucide-react"; // Added User icon
+import { Menu, X, User } from "lucide-react";
 import logo from "../assets/logo.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TranslateComponent from "./GoogleTranslate";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handleLinkClick = () => setIsOpen(false); // Close drawer on link click
 
   return (
     <>
@@ -19,39 +21,25 @@ export default function Navbar() {
 
         {/* Nav Links - centered */}
         <ul className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 font-sans">
-          <li
-            className="hover:text-yellow-400 cursor-pointer"
-            onClick={() => navigate("/")}
-          >
-            Home
+          <li className="hover:text-yellow-400">
+            <Link to="/">Home</Link>
           </li>
-          <li
-            className="hover:text-yellow-400 cursor-pointer"
-            onClick={() => navigate("/about")}
-          >
-            About
+          <li className="hover:text-yellow-400">
+            <Link to="/about">About</Link>
           </li>
-          <li
-            className="hover:text-yellow-400 cursor-pointer"
-            onClick={() => navigate("/mining-pool")}
-          >
-            Mining-Pool
+          <li className="hover:text-yellow-400">
+            <Link to="/mining-pool">Mining-Pool</Link>
           </li>
-          <li
-            className="hover:text-yellow-400 cursor-pointer"
-            onClick={() => navigate("/contact")}
-          >
-            Contact
+          <li className="hover:text-yellow-400">
+            <Link to="/contact">Contact</Link>
           </li>
-          <li className="hover:text-yellow-400 cursor-pointer">
+          <li>
             <TranslateComponent />
           </li>
-          {/* Avatar Icon for Desktop */}
-          <li
-            className="hover:text-yellow-400 cursor-pointer"
-            onClick={() => navigate("/dashboard")}
-          >
-            <User size={24} />
+          <li className="hover:text-yellow-400 cursor-pointer">
+            <Link to="/dashboard">
+              <User size={24} />
+            </Link>
           </li>
         </ul>
 
@@ -71,14 +59,15 @@ export default function Navbar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out`}
       >
-        {/* Avatar Icon in Mobile Sidebar (at the top) */}
+        {/* Avatar Icon */}
         <div className="flex justify-center p-4">
-          <button
-            onClick={() => navigate("/dashboard")}
+          <Link
+            to="/dashboard"
+            onClick={handleLinkClick}
             className="bg-yellow-400 p-2 rounded-full"
           >
             <User size={28} />
-          </button>
+          </Link>
         </div>
 
         <div className="flex justify-between items-center p-4 border-b border-[#374151]">
@@ -89,33 +78,33 @@ export default function Navbar() {
         </div>
 
         <ul className="p-4 space-y-4 font-sans">
-          <li className="hover:text-yellow-400" onClick={() => navigate("/")}>
-            Home
+          <li className="hover:text-yellow-400">
+            <Link to="/" onClick={handleLinkClick}>
+              Home
+            </Link>
           </li>
-          <li
-            className="hover:text-yellow-400"
-            onClick={() => navigate("/about")}
-          >
-            About
+          <li className="hover:text-yellow-400">
+            <Link to="/about" onClick={handleLinkClick}>
+              About
+            </Link>
           </li>
-          <li
-            className="hover:text-yellow-400"
-            onClick={() => navigate("/mining-pool")}
-          >
-            Mining-pool
+          <li className="hover:text-yellow-400">
+            <Link to="/mining-pool" onClick={handleLinkClick}>
+              Mining-Pool
+            </Link>
           </li>
-          <li
-            className="hover:text-yellow-400"
-            onClick={() => navigate("/contact")}
-          >
-            Contact
+          <li className="hover:text-yellow-400">
+            <Link to="/contact" onClick={handleLinkClick}>
+              Contact
+            </Link>
           </li>
         </ul>
 
-        {/* Translate Dropdown on bottom (mobile) */}
-        <div className="p-4 border-t border-[#374151]">
-          <TranslateComponent />
-        </div>
+        {/* Translate dropdown mobile */}
+        <div
+          className="p-4 border-t border-[#374151]"
+          id="google_translate_element_mobile"
+        />
       </div>
 
       {/* Backdrop */}
@@ -126,7 +115,7 @@ export default function Navbar() {
         />
       )}
 
-      {/* Clone the translate element into the mobile sidebar once loaded */}
+      {/* Google Translate clone for mobile */}
       {useEffect(() => {
         const interval = setInterval(() => {
           const desktopElement = document.getElementById(
