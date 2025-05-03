@@ -38,7 +38,7 @@ const SignUp = () => {
   };
 
   return (
-    <AuthFormWrapper title="Welcome Back">
+    <AuthFormWrapper title="Welcome!">
       <form
         onSubmit={handleSubmit}
         className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-5"
@@ -107,17 +107,7 @@ const SignUp = () => {
             </option>
           ))}
         </select>
-        <div>
-          <label className="block mb-1 font-medium">Upload KYC Document</label>
-          <input
-            name="kyc"
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
+
         <label className="flex items-center space-x-2">
           <input
             name="agreeTerms"
@@ -140,7 +130,7 @@ const SignUp = () => {
         </label>
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+          className="w-full bg-yellow-400 hover:bg-blue-700 text-white py-2 rounded"
         >
           Sign Up
         </button>

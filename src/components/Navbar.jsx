@@ -1,47 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X, User } from "lucide-react";
-import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import TranslateComponent from "./GoogleTranslate";
+import logo from "../assets/logo.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleLinkClick = () => setIsOpen(false); // Close drawer on link click
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <>
-      {/* Top Navbar */}
-      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 relative sticky top-0 z-50">
+      {/* Sticky Top Navbar */}
+      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 sticky top-0 z-50 shadow-md">
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <img className="w-[50px] h-auto bg-cover" src={logo} alt="logo" />
+          <img className="w-[50px] h-auto" src={logo} alt="logo" />
         </div>
 
-        {/* Nav Links - centered */}
+        {/* Desktop Nav Links */}
         <ul className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 font-sans">
-          <li className="hover:text-yellow-400">
-            <Link to="/">Home</Link>
-          </li>
-          <li className="hover:text-yellow-400">
-            <Link to="/about">About</Link>
-          </li>
-          <li className="hover:text-yellow-400">
-            <Link to="/mining-pool">Mining-Pool</Link>
-          </li>
-          <li className="hover:text-yellow-400">
-            <Link to="/contact">Contact</Link>
+          <li>
+            <Link className="hover:text-yellow-400" to="/">
+              Home
+            </Link>
           </li>
           <li>
-            <TranslateComponent />
+            <Link className="hover:text-yellow-400" to="/about">
+              About
+            </Link>
           </li>
-          <li className="hover:text-yellow-400 cursor-pointer">
-            <Link to="/dashboard">
+          <li>
+            <Link className="hover:text-yellow-400" to="/mining-pool">
+              Mining-Pool
+            </Link>
+          </li>
+          <li>
+            <Link className="hover:text-yellow-400" to="/contact">
+              Contact
+            </Link>
+          </li>
+          <li>
+            <Link className="hover:text-yellow-400" to="/dashboard">
               <User size={24} />
             </Link>
           </li>
         </ul>
+
+        {/* Auth Links */}
+        <div className="hidden md:flex space-x-4">
+          <Link to="/sign-in" className="text-yellow-400 hover:underline">
+            Sign In
+          </Link>
+          <Link
+            to="/sign-up"
+            className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500"
+          >
+            Sign Up
+          </Link>
+        </div>
 
         {/* Hamburger Menu Button */}
         <button
@@ -57,87 +74,82 @@ export default function Navbar() {
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-[#1f2937] text-white z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out`}
+        } transition-transform duration-300`}
       >
-        {/* Avatar Icon */}
         <div className="flex justify-center p-4">
-          <Link
-            to="/dashboard"
-            onClick={handleLinkClick}
+          <button
+            onClick={() => {
+              navigate("/dashboard");
+              closeMenu();
+            }}
             className="bg-yellow-400 p-2 rounded-full"
           >
             <User size={28} />
-          </Link>
+          </button>
         </div>
-
         <div className="flex justify-between items-center p-4 border-b border-[#374151]">
           <span className="text-xl font-semibold">Menu</span>
-          <button onClick={() => setIsOpen(false)} aria-label="Close Menu">
+          <button onClick={closeMenu} aria-label="Close Menu">
             <X size={24} />
           </button>
         </div>
-
         <ul className="p-4 space-y-4 font-sans">
-          <li className="hover:text-yellow-400">
-            <Link to="/" onClick={handleLinkClick}>
+          <li>
+            <Link to="/" onClick={closeMenu} className="hover:text-yellow-400">
               Home
             </Link>
           </li>
-          <li className="hover:text-yellow-400">
-            <Link to="/about" onClick={handleLinkClick}>
+          <li>
+            <Link
+              to="/about"
+              onClick={closeMenu}
+              className="hover:text-yellow-400"
+            >
               About
             </Link>
           </li>
-          <li className="hover:text-yellow-400">
-            <Link to="/mining-pool" onClick={handleLinkClick}>
+          <li>
+            <Link
+              to="/mining-pool"
+              onClick={closeMenu}
+              className="hover:text-yellow-400"
+            >
               Mining-Pool
             </Link>
           </li>
-          <li className="hover:text-yellow-400">
-            <Link to="/contact" onClick={handleLinkClick}>
+          <li>
+            <Link
+              to="/contact"
+              onClick={closeMenu}
+              className="hover:text-yellow-400"
+            >
               Contact
             </Link>
           </li>
+          <li>
+            <Link to="/sign-in" onClick={closeMenu} className="text-yellow-400">
+              Sign In
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/sign-up"
+              onClick={closeMenu}
+              className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500"
+            >
+              Sign Up
+            </Link>
+          </li>
         </ul>
-
-        {/* Translate dropdown mobile */}
-        <div
-          className="p-4 border-t border-[#374151]"
-          id="google_translate_element_mobile"
-        />
       </div>
 
       {/* Backdrop */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsOpen(false)}
+          onClick={closeMenu}
         />
       )}
-
-      {/* Google Translate clone for mobile */}
-      {useEffect(() => {
-        const interval = setInterval(() => {
-          const desktopElement = document.getElementById(
-            "google_translate_element"
-          );
-          const mobileContainer = document.getElementById(
-            "google_translate_element_mobile"
-          );
-
-          if (
-            desktopElement?.children.length &&
-            mobileContainer?.children.length === 0
-          ) {
-            mobileContainer.appendChild(
-              desktopElement.firstChild.cloneNode(true)
-            );
-            clearInterval(interval);
-          }
-        }, 500);
-
-        return () => clearInterval(interval);
-      }, [])}
     </>
   );
 }

@@ -1,7 +1,6 @@
 import { Menu, Copy } from "lucide-react";
 import React from "react";
 import LiveBinaryChart from "./LiveTradingChart";
-import CryptoTicker from "./CryptoTicker";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -10,7 +9,7 @@ const DashboardLayout = () => {
   return (
     <>
       <div
-        className={`md:flex justify-between font-sans text-[#f5f5f5] transition-opacity duration-300 ${
+        className={`md:flex pt-16 md:pt-0 justify-between font-sans text-[#f5f5f5] transition-opacity duration-300 ${
           isOpen ? "opacity-60 pointer-events-none" : "opacity-100"
         } bg-[#0d1117]`}
       >
@@ -52,18 +51,16 @@ const DashboardLayout = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
-          {/* Mobile Header */}
-          <div className="md:hidden flex justify-between items-center mb-6">
-            <h1 className="text-xl font-bold">Dashboard</h1>
+          <div className="md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-3 px-4 shadow-md flex justify-between items-center mb-6">
+            <h1 className="text-lg font-semibold">Welcome back, John!</h1>
             <button
               onClick={() => setIsOpen(true)}
-              className="px-4 py-1 rounded-md font-semibold"
+              className="p-2 rounded-md hover:bg-[#1f2937] transition mx-2"
+              aria-label="Open Menu"
             >
               <Menu />
             </button>
           </div>
-
-          <CryptoTicker />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {[
@@ -176,7 +173,7 @@ const DashboardLayout = () => {
           <h2 className="text-xl font-bold text-yellow-400 mb-6">CryptoDash</h2>
           <nav className="flex flex-col gap-4">
             {[
-              "Overview & activity",
+              "dashboard",
               "upgrade",
               "invest",
               "deposit",

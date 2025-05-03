@@ -30,7 +30,7 @@ const Users = () => {
         User Management
       </h2>
 
-      <div className="overflow-x-auto rounded-xl border border-[#374151] bg-[#1f2937]">
+      <div className="overflow-x-auto rounded-xl border border-[#374151] bg-[#1f2937] ">
         <table className="min-w-full text-sm text-left text-gray-300">
           <thead className="bg-[#111827] text-gray-400 uppercase text-xs">
             <tr>

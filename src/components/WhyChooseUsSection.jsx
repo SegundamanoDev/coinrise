@@ -37,7 +37,7 @@ const features = [
   {
     icon: <DollarSign className="text-yellow-400 w-8 h-8" />,
     title: "Low Minimum Investment",
-    description: "Get started with as little as $50 and grow from there.",
+    description: "Get started with as little as $250 and grow from there.",
   },
 ];
 

@@ -20,7 +20,7 @@ const AdminLayout = ({ children }) => {
       <div
         className={`md:flex transition-opacity duration-300 font-sans text-[#f5f5f5] ${
           isOpen ? "opacity-60 pointer-events-none" : "opacity-100"
-        } bg-[#0d1117]`}
+        } bg-[#0d1117] min-h-screen `}
       >
         {/* Sidebar */}
         <aside className="hidden md:flex w-64 bg-[#1f2937] flex-col p-6 border-r border-[#374151]">
@@ -43,8 +43,8 @@ const AdminLayout = ({ children }) => {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
           {/* Mobile Header */}
-          <div className="md:hidden flex justify-between items-center mb-6">
-            <h1 className="text-xl font-bold">Admin</h1>
+          <div className="className= md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-3 px-4 shadow-md flex justify-between items-center mb-6">
+            <h1 className="text-lg font-semibold">Welcome back, Admin!</h1>
             <button
               onClick={() => setIsOpen(true)}
               className="px-4 py-1 rounded-md font-semibold"

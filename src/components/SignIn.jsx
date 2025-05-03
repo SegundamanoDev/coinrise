@@ -35,13 +35,13 @@ const SignIn = () => {
 
         <button
           type="submit"
-          className="w-full bg-yellow-500 text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition"
+          className="w-full bg-yellow-400 text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition"
         >
           Sign In
         </button>
         <p className="text-sm text-center mt-2 text-gray-600">
           Don't have an account?{" "}
-          <a href="/signup" className="text-yellow-600 font-medium">
+          <a href="/sign-up" className="text-yellow-600 font-medium">
             Sign Up
           </a>
         </p>
