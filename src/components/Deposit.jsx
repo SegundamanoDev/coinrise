@@ -29,8 +29,6 @@ const Deposit = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-[#0d1117] text-[#f5f5f5] font-sans">
-      <CryptoTicker />
-
       <div className="relative max-w-xl w-full bg-[#1f2937] p-6 my-4 rounded-2xl shadow-lg border border-[#374151]">
         {/* Go Back Button */}
         <button

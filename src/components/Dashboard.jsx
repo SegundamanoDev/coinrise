@@ -1,6 +1,7 @@
 import { Menu, Copy } from "lucide-react";
 import React from "react";
 import LiveBinaryChart from "./LiveTradingChart";
+import TradingViewChart from "./TradingViewChart";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -22,12 +23,7 @@ const DashboardLayout = () => {
             <a href="/dashboard" className="hover:text-yellow-400">
               Overview & activity
             </a>
-            <a href="/#" className="hover:text-yellow-400">
-              Upgrade Account
-            </a>
-            <a href="/invest" className="hover:text-yellow-400">
-              Invest
-            </a>
+
             <a href="/deposit" className="hover:text-yellow-400">
               Deposit
             </a>
@@ -61,7 +57,7 @@ const DashboardLayout = () => {
               <Menu />
             </button>
           </div>
-
+          <TradingViewChart />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {[
               {
@@ -93,11 +89,6 @@ const DashboardLayout = () => {
                 title: "Pending Withdrawals",
                 value: "$100.00",
                 sub: "Awaiting approval",
-              },
-              {
-                title: "Mining Pool Share",
-                value: "0.005 BTC",
-                sub: "Hashrate: 12 MH/s",
               },
             ].map((card, index) => (
               <div
@@ -158,8 +149,6 @@ const DashboardLayout = () => {
               <li>Plan B - $150.00 - Active</li>
             </ul>
           </div>
-
-          <LiveBinaryChart />
         </main>
       </div>
 
@@ -174,8 +163,6 @@ const DashboardLayout = () => {
           <nav className="flex flex-col gap-4">
             {[
               "dashboard",
-              "upgrade",
-              "invest",
               "deposit",
               "withdraw",
               "transaction",

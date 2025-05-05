@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, Globe } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import GoogleTranslate from "./GoogleTranslate";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,6 +47,11 @@ export default function Navbar() {
             </Link>
           </li>
         </ul>
+
+        <div className="hidden md:flex ml-auto mr-4">
+          <Globe />
+          <GoogleTranslate />
+        </div>
 
         {/* Auth Links */}
         <div className="hidden md:flex space-x-4">
@@ -141,6 +147,11 @@ export default function Navbar() {
             </Link>
           </li>
         </ul>
+
+        <div className="flex items-center gap-1 ml-2 mr-4">
+          <Globe />
+          <GoogleTranslate />
+        </div>
       </div>
 
       {/* Backdrop */}
