@@ -17,7 +17,7 @@ import ConfirmInvestment from "./components/ConfirmInvest";
 import SuccessModal from "./components/SuccMsg";
 import ViewInvestment from "./components/ViewInvestment";
 import ActivityOverview from "./components/ActivityOverview";
-import StickySupportBar from "./components/SupportChat";
+// import StickySupportBar from "./components/SupportChat";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import AdminDashboard from "./components/admin/AdminDashboard";
@@ -29,6 +29,8 @@ import Logs from "./components/admin/Log";
 import Setting from "./components/admin/Settings";
 import ScrollToTop from "react-scroll-to-top";
 import ScrollToTops from "./components/ScrollToTop";
+import { store } from "./redux/store";
+import { Provider } from "react-redux";
 
 // Custom wrapper to check route
 const AppRoutes = () => {
@@ -36,8 +38,8 @@ const AppRoutes = () => {
     AOS.init({ once: true });
   }, []);
 
-  const location = useLocation();
-  const hideSupportBar = ["/sign-in", "/sign-up"].includes(location.pathname);
+  // const location = useLocation();
+  // const hideSupportBar = ["/sign-in", "/sign-up"].includes(location.pathname);
 
   return (
     <>
@@ -62,6 +64,7 @@ const AppRoutes = () => {
 
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<Users />} />
+        <Route path="/admin/users/:id" element={<Users />} />
         <Route path="/admin/investments" element={<Investments />} />
         <Route path="/admin/transactions" element={<AdminTransactions />} />
         <Route path="/admin/referrals" element={<Referrals />} />
@@ -70,7 +73,7 @@ const AppRoutes = () => {
       </Routes>
 
       {/* Only show support on allowed pages */}
-      {!hideSupportBar && <StickySupportBar />}
+      {/* {!hideSupportBar && <StickySupportBar />} */}
     </>
   );
 };
@@ -96,8 +99,9 @@ const App = () => (
         alignItems: "center",
       }}
     />
-
-    <AppRoutes />
+    <Provider store={store}>
+      <AppRoutes />
+    </Provider>
   </BrowserRouter>
 );
 

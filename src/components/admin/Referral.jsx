@@ -1,27 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchReferrals } from "../../features/referral/referralSlice";
 import AdminLayout from "../admin/AdminLayout";
 
-const referralData = [
-  {
-    id: 1,
-    user: "Alice",
-    referredUsers: 5,
-    totalBonus: "$50",
-    referrals: ["Bob", "Charlie", "Dave", "Eve", "Frank"],
-  },
-  {
-    id: 2,
-    user: "Bob",
-    referredUsers: 2,
-    totalBonus: "$20",
-    referrals: ["Gina", "Harry"],
-  },
-];
-
 const Referrals = () => {
+  const dispatch = useDispatch();
+  const {
+    data: referralData,
+    loading,
+    error,
+  } = useSelector((state) => state.referrals);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newBonus, setNewBonus] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchReferrals());
+  }, [dispatch]);
 
   const openModal = (user) => {
     setSelectedUser(user);
@@ -30,7 +26,7 @@ const Referrals = () => {
   };
 
   const handleBonusUpdate = () => {
-    console.log(`Bonus for ${selectedUser} set to ${newBonus}`);
+    console.log(`Bonus for ${selectedUser.name} set to ${newBonus}`);
     setIsModalOpen(false);
   };
 
@@ -40,25 +36,28 @@ const Referrals = () => {
         Referral Management
       </h2>
 
+      {loading && <p className="text-gray-300">Loading...</p>}
+      {error && <p className="text-red-400">{error}</p>}
+
       <div className="grid md:grid-cols-2 gap-6">
         {referralData.map((ref) => (
           <div
-            key={ref.id}
+            key={ref._id}
             className="bg-[#1f2937] p-6 rounded-xl shadow-lg border border-[#374151]"
           >
             <h3 className="text-xl font-semibold mb-2 text-white">
-              {ref.user}
+              {ref.user.name}
             </h3>
             <p className="text-sm text-gray-400 mb-1">
               Referred Users:{" "}
               <span className="text-yellow-400 font-semibold">
-                {ref.referredUsers}
+                {ref.referredUsers.length}
               </span>
             </p>
             <p className="text-sm text-gray-400 mb-3">
               Total Bonus Earned:{" "}
               <span className="text-green-400 font-semibold">
-                {ref.totalBonus}
+                ${ref.totalBonus || 0}
               </span>
             </p>
 
@@ -67,8 +66,8 @@ const Referrals = () => {
                 Referrals:
               </h4>
               <ul className="list-disc list-inside text-sm text-gray-400">
-                {ref.referrals.map((name, i) => (
-                  <li key={i}>{name}</li>
+                {ref.referredUsers.map((ru, i) => (
+                  <li key={i}>{ru.name}</li>
                 ))}
               </ul>
             </div>
@@ -88,7 +87,7 @@ const Referrals = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-[#1f2937] p-6 rounded-lg shadow-lg border border-[#374151] w-[90%] max-w-sm">
             <h3 className="text-lg font-semibold text-yellow-400 mb-4">
-              Adjust Bonus for {selectedUser}
+              Adjust Bonus for {selectedUser.name}
             </h3>
             <input
               type="text"

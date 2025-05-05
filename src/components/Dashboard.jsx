@@ -51,7 +51,7 @@ const DashboardLayout = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-3 px-4 shadow-md flex justify-between items-center mb-6">
+          <div className="md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-5 px-4 shadow-md flex justify-between items-center mb-6">
             <h1 className="text-lg font-semibold">Welcome back, John!</h1>
             <button
               onClick={() => setIsOpen(true)}

@@ -43,8 +43,8 @@ const AdminLayout = ({ children }) => {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-6">
           {/* Mobile Header */}
-          <div className="className= md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-3 px-4 shadow-md flex justify-between items-center mb-6">
-            <h1 className="text-lg font-semibold">Welcome back, Admin!</h1>
+          <div className="className= md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-5 px-2 shadow-md flex justify-between items-center mb-6">
+            <h1 className="text-lg font-semibold py-3">Welcome back, Admin!</h1>
             <button
               onClick={() => setIsOpen(true)}
               className="px-4 py-1 rounded-md font-semibold"

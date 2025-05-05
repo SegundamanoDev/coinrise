@@ -1,36 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLogs } from "../../features/log/logsSlice";
 import AdminLayout from "../admin/AdminLayout";
-
-const logs = [
-  {
-    id: 1,
-    type: "Registration",
-    message: "New user registered: john@example.com",
-    timestamp: "2025-05-01 09:00",
-    status: "info",
-  },
-  {
-    id: 2,
-    type: "Deposit",
-    message: "User john@example.com deposited $100",
-    timestamp: "2025-05-01 09:30",
-    status: "success",
-  },
-  {
-    id: 3,
-    type: "Withdrawal",
-    message: "User jane@example.com requested $200 withdrawal",
-    timestamp: "2025-05-01 10:00",
-    status: "pending",
-  },
-  {
-    id: 4,
-    type: "Login Failed",
-    message: "Failed login attempt from IP 102.23.45.6",
-    timestamp: "2025-05-01 10:15",
-    status: "warning",
-  },
-];
 
 const statusColor = {
   info: "text-blue-400",
@@ -40,7 +11,14 @@ const statusColor = {
 };
 
 const Logs = () => {
+  const dispatch = useDispatch();
+  const { logs, loading, error } = useSelector((state) => state.logs);
+
   const [filter, setFilter] = useState("All");
+
+  useEffect(() => {
+    dispatch(fetchLogs());
+  }, [dispatch]);
 
   const filteredLogs =
     filter === "All" ? logs : logs.filter((log) => log.type === filter);
@@ -53,22 +31,27 @@ const Logs = () => {
         Logs & Notifications
       </h2>
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Filter by Type
-        </label>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="w-full md:w-64 bg-[#111827] border border-[#374151] text-white p-2 rounded focus:outline-none focus:ring-yellow-400"
-        >
-          {uniqueTypes.map((type, index) => (
-            <option key={index} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-      </div>
+      {loading && <p className="text-gray-300">Loading logs...</p>}
+      {error && <p className="text-red-400">{error}</p>}
+
+      {!loading && logs.length > 0 && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Filter by Type
+          </label>
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="w-full md:w-64 bg-[#111827] border border-[#374151] text-white p-2 rounded focus:outline-none focus:ring-yellow-400"
+          >
+            {uniqueTypes.map((type, index) => (
+              <option key={index} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="bg-[#1f2937] p-6 rounded-xl border border-[#374151] shadow-lg">
         <ul className="space-y-4">

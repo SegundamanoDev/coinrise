@@ -1,37 +1,30 @@
-import React from "react";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"; // social icons
-import logo from "../assets/logo.png";
+import { useEffect } from "react";
+
 const Footer = () => {
+  useEffect(() => {
+    if (!window.googleTranslateElementInit) {
+      window.googleTranslateElementInit = function () {
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          },
+          "google_translate_element"
+        );
+      };
+
+      const script = document.createElement("script");
+      script.src =
+        "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   return (
-    <footer className="bg-gray-900 text-gray-300 pt-10 pb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-        {/* Left Section - Logo */}
-        <div className="flex items-center space-x-3 mb-6 md:mb-0">
-          <img className="w-[50px] h-auto bg-cover" src={logo} alt="logo" />
-          <span className="text-xl font-bold">Coinrise</span>
-        </div>
-
-        {/* Right Section - Social Icons */}
-        <div className="flex space-x-4">
-          <a href="#" className="hover:text-blue-500 transition">
-            <Facebook className="h-5 w-5" />
-          </a>
-          <a href="#" className="hover:text-blue-400 transition">
-            <Twitter className="h-5 w-5" />
-          </a>
-          <a href="#" className="hover:text-pink-500 transition">
-            <Instagram className="h-5 w-5" />
-          </a>
-          <a href="#" className="hover:text-blue-700 transition">
-            <Linkedin className="h-5 w-5" />
-          </a>
-        </div>
-      </div>
-
-      {/* Bottom copyright */}
-      <div className="mt-8 text-center text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} Coinrise. All rights reserved.
-      </div>
+    <footer className="text-center py-4">
+      <div id="google_translate_element"></div>
+      <p className="text-sm text-gray-500 mt-2">Powered by Google Translate</p>
     </footer>
   );
 };
