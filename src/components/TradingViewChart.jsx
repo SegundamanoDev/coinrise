@@ -1,56 +1,54 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 const TradingViewChart = () => {
+  const containerRef = useRef(null);
+
   useEffect(() => {
-    // Load the TradingView library
+    // Load TradingView script dynamically
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/tv.js";
     script.async = true;
+
     script.onload = () => {
       if (window.TradingView) {
-        new TradingView.widget({
-          container_id: "tradingview_widget",
-          width: "100%",
-          height: "100%",
+        new window.TradingView.widget({
+          width: 1050,
+          height: 500,
           symbol: "BITFINEX:BTCUSD",
           interval: "1",
           timezone: "Etc/UTC",
-          theme: "dark",
-          style: "1", // Candlestick
+          theme: "Dark",
+          style: "9",
           locale: "en",
-          toolbar_bg: "#0a0a0a",
-          hide_top_toolbar: true,
-          hide_side_toolbar: true, // Hides the left tools toolbar
-          save_image: false,
-          studies: ["BB@tv-basicstudies", "Volume@tv-basicstudies"],
+          toolbar_bg: "#f1f3f6",
           enable_publishing: false,
-          allow_symbol_change: false,
-          hide_legend: false,
-          backgroundColor: "#0a0a0a",
-          gridColor: "#333",
-          autosize: true,
-          // Add this line to hide the right price scale and watchlist
-          withdateranges: false,
-          details: false,
-          hotlist: false,
-          calendar: false,
-          hideideas: true,
-          show_popup_button: false,
+          hide_side_toolbar: false,
+          allow_symbol_change: true,
+          calendar: true,
+          studies: ["BB@tv-basicstudies"],
+          container_id: "tradingview_f933e",
         });
       }
     };
-    document.body.appendChild(script);
+
+    containerRef.current.appendChild(script);
+
+    return () => {
+      // Cleanup: optional depending on routing strategy
+      const container = document.getElementById("tradingview_f933e");
+      if (container) container.innerHTML = "";
+    };
   }, []);
 
   return (
-    <div
-      id="tradingview_widget"
-      style={{
-        width: "100%",
-        height: "50vh",
-        marginBottom: "10px",
-      }}
-    />
+    <div className="tradingview-widget-container">
+      <div id="tradingview_f933e" ref={containerRef}></div>
+      <div className="tradingview-widget-copyright" style={{ width: "100%" }}>
+        <a href="#" rel="noopener" target="_blank">
+          <span className="blue-text">Personal trading chart</span>
+        </a>
+      </div>
+    </div>
   );
 };
 

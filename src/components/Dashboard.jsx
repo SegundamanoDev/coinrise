@@ -1,6 +1,5 @@
 import { Menu, Copy } from "lucide-react";
 import React from "react";
-import LiveBinaryChart from "./LiveTradingChart";
 import TradingViewChart from "./TradingViewChart";
 
 const DashboardLayout = () => {
@@ -46,7 +45,7 @@ const DashboardLayout = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto">
           <div className="md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-5 px-4 shadow-md flex justify-between items-center mb-6">
             <h1 className="text-lg font-semibold">Welcome back, John!</h1>
             <button
@@ -57,8 +56,9 @@ const DashboardLayout = () => {
               <Menu />
             </button>
           </div>
+          <div className="pt-4 md:pt-0"></div>
           <TradingViewChart />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 p-6">
             {[
               {
                 title: "Available Balance",

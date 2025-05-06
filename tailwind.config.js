@@ -7,7 +7,15 @@ module.exports = {
         sans: ["Poppins", "Roboto", "sans-serif"],
       },
       animation: {
-        "spin-slow": "spin 8s linear infinite",
+        "spin-slow": "spin 2.5s linear infinite",
+        fadeInOut: "fadeInOut 0.6s ease-in-out",
+      },
+      keyframes: {
+        fadeInOut: {
+          "0%": { opacity: 0 },
+          "50%": { opacity: 1 },
+          "100%": { opacity: 0.95 },
+        },
       },
       colors: {
         // Dashboard Colors

@@ -19,3 +19,15 @@ body {
 #goog-gt-votingInputVote {
   background-color: blue;
 }
+
+/* Hide floating price box and extra buttons */
+.tv-floating-toolbar,
+.tv-snapshot-button,
+.tv-control-bar__wrap--left {
+  display: none !important;
+}
+
+/* Hide price bubble box on right */
+[data-role="price-scale"] .value-mark {
+  display: none !important;
+}
