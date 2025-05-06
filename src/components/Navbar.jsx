@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Menu, X, User, Globe } from "lucide-react";
+import { useTheme } from "../components/context/ThemeContext";
+import { Menu, X, User, Globe, Moon, Sun } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import GoogleTranslate from "./GoogleTranslate";
@@ -10,6 +11,7 @@ export default function Navbar() {
 
   const closeMenu = () => setIsOpen(false);
 
+  const { theme, toggleTheme } = useTheme();
   return (
     <>
       {/* Sticky Top Navbar */}
@@ -41,20 +43,18 @@ export default function Navbar() {
               Contact
             </Link>
           </li>
-          <li>
-            <Link className="hover:text-yellow-400" to="/dashboard">
-              <User size={24} />
-            </Link>
-          </li>
-        </ul>
 
-        <div className="hidden md:flex ml-auto mr-4">
-          <Globe />
-          <GoogleTranslate />
-        </div>
+          <div className="hidden md:flex md:items-center space-x-1">
+            <Globe />
+            <GoogleTranslate />
+          </div>
+        </ul>
 
         {/* Auth Links */}
         <div className="hidden md:flex space-x-4">
+          <button onClick={toggleTheme} className=" text-yellow-400">
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
           <Link to="/sign-in" className="text-yellow-400 hover:underline">
             Sign In
           </Link>
@@ -63,6 +63,9 @@ export default function Navbar() {
             className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500"
           >
             Sign Up
+          </Link>
+          <Link className="hover:text-yellow-400" to="/dashboard">
+            <User size={24} />
           </Link>
         </div>
 
@@ -147,11 +150,16 @@ export default function Navbar() {
             </Link>
           </li>
         </ul>
-
         <div className="flex items-center gap-1 ml-2 mr-4">
           <Globe />
           <GoogleTranslate />
         </div>
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full text-yellow-400 md:hidden mt-2 ml-2"
+        >
+          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
       </div>
 
       {/* Backdrop */}

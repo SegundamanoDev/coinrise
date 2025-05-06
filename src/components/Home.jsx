@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "./Navbar";
-
 import CryptoTicker from "./CryptoTicker";
 import Footer from "./Footer";
 import HeroSection from "./HeroSection";
@@ -24,7 +23,6 @@ const Home = () => {
       <TrustSection />
       <HowItWorksSection />
       <WhyChooseUsSection />
-
       <PartnerLogosSection />
       <InvestmentPlansSection />
       <UserTestimonialsSection />

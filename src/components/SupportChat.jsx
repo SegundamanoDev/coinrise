@@ -13,23 +13,6 @@ export default function StickySupportBar() {
   }, []);
 
   return (
-    <div className="fixed bottom-0 left-0 w-full z-50  border-t shadow-lg flex justify-between items-center px-4 py-3 md:px-8">
-      {/* WhatsApp */}
-      <a
-        href="https://wa.me/2347078588361"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
-      >
-        <PhoneCall className="w-5 h-5" />
-        <span>WhatsApp Support</span>
-      </a>
-
-      {/* Tawk.to Chat Status (label only) */}
-      <div className="flex items-center space-x-2 text-blue-600 font-medium">
-        <MessageCircle className="w-5 h-5" />
-        <span>Live Chat Available</span>
-      </div>
-    </div>
+    <div className="fixed bottom-6 right-6 z-50 hover:scale-110 transition"></div>
   );
 }

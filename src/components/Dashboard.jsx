@@ -5,6 +5,7 @@ import TradingViewChart from "./TradingViewChart";
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const referralCode = "CRYPTO123";
+  const accountType = "Starter"; // Change this dynamically if needed
 
   return (
     <>
@@ -14,7 +15,7 @@ const DashboardLayout = () => {
         } bg-[#0d1117]`}
       >
         {/* Sidebar - Desktop */}
-        <aside className="hidden md:flex w-64 bg-[#1f2937] flex-col p-6 border-r border-[#374151]">
+        <aside className="hidden md:flex w-64 bg-[#1f2937] flex-col p-6 border-r border-[#374151] min-h-screen">
           <h2 className="text-2xl font-bold text-yellow-400 mb-8">
             CryptoDash
           </h2>
@@ -22,7 +23,6 @@ const DashboardLayout = () => {
             <a href="/dashboard" className="hover:text-yellow-400">
               Overview & activity
             </a>
-
             <a href="/deposit" className="hover:text-yellow-400">
               Deposit
             </a>
@@ -45,7 +45,8 @@ const DashboardLayout = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-[#0d1117] min-h-screen">
+          {/* Mobile Header */}
           <div className="md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-5 px-4 shadow-md flex justify-between items-center mb-6">
             <h1 className="text-lg font-semibold">Welcome back, John!</h1>
             <button
@@ -56,9 +57,34 @@ const DashboardLayout = () => {
               <Menu />
             </button>
           </div>
-          <div className="pt-4 md:pt-0"></div>
-          <TradingViewChart />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 p-6">
+
+          <div className="pt-4 md:pt-8" />
+
+          {/* Account Type Banner */}
+          <div className="bg-[#1f2937] text-sm md:text-base text-white p-4 mb-4 mx-4 md:mx-8 rounded-xl shadow border border-[#374151] flex items-center justify-between">
+            <div>
+              <span className="font-semibold text-yellow-400">
+                Account Type:{" "}
+              </span>
+              <span className="uppercase font-bold tracking-wide text-green-400">
+                {accountType}
+              </span>
+            </div>
+            <a
+              href="/settings"
+              className="text-blue-400 hover:underline text-sm"
+            >
+              Upgrade Account
+            </a>
+          </div>
+
+          {/* TradingView Chart */}
+          <div className="px-4 md:px-8 mb-3">
+            <TradingViewChart />
+          </div>
+
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 px-4 md:px-8">
             {[
               {
                 title: "Available Balance",
@@ -122,32 +148,35 @@ const DashboardLayout = () => {
             </div>
           </div>
 
-          {/* Recent Transactions */}
-          <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151] mb-6">
-            <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
-            <ul className="text-sm space-y-2 text-gray-300">
-              <li>
-                Deposited $200.00 -{" "}
-                <span className="text-green-400">Success</span>
-              </li>
-              <li>
-                Profit Earned $25.00 -{" "}
-                <span className="text-green-400">Completed</span>
-              </li>
-              <li>
-                Withdraw Requested $100.00 -{" "}
-                <span className="text-yellow-400">Pending</span>
-              </li>
-            </ul>
-          </div>
+          {/* Transactions & Plan Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 md:px-8 mb-10">
+            <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]">
+              <h3 className="text-lg font-semibold mb-4">
+                Recent Transactions
+              </h3>
+              <ul className="text-sm space-y-2 text-gray-300">
+                <li>
+                  Deposited $200.00 -{" "}
+                  <span className="text-green-400">Success</span>
+                </li>
+                <li>
+                  Profit Earned $25.00 -{" "}
+                  <span className="text-green-400">Completed</span>
+                </li>
+                <li>
+                  Withdraw Requested $100.00 -{" "}
+                  <span className="text-yellow-400">Pending</span>
+                </li>
+              </ul>
+            </div>
 
-          {/* Optional: Plan Summary */}
-          <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]">
-            <h3 className="text-lg font-semibold mb-4">Your Plans</h3>
-            <ul className="text-sm space-y-2 text-gray-300">
-              <li>Plan A - $150.00 - Active</li>
-              <li>Plan B - $150.00 - Active</li>
-            </ul>
+            <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]">
+              <h3 className="text-lg font-semibold mb-4">Your Plans</h3>
+              <ul className="text-sm space-y-2 text-gray-300">
+                <li>Plan A - $150.00 - Active</li>
+                <li>Plan B - $150.00 - Active</li>
+              </ul>
+            </div>
           </div>
         </main>
       </div>

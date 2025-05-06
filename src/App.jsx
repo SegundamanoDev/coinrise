@@ -32,6 +32,11 @@ import ScrollToTops from "./components/ScrollToTop";
 import { store } from "./redux/store";
 import { Provider } from "react-redux";
 import LoadingSpinner from "./components/LoadingSpinner";
+import TermsAndConditions from "./components/TermsAndConditions";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import AMLPolicy from "./components/AMLPolicy";
+import { ThemeProvider } from "./components/context/ThemeContext";
+import Whatsapp from "./components/Whatsapp";
 
 // Custom wrapper to check route
 const AppRoutes = () => {
@@ -53,11 +58,12 @@ const AppRoutes = () => {
     const timer = setTimeout(() => {
       setLoading(false);
       setShowRoutes(true);
-    }, 5000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, [location]);
 
   const hideSupportBar = ["/sign-in", "/sign-up"].includes(location.pathname);
+  const hidewhatsapp = ["/sign-in", "/sign-up"].includes(location.pathname);
 
   return (
     <>
@@ -94,11 +100,15 @@ const AppRoutes = () => {
           <Route path="/admin/referrals" element={<Referrals />} />
           <Route path="/admin/logs" element={<Logs />} />
           <Route path="/admin/settings" element={<Setting />} />
+          <Route path="/terms-conditions" element={<TermsAndConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/aml-policy" element={<AMLPolicy />} />
         </Routes>
       )}
 
       {/* Only show support on allowed pages */}
       {!hideSupportBar && <StickySupportBar />}
+      {!hidewhatsapp && <Whatsapp />}
     </>
   );
 };
@@ -125,7 +135,9 @@ const App = () => (
       }}
     />
     <Provider store={store}>
-      <AppRoutes />
+      <ThemeProvider>
+        <AppRoutes />
+      </ThemeProvider>
     </Provider>
   </BrowserRouter>
 );
