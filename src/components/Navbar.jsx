@@ -4,6 +4,15 @@ import { Menu, X, User, Globe, Moon, Sun } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import GoogleTranslate from "./GoogleTranslate";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHouse,
+  faInfoCircle,
+  faServer,
+  faEnvelope,
+  faSignInAlt,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -95,6 +104,12 @@ export default function Navbar() {
           >
             <User size={28} />
           </button>
+          <button
+            onClick={toggleTheme}
+            className=" fixed right-2.5 top-2.5 p-2 rounded-full text-yellow-400 md:hidden mt-2 ml-2"
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </div>
         <div className="flex justify-between items-center p-4 border-b border-[#374151]">
           <span className="text-xl font-semibold">Menu</span>
@@ -102,13 +117,15 @@ export default function Navbar() {
             <X size={24} />
           </button>
         </div>
-        <ul className="p-4 space-y-4 font-sans">
-          <li>
+        <ul className="p-4 space-y-6 font-sans">
+          <li className="space-x-2 flex items-center py-2">
+            <FontAwesomeIcon icon={faHouse} className="text-xl" />
             <Link to="/" onClick={closeMenu} className="hover:text-yellow-400">
               Home
             </Link>
           </li>
-          <li>
+          <li className="space-x-2 flex items-center py-2">
+            <FontAwesomeIcon icon={faInfoCircle} className="text-xl" />
             <Link
               to="/about"
               onClick={closeMenu}
@@ -117,7 +134,8 @@ export default function Navbar() {
               About
             </Link>
           </li>
-          <li>
+          <li className="space-x-2 flex items-center py-2">
+            <FontAwesomeIcon icon={faServer} className="text-xl" />
             <Link
               to="/mining-pool"
               onClick={closeMenu}
@@ -126,7 +144,8 @@ export default function Navbar() {
               Mining-Pool
             </Link>
           </li>
-          <li>
+          <li className="space-x-2 flex items-center py-2">
+            <FontAwesomeIcon icon={faEnvelope} className="text-xl" />
             <Link
               to="/contact"
               onClick={closeMenu}
@@ -135,31 +154,23 @@ export default function Navbar() {
               Contact
             </Link>
           </li>
-          <li>
-            <Link to="/sign-in" onClick={closeMenu} className="text-yellow-400">
+          <li className="space-x-2 flex items-center py-2">
+            <FontAwesomeIcon icon={faSignInAlt} className="text-xl" />
+            <Link to="/sign-in" onClick={closeMenu} className="">
               Sign In
             </Link>
           </li>
-          <li>
-            <Link
-              to="/sign-up"
-              onClick={closeMenu}
-              className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500"
-            >
+          <li className="space-x-2 flex items-center py-2">
+            <FontAwesomeIcon icon={faUserPlus} className="text-xl" />
+            <Link to="/sign-up" onClick={closeMenu} className="">
               Sign Up
             </Link>
           </li>
         </ul>
-        <div className="flex items-center gap-1 ml-2 mr-4">
+        <div className="flex items-center space-x-2 ml-3 py-2">
           <Globe />
           <GoogleTranslate />
         </div>
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full text-yellow-400 md:hidden mt-2 ml-2"
-        >
-          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
       </div>
 
       {/* Backdrop */}
