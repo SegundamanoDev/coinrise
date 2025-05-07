@@ -1,6 +1,17 @@
 import { Menu, Copy } from "lucide-react";
 import React from "react";
 import TradingViewChart from "./TradingViewChart";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faGauge,
+  faMoneyBillWave,
+  faMoneyCheckAlt,
+  faExchangeAlt,
+  faUser,
+  faGear,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -188,33 +199,59 @@ const DashboardLayout = () => {
         }`}
       >
         <div className="w-64 bg-[#1f2937] h-full p-6 shadow-lg">
-          <h2 className="text-xl font-bold text-yellow-400 mb-6">CryptoDash</h2>
-          <nav className="flex flex-col gap-4">
-            {[
-              "dashboard",
-              "deposit",
-              "withdraw",
-              "transaction",
-              "profile",
-              "settings",
-            ].map((link, index) => (
-              <a
-                key={index}
-                onClick={() => setIsOpen(false)}
-                href={`/${link}`}
-                className="hover:text-yellow-400 text-white"
-              >
-                {link.charAt(0).toUpperCase() +
-                  link.slice(1).replace(/-/g, " ")}
-              </a>
-            ))}
-            <a
-              onClick={() => setIsOpen(false)}
-              href="/"
-              className="hover:text-yellow-400 text-white mt-4"
+          <h2 className="text-xl font-bold text-yellow-400 mb-6">
+            Dashboard & Overview
+          </h2>
+          <nav className="flex flex-col space-y-6">
+            <Link
+              to="/dashboard"
+              className="flex items-center space-x-3 py-2 text-white"
             >
-              Back to Home
-            </a>
+              <FontAwesomeIcon icon={faGauge} className="text-xl" />
+              <span className="text-base">Dashboard</span>
+            </Link>
+            <Link
+              to="/deposit"
+              className="flex items-center space-x-3 py-2 text-white"
+            >
+              <FontAwesomeIcon icon={faMoneyBillWave} className="text-xl" />
+              <span className="text-base">Deposit</span>
+            </Link>
+            <Link
+              to="/withdraw"
+              className="flex items-center space-x-3 py-2 text-white"
+            >
+              <FontAwesomeIcon icon={faMoneyCheckAlt} className="text-xl" />
+              <span className="text-base">Withdraw</span>
+            </Link>
+            <Link
+              to="/transaction"
+              className="flex items-center space-x-3 py-2 text-white"
+            >
+              <FontAwesomeIcon icon={faExchangeAlt} className="text-xl" />
+              <span className="text-base">Transaction</span>
+            </Link>
+            <Link
+              to="/profile"
+              className="flex items-center space-x-3 py-2 text-white"
+            >
+              <FontAwesomeIcon icon={faUser} className="text-xl" />
+              <span className="text-base">Profile</span>
+            </Link>
+            <Link
+              to="/settings"
+              className="flex items-center space-x-3 py-2 text-white"
+            >
+              <FontAwesomeIcon icon={faGear} className="text-xl" />
+              <span className="text-base">Settings</span>
+            </Link>
+            <Link
+              to="/"
+              className="flex items-center space-x-3 py-2 text-white"
+            >
+              <FontAwesomeIcon icon={faArrowLeft} className="text-xl" />
+              <span className="text-base">Back to Home</span>
+            </Link>
           </nav>
         </div>
         <div
