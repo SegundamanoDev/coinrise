@@ -1,26 +1,29 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import AuthFormWrapper from "./AuthFormWrapper";
 import ReactFlagsSelect from "react-flags-select";
-import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
-import CurrencyInput from "react-currency-input-field";
+import "react-phone-number-input/style.css";
 import countries from "./countryCurrency";
+import { signupUser } from "../features/users/authSlice";
 
 const SignUp = () => {
+  const dispatch = useDispatch();
+  const { loading, error, successMessage } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
     referralCode: "",
-    kyc: null,
     agreeTerms: false,
     ageConfirmed: false,
   });
 
   const [country, setCountry] = useState(null);
   const [phone, setPhone] = useState(null);
-  const [CountryCurrency, setCountryCurrency] = useState(null);
+  const [currency, setCurrency] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -33,8 +36,27 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitted:", formData);
-    // You can integrate API call or Firebase logic here
+    if (!formData.agreeTerms) {
+      alert("You must agree to the Terms & Conditions");
+      return;
+    }
+    if (!formData.ageConfirmed) {
+      alert("You must be at least 18 years old");
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      country,
+      phone,
+      currency,
+    };
+
+    dispatch(signUpUser(payload));
   };
 
   return (
@@ -44,6 +66,11 @@ const SignUp = () => {
         className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-5"
       >
         <h2 className="text-2xl font-bold text-center">Create an Account</h2>
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        {successMessage && (
+          <p className="text-green-500 text-sm text-center">{successMessage}</p>
+        )}
+
         <input
           name="fullName"
           type="text"
@@ -64,6 +91,7 @@ const SignUp = () => {
           placeholder="Enter phone number"
           value={phone}
           onChange={setPhone}
+          defaultCountry="US"
         />
         <input
           name="password"
@@ -91,14 +119,16 @@ const SignUp = () => {
         <ReactFlagsSelect
           selected={country}
           onSelect={(code) => setCountry(code)}
-          placeholder="Select Language"
+          placeholder="Select country"
           searchable
           searchPlaceholder="Search countries"
         />
 
         <select
-          className="w-full"
-          onChange={(e) => setCountryCurrency(e.target.value)}
+          className="w-full p-2 border rounded"
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+          required
         >
           <option value="">Select Currency</option>
           {countries.map((c, index) => (
@@ -130,9 +160,10 @@ const SignUp = () => {
         </label>
         <button
           type="submit"
-          className="w-full bg-yellow-400 hover:bg-blue-700 text-white py-2 rounded"
+          disabled={loading}
+          className="w-full bg-yellow-400 text-white py-2 rounded hover:bg-yellow-500"
         >
-          Sign Up
+          {loading ? "Signing Up..." : "Sign Up"}
         </button>
       </form>
     </AuthFormWrapper>

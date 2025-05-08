@@ -5,9 +5,11 @@ import investmentReducer from "../features/investment/investmentsSlice";
 import referralReducer from "../features/referral/referralSlice";
 import logsReducer from "../features/log/logsSlice";
 import settingsReducer from "../features/setting/settingSlice";
+import authReducer from "../features/users/authSlice";
 export const store = configureStore({
   reducer: {
     admin: adminReducer,
+    auth: authReducer,
     users: usersReducer,
     investment: investmentReducer,
     referral: referralReducer,
