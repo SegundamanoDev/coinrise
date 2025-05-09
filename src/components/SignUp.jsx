@@ -56,7 +56,8 @@ const SignUp = () => {
       currency,
     };
 
-    dispatch(signUpUser(payload));
+    dispatch(signupUser(payload));
+    console.log(payload);
   };
 
   return (

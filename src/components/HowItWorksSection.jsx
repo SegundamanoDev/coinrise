@@ -20,11 +20,7 @@ const steps = [
     description:
       "Deposit your preferred amount using Bitcoin or other crypto methods.",
   },
-  {
-    icon: <Settings className="text-yellow-400 w-8 h-8" />,
-    title: "Choose a Mining Plan",
-    description: "Pick from various profitable plans tailored to your needs.",
-  },
+
   {
     icon: <TrendingUp className="text-yellow-400 w-8 h-8" />,
     title: "Earn Daily Profits",
@@ -60,7 +56,7 @@ const HowItWorksSection = () => {
           Start investing in 5 easy steps
         </p>
 
-        <div className="grid gap-10 md:grid-cols-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {steps.map((step, index) => (
             <div
               key={index}

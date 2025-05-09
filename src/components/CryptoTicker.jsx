@@ -31,19 +31,19 @@ const CryptoTicker = () => {
   return (
     <div className="relative overflow-hidden bg-gray-900 py-4">
       <div
-        className=" whitespace-nowrap flex"
+        className=" whitespace-nowrap flex "
         style={{
-          animation: "marquee 150s linear infinite",
+          animation: "marquee 300s linear infinite",
           width: "max-content",
         }}
       >
         {coins.map((coin) => (
           <div
             key={coin.id}
-            className="flex items-center space-x-2 mx-8 min-w-max"
+            className="flex items-center space-x-2 mx-8 min-w-max border-r-2 border-white pr-2"
           >
             <img src={coin.image} alt={coin.name} className="w-6 h-6" />
-            <div className="text-white text-sm">
+            <div className="text-white text-sm ">
               {coin.symbol.toUpperCase()} ${coin.current_price.toLocaleString()}
             </div>
             <div

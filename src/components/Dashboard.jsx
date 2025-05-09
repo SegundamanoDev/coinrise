@@ -268,6 +268,9 @@ import {
 import { Link } from "react-router-dom";
 import axios from "axios";
 import TradingViewChart from "./TradingViewChart";
+import TvWidget from "./TradingViewWidget.";
+import updown from "../assets/14.png";
+import MarketOverview from "./MarketOverView";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -329,7 +332,7 @@ const DashboardLayout = () => {
     );
 
   const referralCode = data?.referralCode || "N/A";
-  const accountType = data?.accountType || "Starter";
+  const accountType = data?.accountType || "Basic";
 
   return (
     <>
@@ -440,27 +443,10 @@ const DashboardLayout = () => {
               </p>
             </div>
           </div>
-
-          {/* Transactions & Plan Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 md:px-8 mb-10">
-            <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]">
-              <h3 className="text-lg font-semibold mb-4">
-                Recent Transactions
-              </h3>
-              <ul className="text-sm space-y-2 text-gray-300">
-                <li>
-                  Deposited $200.00 -{" "}
-                  <span className="text-green-400">Success</span>
-                </li>
-                <li>
-                  Profit Earned $25.00 -{" "}
-                  <span className="text-green-400">Completed</span>
-                </li>
-                <li>
-                  Withdraw Requested $100.00 -{" "}
-                  <span className="text-yellow-400">Pending</span>
-                </li>
-              </ul>
+          <div>
+            <TvWidget />
+            <div className="mov">
+              <MarketOverview />
             </div>
           </div>
         </main>

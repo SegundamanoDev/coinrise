@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-body {
-  font-family: Poppins, sans-serif;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -40,4 +36,10 @@ body {
 
 body {
   @apply bg-white text-black dark:bg-[#111827] dark:text-white;
+
+  font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }

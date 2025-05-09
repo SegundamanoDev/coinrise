@@ -1,84 +1,100 @@
-import React, { useEffect } from "react";
-import { Coins, Gem, Rocket } from "lucide-react";
+import { Check, X } from "lucide-react";
+import React from "react";
 
 const plans = [
   {
-    icon: <Coins className="w-8 h-8 text-yellow-400" />,
-    title: "Starter Plan",
-    price: "$250 Minimum",
-    returnRate: "7% Daily for 7 Days",
-    features: ["Instant Activation", "24/7 Support", "Daily Profits"],
-  },
-  {
-    icon: <Gem className="w-8 h-8 text-yellow-400" />,
-    title: "Premium Plan",
-    price: "$500 Minimum",
-    returnRate: "10% Daily for 14 Days",
-    features: ["Priority Support", "Higher Returns", "Instant Withdrawals"],
-    recommended: true,
-  },
-  {
-    icon: <Rocket className="w-8 h-8 text-yellow-400" />,
-    title: "Ultimate Plan",
-    price: "$2000 Minimum",
-    returnRate: "15% Daily for 30 Days",
-    features: [
-      "Top-Tier Returns",
-      "Dedicated Account Manager",
-      "Live Dashboard",
+    title: "BASIC",
+    price: "$1,100.00",
+    details: [
+      "$1,100.00 - $1,999.00",
+      "65% 24hours",
+      "24/7 Support",
+      "Daily Status Report",
+      "5% commission",
+      "Capital Insurance: None",
     ],
+    buttonColor: "bg-yellow-400",
+  },
+  {
+    title: "STANDARD",
+    price: "$2,100.00",
+    recommended: true,
+    details: [
+      "$2,100.00 - $3,999.00",
+      "70% 24hours",
+      "24/7 Support",
+      "Daily Status Report",
+      "10% commission",
+      "Capital Insurance: 20%",
+    ],
+    buttonColor: "bg-yellow-400",
+  },
+  {
+    title: "PLATINUM",
+    price: "$3,100.00",
+    details: [
+      "$4,100.00 - $4,999.00",
+      "75% 24hours",
+      "24/7 Support",
+      "Daily Status Report",
+      "12% commission",
+      "Capital Insurance: 80%",
+    ],
+    buttonColor: "bg-yellow-400",
+  },
+  {
+    title: "DIAMOND",
+    price: "$5,000.00",
+    details: [
+      "$5,000.00 - $99,999,999.00",
+      "80% 24hours",
+      "24/7 Support",
+      "Daily Status Report",
+      "15% commission",
+      "Capital Insurance: 85%",
+    ],
+    buttonColor: "bg-yellow-400",
   },
 ];
 
-const InvestmentPlans = () => {
+const TradingPlans = () => {
   return (
-    <section className="bg-[#111827] py-20 px-6 text-gray-200">
-      <div className="max-w-6xl mx-auto text-center" data-aos="fade-up">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-          Investment Plans
-        </h2>
-        <p className="text-gray-400 mb-12">
-          Choose the plan that suits you best
-        </p>
-
-        <div className="grid gap-8 md:grid-cols-3">
-          {plans.map((plan, index) => (
-            <div
-              key={index}
-              className={`rounded-xl shadow-md p-8 bg-[#1f2937] hover:shadow-xl transition duration-300 relative ${
-                plan.recommended ? "border-2 border-yellow-400" : ""
-              }`}
-              data-aos="zoom-in"
-              data-aos-delay={index * 150}
-            >
-              <div className="flex justify-center mb-4">{plan.icon}</div>
-              <h3 className="text-xl font-semibold text-white">{plan.title}</h3>
-              <p className="text-yellow-400 text-lg font-bold mt-2">
-                {plan.price}
-              </p>
-              <p className="text-gray-400 mt-1">{plan.returnRate}</p>
-
-              <ul className="mt-6 text-sm text-gray-400 space-y-2">
-                {plan.features.map((feature, i) => (
-                  <li key={i}>• {feature}</li>
+    <section className="py-10 px-4 bg-[#111827]">
+      <h2 className="text-2xl font-bold text-center mb-8 text-white">
+        TRADING PLANS
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        {plans.map((plan, idx) => (
+          <div
+            key={idx}
+            className="p-6 bg-[#1f2937] rounded-xl shadow-md hover:shadow-xl flex flex-col justify-between"
+          >
+            {plan.recommended && (
+              <span className="text-sm text-white font-semibold mb-2">
+                Recommended
+              </span>
+            )}
+            <div>
+              <h3 className="text-lg font-semibold mb-2 text-white">
+                {plan.title}
+              </h3>
+              <p className="text-2xl font-bold mb-4 text-white">{plan.price}</p>
+              <ul className="space-y-1 mb-4 text-sm text-gray-300">
+                {plan.details.map((detail, i) => (
+                  <li key={i}> {detail}</li>
                 ))}
               </ul>
-
-              <button className="mt-6 bg-yellow-400 text-black font-semibold py-2 px-4 rounded hover:bg-yellow-300 transition">
-                Invest Now
-              </button>
-
-              {plan.recommended && (
-                <span className="absolute top-0 right-0 bg-yellow-400 text-black text-xs font-semibold px-2 py-1 rounded-bl">
-                  Best Value
-                </span>
-              )}
             </div>
-          ))}
-        </div>
+            <button
+              className={`w-full py-2 text-white font-semibold rounded-full ${plan.buttonColor}`}
+            >
+              JOIN
+            </button>
+          </div>
+        ))}
       </div>
     </section>
   );
 };
 
-export default InvestmentPlans;
+export default TradingPlans;

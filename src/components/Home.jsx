@@ -23,7 +23,6 @@ const Home = () => {
       <TrustSection />
       <HowItWorksSection />
       <WhyChooseUsSection />
-      <PartnerLogosSection />
       <InvestmentPlansSection />
       <UserTestimonialsSection />
       <StatsCountersSection />

@@ -19,19 +19,19 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const closeMenu = () => setIsOpen(false);
-
   const { theme, toggleTheme } = useTheme();
+
   return (
     <>
       {/* Sticky Top Navbar */}
-      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 sticky top-0 z-50 shadow-md">
+      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <img className="w-[50px] h-auto" src={logo} alt="logo" />
         </div>
 
         {/* Desktop Nav Links */}
-        <ul className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 font-sans">
+        <ul className="hidden md:flex items-center space-x-6 font-sans">
           <li>
             <Link className="hover:text-yellow-400" to="/">
               Home
@@ -52,16 +52,15 @@ export default function Navbar() {
               Contact
             </Link>
           </li>
-
-          <div className="hidden md:flex md:items-center space-x-1">
+          <li className="flex items-center space-x-2">
             <Globe />
             <GoogleTranslate />
-          </div>
+          </li>
         </ul>
 
         {/* Auth Links */}
-        <div className="hidden md:flex space-x-4">
-          <button onClick={toggleTheme} className=" text-yellow-400">
+        <div className="hidden md:flex items-center space-x-4">
+          <button onClick={toggleTheme} className="text-yellow-400">
             {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
           <Link to="/sign-in" className="text-yellow-400 hover:underline">
@@ -90,11 +89,18 @@ export default function Navbar() {
 
       {/* Mobile Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-[#1f2937] text-white z-50 transform ${
+        className={`fixed top-0 left-0 h-full max-w-[80vw] w-64 bg-[#1f2937] text-white z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300`}
       >
-        <div className="flex justify-center p-4">
+        <div className="relative p-4 flex justify-between items-center border-b border-[#374151]">
+          <span className="text-xl font-semibold">Menu</span>
+          <button onClick={closeMenu} aria-label="Close Menu">
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="p-4 flex justify-between items-center">
           <button
             onClick={() => {
               navigate("/dashboard");
@@ -106,26 +112,21 @@ export default function Navbar() {
           </button>
           <button
             onClick={toggleTheme}
-            className=" fixed right-2.5 top-2.5 p-2 rounded-full text-yellow-400 md:hidden mt-2 ml-2"
+            className="p-2 rounded-full text-yellow-400"
           >
             {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
         </div>
-        <div className="flex justify-between items-center p-4 border-b border-[#374151]">
-          <span className="text-xl font-semibold">Menu</span>
-          <button onClick={closeMenu} aria-label="Close Menu">
-            <X size={24} />
-          </button>
-        </div>
+
         <ul className="p-4 space-y-6 font-sans">
-          <li className="space-x-2 flex items-center py-2">
-            <FontAwesomeIcon icon={faHouse} className="text-xl" />
+          <li className="flex items-center space-x-2 py-2">
+            <FontAwesomeIcon icon={faHouse} />
             <Link to="/" onClick={closeMenu} className="hover:text-yellow-400">
               Home
             </Link>
           </li>
-          <li className="space-x-2 flex items-center py-2">
-            <FontAwesomeIcon icon={faInfoCircle} className="text-xl" />
+          <li className="flex items-center space-x-2 py-2">
+            <FontAwesomeIcon icon={faInfoCircle} />
             <Link
               to="/about"
               onClick={closeMenu}
@@ -134,8 +135,8 @@ export default function Navbar() {
               About
             </Link>
           </li>
-          <li className="space-x-2 flex items-center py-2">
-            <FontAwesomeIcon icon={faServer} className="text-xl" />
+          <li className="flex items-center space-x-2 py-2">
+            <FontAwesomeIcon icon={faServer} />
             <Link
               to="/mining-pool"
               onClick={closeMenu}
@@ -144,8 +145,8 @@ export default function Navbar() {
               Mining-Pool
             </Link>
           </li>
-          <li className="space-x-2 flex items-center py-2">
-            <FontAwesomeIcon icon={faEnvelope} className="text-xl" />
+          <li className="flex items-center space-x-2 py-2">
+            <FontAwesomeIcon icon={faEnvelope} />
             <Link
               to="/contact"
               onClick={closeMenu}
@@ -154,20 +155,21 @@ export default function Navbar() {
               Contact
             </Link>
           </li>
-          <li className="space-x-2 flex items-center py-2">
-            <FontAwesomeIcon icon={faSignInAlt} className="text-xl" />
-            <Link to="/sign-in" onClick={closeMenu} className="">
+          <li className="flex items-center space-x-2 py-2">
+            <FontAwesomeIcon icon={faSignInAlt} />
+            <Link to="/sign-in" onClick={closeMenu}>
               Sign In
             </Link>
           </li>
-          <li className="space-x-2 flex items-center py-2">
-            <FontAwesomeIcon icon={faUserPlus} className="text-xl" />
-            <Link to="/sign-up" onClick={closeMenu} className="">
+          <li className="flex items-center space-x-2 py-2">
+            <FontAwesomeIcon icon={faUserPlus} />
+            <Link to="/sign-up" onClick={closeMenu}>
               Sign Up
             </Link>
           </li>
         </ul>
-        <div className="flex items-center space-x-2 ml-3 py-2">
+
+        <div className="flex items-center space-x-2 ml-4 py-2">
           <Globe />
           <GoogleTranslate />
         </div>
