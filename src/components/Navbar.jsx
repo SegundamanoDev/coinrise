@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTheme } from "../components/context/ThemeContext";
 import { Menu, X, User, Globe, Moon, Sun } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
+import logo from "../assets/trustvest.png";
 import GoogleTranslate from "./GoogleTranslate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -26,12 +26,12 @@ export default function Navbar() {
       {/* Sticky Top Navbar */}
       <nav className="flex items-center justify-between font-[Montserrat] bg-[#111827] text-white px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <img className="w-[50px] h-auto" src={logo} alt="logo" />
-        </div>
+        <Link to="/">
+          <img className="h-10 object-contain" src={logo} alt="trustvest" />
+        </Link>
 
         {/* Desktop Nav Links */}
-        <ul className="hidden md:flex items-center space-x-6 font-sans">
+        <ul className="hidden md:flex items-center space-x-6 font-[Montserrat]">
           <li>
             <Link className="hover:text-yellow-400" to="/">
               Home
@@ -89,7 +89,7 @@ export default function Navbar() {
 
       {/* Mobile Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full max-w-[80vw] w-64 bg-[#1f2937] text-white z-50 transform ${
+        className={`fixed top-0 left-0 h-full max-w-[80vw] font-[Montserrat] w-64 bg-[#1f2937] text-white z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300`}
       >

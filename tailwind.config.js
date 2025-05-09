@@ -10,13 +10,19 @@ module.exports = {
       },
       animation: {
         "spin-slow": "spin 2.5s linear infinite",
-        fadeInOut: "fadeInOut 0.6s ease-in-out",
+        fadeIn: "fadeIn 2s ease-in-out",
+        fadeLetter: "fadeLetter 1s ease-in-out forwards",
+        pulseSlow: "pulse 1s ease-in-out infinite",
       },
       keyframes: {
-        fadeInOut: {
+        fadeIn: {
           "0%": { opacity: 0 },
-          "50%": { opacity: 1 },
-          "100%": { opacity: 0.95 },
+          "100%": { opacity: 1 },
+        },
+        fadeLetter: {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "50%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "0.8" },
         },
       },
       colors: {

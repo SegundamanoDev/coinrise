@@ -37,6 +37,7 @@ import PrivacyPolicy from "./components/PrivacyPolicy";
 import AMLPolicy from "./components/AMLPolicy";
 import { ThemeProvider } from "./components/context/ThemeContext";
 import Whatsapp from "./components/Whatsapp";
+import UpgradeAccount from "./components/UpgradeAccount";
 
 // Custom wrapper to check route
 const AppRoutes = () => {
@@ -103,6 +104,7 @@ const AppRoutes = () => {
           <Route path="/terms-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/aml-policy" element={<AMLPolicy />} />
+          <Route path="/upgrade-account" element={<UpgradeAccount />} />
         </Routes>
       )}
 

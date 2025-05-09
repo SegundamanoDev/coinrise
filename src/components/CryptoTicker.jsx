@@ -1,97 +1,17 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 
 const CryptoTicker = () => {
-  const [coins, setCoins] = useState([]);
-
-  useEffect(() => {
-    const fetchCoins = async () => {
-      try {
-        const res = await axios.get(
-          "https://api.coingecko.com/api/v3/coins/markets",
-          {
-            params: {
-              vs_currency: "usd",
-              order: "market_cap_desc",
-              per_page: 50,
-              page: 1,
-              price_change_percentage: "1h",
-            },
-          }
-        );
-        setCoins(res.data);
-      } catch (error) {
-        console.error("Failed to fetch coins:", error);
-      }
-    };
-
-    fetchCoins();
-  }, []);
-
   return (
-    <div className="relative overflow-hidden bg-gray-900 py-4">
-      <div
-        className=" whitespace-nowrap flex "
-        style={{
-          animation: "marquee 300s linear infinite",
-          width: "max-content",
-        }}
-      >
-        {coins.map((coin) => (
-          <div
-            key={coin.id}
-            className="flex items-center space-x-2 mx-8 min-w-max border-r-2 border-white pr-2"
-          >
-            <img src={coin.image} alt={coin.name} className="w-6 h-6" />
-            <div className="text-white text-sm ">
-              {coin.symbol.toUpperCase()} ${coin.current_price.toLocaleString()}
-            </div>
-            <div
-              className={`text-xs ${
-                coin.price_change_percentage_1h_in_currency >= 0
-                  ? "text-green-400"
-                  : "text-red-400"
-              }`}
-            >
-              {coin.price_change_percentage_1h_in_currency
-                ? coin.price_change_percentage_1h_in_currency.toFixed(2)
-                : "0.00"}
-              %
-            </div>
-          </div>
-        ))}
-
-        {/* duplicate the list for infinite effect */}
-        {coins.map((coin) => (
-          <div
-            key={coin.id + "-duplicate"}
-            className="flex items-center space-x-2 mx-8 min-w-max"
-          >
-            <img src={coin.image} alt={coin.name} className="w-6 h-6" />
-            <div className="text-white text-sm">
-              {coin.symbol.toUpperCase()} ${coin.current_price.toLocaleString()}
-            </div>
-            <div
-              className={`text-xs ${
-                coin.price_change_percentage_1h_in_currency >= 0
-                  ? "text-green-400"
-                  : "text-red-400"
-              }`}
-            >
-              {coin.price_change_percentage_1h_in_currency
-                ? coin.price_change_percentage_1h_in_currency.toFixed(2)
-                : "0.00"}
-              %
-            </div>
-          </div>
-        ))}
-      </div>
-      <style>
-        {`@keyframes marquee{
-        0% {transform: translateX(0%)}
-        100%{transform: translateX(-100%)}
-        }`}
-      </style>
+    <div className=" rounded overflow-hidden shadow">
+      {" "}
+      <iframe
+        src="https://s.tradingview.com/embed-widget/ticker-tape/?locale=en#%7B%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%2C%22displayMode%22%3A%22adaptive%22%2C%22locale%22%3A%22en%22%7D"
+        className="w-full h-14"
+        frameBorder="0"
+        scrolling="no"
+        allowTransparency="true"
+        title="Crypto Ticker"
+      ></iframe>{" "}
     </div>
   );
 };

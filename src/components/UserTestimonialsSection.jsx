@@ -1,156 +1,224 @@
-import React, { useEffect, useState } from "react";
-import TestimonialForm from "./TestimonialForm";
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Pagination } from "swiper/modules";
 const testimonials = [
   {
-    name: "Dimitri Ivanov",
-    location: "Moscow, Russia",
-    flag: "🇷🇺",
-    image: "https://randomuser.me/api/portraits/men/54.jpg",
-    feedback:
-      "It was my first time investing in crypto and forex I was a bit scared but thanks to the good customer support who helped me understood everything perfectly. I just got my payout today and I am very happy not only will I continue investing but I will refer my friends. Thank you .",
-    rating: 5,
-  },
-  {
-    name: "Ahmed Al-Farsi",
-    location: "Riyadh, Saudi Arabia",
-    flag: "🇸🇦",
-    image: "https://randomuser.me/api/portraits/men/15.jpg",
-    feedback:
-      "I have been trading in forex for 3 years in all my years of experience I have never found any platform like that makes it very simple and easy for everyone to join the wagon I totally recommend to anyone out there looking for a way to make passive income",
-    rating: 4,
-  },
-  {
-    name: "Emily Johnson",
-    location: "New York, USA",
+    name: "John Doe",
+    country: "USA",
     flag: "🇺🇸",
-    image: "https://randomuser.me/api/portraits/women/68.jpg",
+    image:
+      "https://images.unsplash.com/photo-1506748686213-1e8e99c9f6d7?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8MXx8cGVyZmVjdCUyMHN0b2NrdHxlbnwwfDB8fHwyfDE",
     feedback:
-      " I never believed in online investment as a friend of mine was scammed off a thousand dollars investing with bitdouble scam platform. but then I was convinced to give a trial here, and to my greatest surprise, I got my payouts with no stress. Thank you for your openness! ",
-    rating: 5,
+      "TrustVest Fx provided me with excellent trading tools and guidance. My investments have seen great growth!",
   },
   {
-    name: "Wayne Henderson",
-    location: "Lagos, Nigeria",
-    flag: "🇳🇬",
-    image: "https://randomuser.me/api/portraits/men/22.jpg",
+    name: "Emily Clark",
+    country: "Canada",
+    flag: "🇨🇦",
+    image:
+      "https://images.unsplash.com/photo-1594851328428-c7b0cce72b7e?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8NXx8Y2VsZmljfGVufDB8fHx8fDE",
     feedback:
-      " I let do my trading for me because they know what they are doing and the returns are great. I just walk to the bank with a big smile across my face every Friday. deserve my full endorsement",
-    rating: 4,
+      "I've been using TrustVest Fx for a few months, and the platform is easy to use and reliable. Highly recommend!",
   },
   {
-    name: "Sofia González",
-    location: "Madrid, Spain",
-    flag: "🇪🇸",
-    image: "https://randomuser.me/api/portraits/women/12.jpg",
+    name: "Michael Smith",
+    country: "UK",
+    flag: "🇬🇧",
+    image:
+      "https://images.unsplash.com/photo-1569732199-6a7046d5994a?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8cGVyZmVjdCUyMG1lbnxlbnwwfDB8fHwyfDE",
     feedback:
-      "I love the concept behind this platform. Clear, quick, and reliable.",
-    rating: 5,
+      "The customer service at TrustVest Fx is top-notch. I always feel supported, and my investments are doing well.",
   },
   {
-    name: "Takahiro Sato",
-    location: "Tokyo, Japan",
-    flag: "🇯🇵",
-    image: "https://randomuser.me/api/portraits/men/38.jpg",
+    name: "Sophia Johnson",
+    country: "Australia",
+    flag: "🇦🇺",
+    image:
+      "https://images.unsplash.com/photo-1512561251284-d017568dc5c7?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8NHx8cGVyZmVjdCUyMGZlbWFsZSUyMHdhbGx8ZW58fDB8fHx8fDE",
     feedback:
-      "It’s been a smooth experience overall. Interface is user-friendly.",
-    rating: 4,
+      "I had a fantastic experience with TrustVest Fx. They helped me grow my portfolio significantly in just a few months!",
   },
   {
-    name: "Fatima El Amrani",
-    location: "Casablanca, Morocco",
-    flag: "🇲🇦",
-    image: "https://randomuser.me/api/portraits/women/45.jpg",
-    feedback: "Excellent service and prompt support. I’m happy I joined.",
-    rating: 5,
-  },
-  {
-    name: "Jean Dupont",
-    location: "Paris, France",
-    flag: "🇫🇷",
-    image: "https://randomuser.me/api/portraits/men/47.jpg",
-    feedback:
-      "Very professional team and transparent results. Highly recommend.",
-    rating: 4,
-  },
-  {
-    name: "Meera Patel",
-    location: "Mumbai, India",
-    flag: "🇮🇳",
-    image: "https://randomuser.me/api/portraits/women/33.jpg",
-    feedback:
-      "Great investment opportunities. The daily status reports are helpful.",
-    rating: 5,
-  },
-  {
-    name: "Lucas Müller",
-    location: "Berlin, Germany",
+    name: "Lucas White",
+    country: "Germany",
     flag: "🇩🇪",
-    image: "https://randomuser.me/api/portraits/men/65.jpg",
-    feedback: "Fantastic experience. Love how simple everything is.",
-    rating: 5,
+    image:
+      "https://images.unsplash.com/photo-1606287653512-ef55a8285d65?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OXx8bWVufGVufDB8fHx8fDE",
+    feedback:
+      "The trading experience with TrustVest Fx is smooth, and the platform provides great tools to maximize profits.",
+  },
+  {
+    name: "Olivia Brown",
+    country: "New Zealand",
+    flag: "🇳🇿",
+    image:
+      "https://images.unsplash.com/photo-1516835031164-d51e77dbff8e?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OHx8cGVyZmVjdCUyMGdyb3dlfGVufDB8fHx8fDE",
+    feedback:
+      "TrustVest Fx is great for beginners. The tutorials and tips have helped me a lot in my trading journey.",
+  },
+  {
+    name: "Ethan Wilson",
+    country: "USA",
+    flag: "🇺🇸",
+    image:
+      "https://images.unsplash.com/photo-1491295152030-3be5be945c73?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OXx8Y2VydC1lbnRlcnByZXllfGVufDB8fHx8fDE",
+    feedback:
+      "I’ve traded with several platforms, but TrustVest Fx stands out for its transparency and support.",
+  },
+  {
+    name: "Ava Taylor",
+    country: "Canada",
+    flag: "🇨🇦",
+    image:
+      "https://images.unsplash.com/photo-1583403352208-08d0e1bdb5be?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8Y2VsZm18ZW58fDB8fHx8fDE",
+    feedback:
+      "I trust TrustVest Fx for all my trades. They offer some of the best investment opportunities in the market.",
+  },
+  {
+    name: "James Harris",
+    country: "UK",
+    flag: "🇬🇧",
+    image:
+      "https://images.unsplash.com/photo-1502922057084-31a1380fd8a0?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8Y2VydC1lbnRlcnByZXllfGVufDB8fHx8fDE",
+    feedback:
+      "Great returns on my investments with TrustVest Fx! The platform is user-friendly, and withdrawals are quick.",
+  },
+  {
+    name: "Charlotte Martinez",
+    country: "Spain",
+    flag: "🇪🇸",
+    image:
+      "https://images.unsplash.com/photo-1587758926704-57365c6bc54f?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OXx8cGVyZmVjdCUyMHRyYWRlczxlbnwwfDB8fHx8fDE",
+    feedback:
+      "I love how easy it is to trade with TrustVest Fx. The market insights are incredibly helpful for making decisions.",
+  },
+  {
+    name: "Benjamin Lewis",
+    country: "USA",
+    flag: "🇺🇸",
+    image:
+      "https://images.unsplash.com/photo-1518711770430-87bb1a7f4f5f?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8Y2VydC1lbnRlcnByZXllfGVufDB8fHx8fDE",
+    feedback:
+      "TrustVest Fx has made trading accessible for me. I’m seeing steady gains, and the platform is reliable.",
+  },
+  {
+    name: "Mia Robinson",
+    country: "Canada",
+    flag: "🇨🇦",
+    image:
+      "https://images.unsplash.com/photo-1524748832474-d63f6749da04?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8Y2VsZmFjfGVufDB8fHx8fDE",
+    feedback:
+      "Since starting with TrustVest Fx, my portfolio has grown steadily. I’m more confident with my investments.",
+  },
+  {
+    name: "Daniel Lee",
+    country: "Australia",
+    flag: "🇦🇺",
+    image:
+      "https://images.unsplash.com/photo-1600185059241-b29a30e9a315?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8MXx8Y2VsZmF8ZW58fDB8fHx8fDE",
+    feedback:
+      "Fantastic trading platform with a lot of tools to help you succeed. TrustVest Fx has been amazing!",
+  },
+  {
+    name: "Amelia Walker",
+    country: "UK",
+    flag: "🇬🇧",
+    image:
+      "https://images.unsplash.com/photo-1572495921167-cb3a290a1b9c?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8MXx8cGVyZmVjdCUyMGdpcmwxfGVufDB8fHx8fDE",
+    feedback:
+      "Highly satisfied with TrustVest Fx! I’ve seen incredible profits from my trades in a short amount of time.",
+  },
+  {
+    name: "Sebastian Young",
+    country: "Germany",
+    flag: "🇩🇪",
+    image:
+      "https://images.unsplash.com/photo-1572105221559-618d11095db6?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OHx8cGVyZmVjdCUyMHRyYWRlczxlbnwwfDB8fHx8fDE",
+    feedback:
+      "TrustVest Fx offers an intuitive platform that’s perfect for both new and experienced traders. Highly recommend!",
+  },
+  {
+    name: "Isla King",
+    country: "New Zealand",
+    flag: "🇳🇿",
+    image:
+      "https://images.unsplash.com/photo-1509382120716-10588a3b5f88?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8NXx8cGVyZmVjdCUyMGdyb3dlfGVufDB8fHx8fDE",
+    feedback:
+      "I’ve learned so much since joining TrustVest Fx. Their tools and customer support have been exceptional.",
+  },
+  {
+    name: "Henry Scott",
+    country: "USA",
+    flag: "🇺🇸",
+    image:
+      "https://images.unsplash.com/photo-1552440152-c9702b6f02f0?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8MXx8Y2VydC1lbnRlcnByZXllfGVufDB8fHx8fDE",
+    feedback:
+      "The tools and resources provided by TrustVest Fx have helped me stay on top of the market and make smart decisions.",
+  },
+  {
+    name: "Grace Adams",
+    country: "Canada",
+    flag: "🇨🇦",
+    image:
+      "https://images.unsplash.com/photo-1548098324-b84c37069cc6?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8cGVyZmVjdCUyMG5vcm5hbHxlbnwwfDB8fHx8fDE",
+    feedback:
+      "TrustVest Fx has given me the confidence to invest in the forex market. Their platform is secure and easy to use.",
+  },
+  {
+    name: "Samuel Carter",
+    country: "Australia",
+    flag: "🇦🇺",
+    image:
+      "https://images.unsplash.com/photo-1587614313213-f8c37fc4a33b?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8cGVyZmVjdCUyMGdyb3dlfGVufDB8fHx8fDE",
+    feedback:
+      "I’ve made great returns on my trades with TrustVest Fx, and their support team is always ready to help.",
+  },
+  {
+    name: "Ella Thomas",
+    country: "UK",
+    flag: "🇬🇧",
+    image:
+      "https://images.unsplash.com/photo-1529209827745-c16fd65069c8?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8MXx8cGVyZmVjdCUyMGdyb3dlfGVufDB8fHx8fDE",
+    feedback:
+      "I highly recommend TrustVest Fx for anyone looking to trade forex. The platform is reliable and easy to navigate.",
   },
 ];
 
-const TestimonialSlider = () => {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % testimonials.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
+export default function TestimonialSlider() {
   return (
-    <section className="py-10 px-4 bg-[#111827] text-center">
-      <h2 className="text-2xl font-bold text-white mb-4">WHAT PEOPLE SAY</h2>
-      <p className="text-gray-400 mb-8">
-        More than 3 million customers worldwide trust us and earn daily. We
-        don't like to brag, but we don't mind letting our customers do it for
-        us. Here are a few nice things folks have said about us over the years.
-      </p>
-
-      <div className="overflow-hidden relative h-[320px]  py-10">
-        <div
-          className="whitespace-nowrap transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${index * 100}%)` }}
-        >
-          {testimonials.map((t, i) => (
-            <div key={i} className="inline-block w-full px-4">
+    <div className="bg-white py-10 px-4 md:px-10">
+      <h2 className="text-3xl font-bold text-center mb-8">
+        What Our Traders Say
+      </h2>
+      <Swiper
+        spaceBetween={20}
+        slidesPerView={1}
+        pagination={{ clickable: true }}
+        modules={[Pagination]}
+        breakpoints={{
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 },
+        }}
+      >
+        {testimonials.map((user, index) => (
+          <SwiperSlide key={index}>
+            <div className="bg-gray-50 rounded-xl shadow-md p-5 text-center">
               <img
-                src={t.image}
-                alt={t.name}
-                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                src={user.image}
+                alt={user.name}
+                className="w-20 h-20 rounded-full mx-auto mb-4"
               />
-              <blockquote className="text-white italic mb-4 px-4">
-                "{t.feedback}"
-              </blockquote>
-              <div className="text-yellow-500 mb-1">
-                {"★".repeat(t.rating) + "☆".repeat(5 - t.rating)}
+              <p className="text-lg font-semibold">{user.name}</p>
+              <div className="flex justify-center items-center space-x-2 my-1">
+                <img src={user.flag} alt={user.country} className="w-5 h-5" />
+                <span className="text-sm text-gray-600">{user.country}</span>
               </div>
-              <p className="font-bold text-white">{t.name}</p>
-              <p className="text-sm text-gray-200">
-                {t.location} <span>{t.flag}</span>
-              </p>
+              <p className="text-sm text-gray-700 mt-3">{user.feedback}</p>
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex justify-center mt-6 space-x-1">
-        {testimonials.map((_, i) => (
-          <span
-            key={i}
-            className={`h-1.5 w-4 rounded-full ${
-              i === index ? "bg-red-500" : "bg-gray-300"
-            }`}
-          ></span>
+          </SwiperSlide>
         ))}
-      </div>
-      <TestimonialForm />
-    </section>
+      </Swiper>
+    </div>
   );
-};
-
-export default TestimonialSlider;
+}

@@ -8,12 +8,14 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Column 1 - Company Info */}
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-yellow-500">COINRISE</h2>
+          <h2 className="text-2xl font-bold mb-4 text-yellow-500">
+            TrustVestFx
+          </h2>
           <p className="text-sm text-gray-400">
-            123 Coinrise Avenue, Silicon Valley, CA, USA
+            123 TrustVestFx Avenue, Silicon Valley, CA, USA
           </p>
           <p className="text-sm text-gray-400 mt-2">
-            &copy; 2008 - 2025 COINRISE. All rights reserved.
+            &copy; 2008 - 2025 TrustVestFx. All rights reserved.
           </p>
         </div>
 

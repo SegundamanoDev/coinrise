@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { MessageCircle, PhoneCall } from "lucide-react";
 
 export default function StickySupportBar() {
   useEffect(() => {

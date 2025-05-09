@@ -1,92 +1,98 @@
 import { Check, X } from "lucide-react";
-import React from "react";
 
 const plans = [
   {
     title: "BASIC",
     price: "$1,100.00",
-    details: [
-      "$1,100.00 - $1,999.00",
-      "65% 24hours",
-      "24/7 Support",
-      "Daily Status Report",
-      "5% commission",
-      "Capital Insurance: None",
+    features: [
+      { label: "$1,100.00 - $9,999.00", included: true },
+      { label: "65% 24hours", included: true },
+      { label: "24/7 Support", included: true },
+      { label: "Daily Status Report", included: false },
+      { label: "5% commission", included: false },
+      { label: "Capital Insurance: 1%", included: false },
     ],
-    buttonColor: "bg-yellow-400",
+    buttonColor: "bg-yellow-500",
   },
   {
     title: "STANDARD",
     price: "$2,100.00",
-    recommended: true,
-    details: [
-      "$2,100.00 - $3,999.00",
-      "70% 24hours",
-      "24/7 Support",
-      "Daily Status Report",
-      "10% commission",
-      "Capital Insurance: 20%",
+    features: [
+      { label: "$2,100.00 - $99,999.00", included: true },
+      { label: "160% 24hours", included: true },
+      { label: "24/7 Support", included: true },
+      { label: "Daily Status Report", included: true },
+      { label: "10% commission", included: true },
+      { label: "Capital Insurance: 70%", included: true },
     ],
     buttonColor: "bg-yellow-400",
   },
   {
     title: "PLATINUM",
     price: "$3,100.00",
-    details: [
-      "$4,100.00 - $4,999.00",
-      "75% 24hours",
-      "24/7 Support",
-      "Daily Status Report",
-      "12% commission",
-      "Capital Insurance: 80%",
+    features: [
+      { label: "$3,100.00 - $499,999.00", included: true },
+      { label: "245% 24hours", included: true },
+      { label: "24/7 Support", included: true },
+      { label: "Daily Status Report", included: true },
+      { label: "12% commission", included: true },
+      { label: "Capital Insurance: 80%", included: true },
     ],
-    buttonColor: "bg-yellow-400",
+    buttonColor: "bg-yellow-500",
   },
   {
     title: "DIAMOND",
     price: "$5,000.00",
-    details: [
-      "$5,000.00 - $99,999,999.00",
-      "80% 24hours",
-      "24/7 Support",
-      "Daily Status Report",
-      "15% commission",
-      "Capital Insurance: 85%",
+    features: [
+      { label: "$5,000.00 - $99,999,999.00", included: true },
+      { label: "300% 24hours", included: true },
+      { label: "24/7 Support", included: true },
+      { label: "Daily Status Report", included: true },
+      { label: "15% commission", included: true },
+      { label: "Capital Insurance: 95%", included: true },
     ],
-    buttonColor: "bg-yellow-400",
+    buttonColor: "bg-yellow-500",
   },
 ];
 
 const TradingPlans = () => {
   return (
-    <section className="py-10 px-4 bg-[#111827]">
+    <section className="py-10 px-4 bg-[#111827] font-[Montserrat]">
       <h2 className="text-2xl font-bold text-center mb-8 text-white">
         TRADING PLANS
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+      <div className="flex flex-col gap-6 items-center max-w-3xl mx-auto">
         {plans.map((plan, idx) => (
           <div
             key={idx}
-            className="p-6 bg-[#1f2937] rounded-xl shadow-md hover:shadow-xl flex flex-col justify-between"
+            className="bg-[#1f2937] shadow-md rounded-xl p-6 w-full border"
           >
-            {plan.recommended && (
-              <span className="text-sm text-white font-semibold mb-2">
-                Recommended
-              </span>
-            )}
-            <div>
-              <h3 className="text-lg font-semibold mb-2 text-white">
-                {plan.title}
-              </h3>
-              <p className="text-2xl font-bold mb-4 text-white">{plan.price}</p>
-              <ul className="space-y-1 mb-4 text-sm text-gray-300">
-                {plan.details.map((detail, i) => (
-                  <li key={i}> {detail}</li>
-                ))}
-              </ul>
-            </div>
+            <h3 className="text-center text-sm font-semibold uppercase mb-2 text-white">
+              {plan.title}
+            </h3>
+            <p className="text-3xl text-center text-white font-bold mb-4">
+              {plan.price}
+            </p>
+            <ul className="space-y-2 mb-4">
+              {plan.features.map((feature, i) => (
+                <li key={i} className="flex items-center space-x-2">
+                  {feature.included ? (
+                    <Check className="text-green-600 w-5 h-5" />
+                  ) : (
+                    <X className="text-gray-400 w-5 h-5" />
+                  )}
+                  <span
+                    className={`${
+                      feature.included ? "text-white" : "text-gray-400"
+                    } text-sm`}
+                  >
+                    {feature.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
             <button
-              className={`w-full py-2 text-white font-semibold rounded-full ${plan.buttonColor}`}
+              className={`w-full py-2 rounded-full font-semibold text-white ${plan.buttonColor}`}
             >
               JOIN
             </button>

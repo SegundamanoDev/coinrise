@@ -1,142 +1,128 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CryptoTicker from "./CryptoTicker";
+import { motion, AnimatePresence } from "framer-motion";
+import { Copy } from "lucide-react";
+import Barcode from "react-barcode";
+import TvWidget from "./TradingViewWidget.";
+
+const coinOptions = ["BTC", "ETH", "LTC", "USDT"];
 
 const Deposit = () => {
-  const [copied, setCopied] = useState(false);
+  const [selectedCoin, setSelectedCoin] = useState("");
   const [file, setFile] = useState(null);
-  const navigate = useNavigate();
-  const walletAddress = "bc1qexamplewalletaddress123xyz";
+  const walletAddress = "bc1q5n7kkd6hmzsdrpvgl4223e";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(walletAddress);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleSubmit = () => {
-    if (!file) {
-      alert("Please upload your payment confirmation before submitting.");
-      return;
-    }
-    // Handle file submission here, e.g., upload to server
-    alert("Proof of payment submitted. Your manager will verify shortly.");
+    alert("Wallet address copied!");
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-[#0d1117] text-[#f5f5f5] font-sans">
-      <div className="relative max-w-xl w-full bg-[#1f2937] p-6 my-4 rounded-2xl shadow-lg border border-[#374151]">
-        {/* Go Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 text-sm text-yellow-400 hover:underline"
-        >
-          ← Go Back
-        </button>
+    <div className="p-6 bg-[#1f2937] text-white min-h-screen">
+      <div className="">
+        {" "}
+        {/* TradingView Infinite Crypto Ticker via iframe */}{" "}
+        <div className="mb-4 rounded overflow-hidden shadow bg-[#1f2937]">
+          {" "}
+          <iframe
+            src="https://s.tradingview.com/embed-widget/ticker-tape/?locale=en#%7B%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%2C%22displayMode%22%3A%22adaptive%22%2C%22locale%22%3A%22en%22%7D"
+            className="w-full h-12"
+            frameBorder="0"
+            scrolling="no"
+            allowTransparency="true"
+            title="Crypto Ticker"
+          ></iframe>{" "}
+        </div>
+        {/* Deposit Form */}
+        <div className="bg-[#374151] text-gray-400 rounded-xl shadow-md p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-center">
+            Deposit into your wallet
+          </h2>
 
-        <h2 className="text-2xl font-bold text-yellow-400 mb-4 text-center">
-          Deposit Bitcoin
-        </h2>
+          <div>
+            <label className="block text-sm mb-1">Select a coin</label>
+            <select
+              className="w-full border border-gray-700 rounded p-2 bg-black text-white"
+              value={selectedCoin}
+              onChange={(e) => setSelectedCoin(e.target.value)}
+            >
+              <option value="">--Select Coin--</option>
+              {coinOptions.map((coin) => (
+                <option key={coin} value={coin}>
+                  {coin}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <p className="text-sm text-gray-300 mb-4">
-          To fund your trading account, please send Bitcoin to the wallet
-          address below. Once your transaction is complete, upload your payment
-          confirmation slip. As soon as your account manager verifies the
-          deposit, your account will be credited and trading will begin.
-        </p>
+          <input
+            type="text"
+            placeholder="Amount"
+            className="w-full border border-gray-700 rounded p-2 bg-black text-white"
+          />
 
-        {/* BTC Wallet Section */}
-        <div className="bg-[#111827] p-4 rounded-xl flex items-center justify-between mb-4">
-          <span className="truncate">{walletAddress}</span>
-          <button
-            onClick={handleCopy}
-            className="ml-4 px-3 py-1 bg-yellow-400 text-black font-semibold rounded-md hover:bg-yellow-300 transition"
-          >
-            {copied ? "Copied!" : "Copy"}
+          <AnimatePresence>
+            {selectedCoin && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-3"
+              >
+                <div>
+                  <label className="block text-sm mb-1">
+                    {selectedCoin} Wallet Address
+                  </label>
+                  <div className="flex items-center bg-gray-800 p-2 rounded">
+                    <span className="flex-1 truncate">{walletAddress}</span>
+                    <button onClick={handleCopy} className="ml-2">
+                      <Copy size={16} className="text-white" />
+                    </button>
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-400">
+                  Make sure that you are sending funds to the correct wallet
+                  address and blockchain network. Sending coins or tokens other
+                  than {selectedCoin} to this address may result in loss of your
+                  deposit.
+                </p>
+
+                <div className="flex justify-center">
+                  <Barcode
+                    value={walletAddress}
+                    background="transparent"
+                    lineColor="#ffffff"
+                    height={60}
+                    width={1.4}
+                    fontSize={12}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div>
+            <label className="block text-sm mb-1">
+              Made payment? Send proof of payment here
+            </label>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="w-full border border-gray-700 p-2 bg-black text-white"
+            />
+          </div>
+
+          <p className="text-xs text-gray-400">
+            Deposit reflects after 2 network confirmations.
+          </p>
+
+          <button className="w-full bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-4 rounded">
+            Deposit
           </button>
         </div>
-
-        {/* File Upload */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Upload Proof of Payment:
-          </label>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="w-full text-sm text-gray-100 bg-[#111827] border border-gray-600 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-yellow-400 file:text-black hover:file:bg-yellow-300"
-          />
-        </div>
-
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-yellow-400 text-black font-bold py-3 rounded-lg hover:bg-yellow-300 transition mb-6"
-        >
-          Submit Confirmation
-        </button>
-
-        {/* Trusted BTC Purchase Links */}
-        <div className="mb-4">
-          <h3 className="text-yellow-400 font-semibold mb-2 text-lg">
-            Trusted Websites to Buy Bitcoin:
-          </h3>
-          <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
-            <li>
-              <a
-                href="https://www.binance.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-yellow-400 hover:underline"
-              >
-                Binance
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.coinbase.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-yellow-400 hover:underline"
-              >
-                Coinbase
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.kraken.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-yellow-400 hover:underline"
-              >
-                Kraken
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.paxful.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-yellow-400 hover:underline"
-              >
-                Paxful
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.bitpay.com/buy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-yellow-400 hover:underline"
-              >
-                BitPay
-              </a>
-            </li>
-          </ul>
-        </div>
+      </div>
+      <div className="mt-10 bg-[#1f2937]">
+        <TvWidget />
       </div>
     </div>
   );

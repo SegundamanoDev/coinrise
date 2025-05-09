@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CryptoTicker from "./CryptoTicker";
+import TvWidget from "./TradingViewWidget.";
 
 const WithdrawFunds = () => {
   const [amount, setAmount] = useState("");
@@ -276,6 +277,9 @@ const WithdrawFunds = () => {
           </div>
         </div>
       )}
+      <div className="mt-10 bg-[#1f2937]">
+        <TvWidget />
+      </div>
     </div>
   );
 };
