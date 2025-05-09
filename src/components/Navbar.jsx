@@ -24,7 +24,7 @@ export default function Navbar() {
   return (
     <>
       {/* Sticky Top Navbar */}
-      <nav className="flex items-center justify-between bg-[#111827] text-white px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
+      <nav className="flex items-center justify-between font-[Montserrat] bg-[#111827] text-white px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
         {/* Logo */}
         <div className="flex items-center space-x-2">
           <img className="w-[50px] h-auto" src={logo} alt="logo" />
