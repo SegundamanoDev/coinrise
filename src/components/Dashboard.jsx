@@ -27,7 +27,7 @@
 //       >
 //         {/* Sidebar - Desktop */}
 //         <aside className="hidden md:flex w-64 bg-[#1f2937] flex-col p-6 border-r border-[#374151] min-h-screen">
-//           <h2 className="text-2xl font-bold text-yellow-400 mb-8">
+//           <h2 className="text-2xl font-bold text-[#ffffff] mb-8">
 //             CryptoDash
 //           </h2>
 //           <nav className="flex flex-col gap-6 text-lg">
@@ -287,6 +287,7 @@ import axios from "axios";
 import TradingViewChart from "./TradingViewChart";
 import AdvancedChart from "./AdChart";
 import ForexRates from "./FRate";
+import Loader from "./LoadingSpinner";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -344,81 +345,80 @@ const DashboardLayout = () => {
 
   if (loading)
     return (
-      <div className="text-center mt-20 text-gray-400 font-[Montserrat]">
-        Loading dashboard...
+      <div>
+        <Loader />
       </div>
     );
 
   const referralCode = data?.referralCode || "N/A";
-  const accountType = data?.accountType || "Basic";
 
   return (
     <>
       <div
         className={`md:flex pt-16 md:pt-0 justify-between font-sans text-[#f5f5f5] transition-opacity duration-300 ${
           isOpen ? "opacity-60 pointer-events-none" : "opacity-100"
-        } bg-[#0d1117]`}
+        } bg-[#000000]`}
       >
         {/* Sidebar - Desktop */}
-        <aside className="hidden md:flex w-64 bg-[#1f2937] flex-col p-6 border-r border-[#374151] min-h-screen font-montserrat">
+        <aside className="hidden md:flex w-64 bg-[#000000] flex-col p-6 border-r border-[#374151] min-h-screen font-montserrat">
           <nav className="flex flex-col gap-6 text-lg text-gray-400 font-[Montserrat]">
             <a
               href="/dashboard"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <LayoutDashboard size={20} /> Dashboard
             </a>
             <a
               href="/deposit"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <ArrowDownCircle size={20} /> Deposit Now
             </a>
             <a
               href="/withdraw"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <ArrowUpCircle size={20} /> Withdraw Funds
             </a>
             <a
               href="/deposit-history"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <ListOrdered size={20} /> Deposit History
             </a>
             <a
               href="/transaction-history"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <Receipt size={20} /> Transaction History
             </a>
             <a
               href="/upgrade-account"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <TrendingUp size={20} /> Upgrade Account
             </a>
             <a
               href="/withdrawal-pin"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <KeyRound size={20} /> Withdrawal Pin
             </a>
             <a
               href="/profile-settings"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <Settings size={20} /> Profile Settings
             </a>
             <a
               href="/verified-account"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <ShieldCheck size={20} /> Verified Account
             </a>
             <a
               href="/"
-              className="flex items-center gap-2 hover:text-yellow-400"
+              className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <Home size={20} /> Back to Home
             </a>
@@ -463,7 +463,7 @@ const DashboardLayout = () => {
             <div className=" p-5 rounded-xl shadow-lg border border-divider">
               <h3 className="text-lg font-semibold mb-2">Your Referral Code</h3>
               <div className="flex items-center justify-between">
-                <p className="text-yellow-400 font-mono">{referralCode}</p>
+                <p className="text-[#ffffff] font-mono">{referralCode}</p>
                 <button
                   onClick={() => navigator.clipboard.writeText(referralCode)}
                 >
@@ -493,9 +493,9 @@ const DashboardLayout = () => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="w-64 h-full p-6 shadow-lg">
+        <div className="w-64 bg-[#000000] h-full p-6 shadow-lg">
           <div
-            className="close flex justify-end "
+            className="close flex justify-end text-gray-300"
             onClick={() => setIsOpen(false)}
           >
             <X />
@@ -503,70 +503,70 @@ const DashboardLayout = () => {
           <nav className="flex flex-col space-y-6 font-montserrat">
             <Link
               to="/dashboard"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faGauge} className="text-xl" />
               <span className="text-base">Dashboard</span>
             </Link>
             <Link
               to="/deposit"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faMoneyBillWave} className="text-xl" />
               <span className="text-base">Deposit Now</span>
             </Link>
             <Link
               to="/withdraw"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faMoneyCheckAlt} className="text-xl" />
               <span className="text-base">Withdraw Funds</span>
             </Link>
             <Link
               to="/deposit-history"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faListAlt} className="text-xl" />
               <span className="text-base">Deposit History</span>
             </Link>
             <Link
               to="/transaction-history"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faExchangeAlt} className="text-xl" />
               <span className="text-base">Transaction History</span>
             </Link>
             <Link
               to="/upgrade-account"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faArrowUpRightDots} className="text-xl" />
               <span className="text-base">Upgrade Account</span>
             </Link>
             <Link
               to="/withdrawal-pin"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faKey} className="text-xl" />
               <span className="text-base">Withdrawal Pin</span>
             </Link>
             <Link
               to="/profile-settings"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faUserGear} className="text-xl" />
               <span className="text-base">Profile Settings</span>
             </Link>
             <Link
               to="/verified-account"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faCircleCheck} className="text-xl" />
               <span className="text-base">Verified Account</span>
             </Link>
             <Link
               to="/"
-              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-yellow-400"
+              className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faArrowLeft} className="text-xl" />
               <span className="text-base">Back to Home</span>

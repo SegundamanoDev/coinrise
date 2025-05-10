@@ -57,7 +57,7 @@ const plans = [
 
 const TradingPlans = ({ heading }) => {
   return (
-    <section className="py-10 px-4 font-[Montserrat]">
+    <section className="py-5 px-4 font-[Montserrat]">
       <h2 className="text-2xl font-bold text-center mb-8 text">{heading}</h2>
       <div className="flex flex-col gap-6 items-center max-w-3xl mx-auto">
         {plans.map((plan, idx) => (

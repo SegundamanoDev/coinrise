@@ -38,6 +38,7 @@ import AMLPolicy from "./components/AMLPolicy";
 import { ThemeProvider } from "./components/context/ThemeContext";
 import Whatsapp from "./components/Whatsapp";
 import UpgradeAccount from "./components/UpgradeAccount";
+import DepositHistory from "./components/DepositHistory";
 
 // Custom wrapper to check route
 const AppRoutes = () => {
@@ -78,8 +79,9 @@ const AppRoutes = () => {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/mining-pool" element={<MiningPoolPage />} />
           <Route path="/dashboard" element={<DashboardLayout />} />
-          <Route path="/transaction" element={<Transactions />} />
+          <Route path="/transaction-history" element={<Transactions />} />
           <Route path="/deposit" element={<Deposit />} />
+          <Route path="/deposit-history" element={<DepositHistory />} />
           <Route path="/invest" element={<Invest />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/confirm-success" element={<SuccessModal />} />

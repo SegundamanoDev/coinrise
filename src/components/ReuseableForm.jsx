@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Copy } from "lucide-react";
 import Barcode from "react-barcode";
 import TvWidget from "./TradingViewWidget.";
+import AdvancedChart from "./AdChart";
+import ForexRates from "./FRate";
 
 const coinOptions = ["BTC", "ETH", "LTC", "USDT"];
 
-const ReuseableForm = ({ heading, title, desc }) => {
+const ReuseableForm = ({ heading, title, desc, note }) => {
   const [selectedCoin, setSelectedCoin] = useState("");
   const [file, setFile] = useState(null);
   const walletAddress = "bc1q5n7kkd6hmzsdrpvgl4223e";
@@ -17,28 +19,17 @@ const ReuseableForm = ({ heading, title, desc }) => {
   };
 
   return (
-    <div className="p-6 bg-[#1f2937] font-[Montserrat] text-white min-h-screen">
+    <div className="p-6 ">
       <div>
         {" "}
-        <div className="mb-4 rounded overflow-hidden shadow bg-gray-900">
-          {" "}
-          <iframe
-            src="https://s.tradingview.com/embed-widget/ticker-tape/?locale=en#%7B%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%2C%22displayMode%22%3A%22adaptive%22%2C%22locale%22%3A%22en%22%7D"
-            className="w-full h-12"
-            frameBorder="0"
-            scrolling="no"
-            allowTransparency="true"
-            title="Crypto Ticker"
-          ></iframe>{" "}
-        </div>
         {/* Deposit Form */}
-        <div className="bg-[#1a1e27] text-gray-300 rounded-xl shadow-md p-6 space-y-4">
+        <div className="rounded-xl shadow-md p-6 space-y-4 border border-divider">
           <h2 className="text-lg font-semibold text-center">{heading}</h2>
 
           <div>
-            <label className="block text-sm mb-1">Select a coin</label>
+            <h2 className="block text-sm mb-1">Select a coin</h2>
             <select
-              className="w-full border border-gray-700 rounded p-2 bg-black text-white"
+              className="w-full border bg-[#000000] border-divider rounded p-2 text-[#ffffff]"
               value={selectedCoin}
               onChange={(e) => setSelectedCoin(e.target.value)}
             >
@@ -49,12 +40,13 @@ const ReuseableForm = ({ heading, title, desc }) => {
                 </option>
               ))}
             </select>
+            <h2 className="pt-2">{note}</h2>
           </div>
 
           <input
             type="text"
             placeholder="Amount"
-            className="w-full border border-gray-700 rounded p-2 bg-black text-white placeholder:text-gray-300"
+            className="w-full border border-divider rounded p-2 bg-black text-[#ffffff] placeholder:text-[#ffffff]"
           />
 
           <AnimatePresence>
@@ -66,18 +58,18 @@ const ReuseableForm = ({ heading, title, desc }) => {
                 className="space-y-3"
               >
                 <div>
-                  <label className="block text-sm mb-1">
+                  <h2 className="block text-sm mb-1">
                     {selectedCoin} Wallet Address
-                  </label>
+                  </h2>
                   <div className="flex items-center bg-gray-800 p-2 rounded">
-                    <span className="flex-1 truncate">{walletAddress}</span>
+                    <h2 className="flex-1 truncate">{walletAddress}</h2>
                     <button onClick={handleCopy} className="ml-2">
                       <Copy size={16} className="text-white" />
                     </button>
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-300">{title}</p>
+                <h2 className="text-xs text-gray-300">{title}</h2>
 
                 <div className="flex justify-center">
                   <Barcode
@@ -94,25 +86,30 @@ const ReuseableForm = ({ heading, title, desc }) => {
           </AnimatePresence>
 
           <div>
-            <label className="block text-sm mb-1">
+            <h2 className="block text-sm mb-1">
               Made payment? Send proof of payment here
-            </label>
+            </h2>
             <input
               type="file"
               onChange={(e) => setFile(e.target.files[0])}
-              className="w-full border border-gray-700 p-2 bg-black text-white"
+              className="w-full border border-gray-700 p-2 bg-black text-white file:px-4 py-2 file:bg-gradient-to-r file:from-[#00befe] file:to-[#a700ff]"
             />
           </div>
 
-          <p className="text-xs text-gray-300">{desc}</p>
+          <h2 className="text-xs text-gray-300">{desc}</h2>
 
-          <button className="w-full bg-yellow-500 hover:bg-yellow-700 text-white py-2 px-4 rounded">
+          <button className="w-full bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white py-2 px-4 rounded">
             Deposit
           </button>
         </div>
       </div>
-      <div className="mt-10 bg-[#1f2937]">
-        <TvWidget />
+      <div className="mt-10 mb-5 ">
+        <div className="mb-10">
+          <AdvancedChart />
+        </div>
+        <div className="">
+          <ForexRates />
+        </div>
       </div>
     </div>
   );
