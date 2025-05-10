@@ -53,7 +53,7 @@ const SignIn = () => {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="w-full pl-10 pr-4 py-3 border border-divider rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             required
           />
         </div>
@@ -66,7 +66,7 @@ const SignIn = () => {
             value={formData.password}
             onChange={handleChange}
             placeholder="Password"
-            className="w-full pl-10 pr-10 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="w-full pl-10 pr-10 py-3 border border-divider rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             required
           />
           <button
@@ -80,7 +80,7 @@ const SignIn = () => {
 
         <button
           type="submit"
-          className="w-full bg-yellow-400 text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition"
+          className="w-full bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition"
           disabled={loading}
         >
           {loading ? "Signing In..." : "Sign In"}

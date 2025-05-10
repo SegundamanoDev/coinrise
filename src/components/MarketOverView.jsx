@@ -46,7 +46,7 @@ const MarketOverview = () => {
     document.getElementById("market-overview-container").appendChild(script);
   }, []);
 
-  return <div id="market-overview-container" className="w-full" />;
+  return <div id="market-overview-container" className="w-full p-5" />;
 };
 
 export default MarketOverview;

@@ -15,6 +15,7 @@ import TestimonialSlider from "./UserTestimonialsSection";
 import MarketOverview from "./MarketOverView";
 import TechnicalAnalysis from "./TechnicalAnalysis";
 import ForexCrossRates from "./ForexCrossRates";
+import Certificate from "./certificate";
 
 const Home = () => {
   return (
@@ -31,6 +32,7 @@ const Home = () => {
       <TestimonialSlider />
       <StatsCountersSection />
       <ForexCrossRates />
+      <Certificate />
       <FAQSection />
       <CTACallToActionSection />
       <EarningsPopup />

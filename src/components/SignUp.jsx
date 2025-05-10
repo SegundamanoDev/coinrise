@@ -64,7 +64,7 @@ const SignUp = () => {
     <AuthFormWrapper title="Welcome!">
       <form
         onSubmit={handleSubmit}
-        className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-5"
+        className="max-w-xl mx-auto p-6 bg-[#000000] rounded-xl shadow-md space-y-5"
       >
         <h2 className="text-2xl font-bold text-center">Create an Account</h2>
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
@@ -78,7 +78,7 @@ const SignUp = () => {
           placeholder="Full Name"
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-divider rounded"
         />
         <input
           name="email"
@@ -86,7 +86,7 @@ const SignUp = () => {
           placeholder="Email Address"
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-divider rounded"
         />
         <PhoneInput
           placeholder="Enter phone number"
@@ -100,7 +100,7 @@ const SignUp = () => {
           placeholder="Password"
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-divider rounded"
         />
         <input
           name="confirmPassword"
@@ -108,14 +108,14 @@ const SignUp = () => {
           placeholder="Confirm Password"
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-divider rounded"
         />
         <input
           name="referralCode"
           type="text"
           placeholder="Referral Code (Optional)"
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-divider rounded"
         />
         <ReactFlagsSelect
           selected={country}
@@ -126,7 +126,7 @@ const SignUp = () => {
         />
 
         <select
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-divider rounded"
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
           required
@@ -162,7 +162,7 @@ const SignUp = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-yellow-400 text-white py-2 rounded hover:bg-yellow-500"
+          className="w-full bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white py-2 rounded"
         >
           {loading ? "Signing Up..." : "Sign Up"}
         </button>

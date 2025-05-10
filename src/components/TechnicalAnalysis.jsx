@@ -19,7 +19,7 @@ const TechnicalAnalysis = () => {
     document.getElementById("technical-analysis-container").appendChild(script);
   }, []);
 
-  return <div id="technical-analysis-container" className="w-full" />;
+  return <div id="technical-analysis-container" className="w-full p-5" />;
 };
 
 export default TechnicalAnalysis;

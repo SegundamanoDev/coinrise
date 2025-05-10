@@ -17,7 +17,7 @@ const ForexCrossRates = () => {
     document.getElementById("forex-cross-rates-container").appendChild(script);
   }, []);
 
-  return <div id="forex-cross-rates-container" className="w-full" />;
+  return <div id="forex-cross-rates-container" className="w-full p-5" />;
 };
 
 export default ForexCrossRates;

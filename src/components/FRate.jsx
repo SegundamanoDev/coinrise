@@ -22,7 +22,7 @@ const ForexRates = () => {
     }
   }, []);
 
-  return <div ref={containerRef} />;
+  return <div ref={containerRef} className="p-5" />;
 };
 
 export default ForexRates;

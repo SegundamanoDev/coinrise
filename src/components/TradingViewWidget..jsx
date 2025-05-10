@@ -34,7 +34,7 @@ const TradingViewWidget = ({ symbol }) => {
   return (
     <div
       id={`tv-widget-${symbol}`}
-      className="bg-black rounded-xl shadow-md overflow-hidden mb-4"
+      className="bg-black rounded-xl shadow-md overflow-hidden mb-4 p-5"
     />
   );
 };
