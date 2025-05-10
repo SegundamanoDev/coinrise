@@ -15,6 +15,7 @@ const UpgradeAccount = () => {
                   deposit."
         note="Upgrade your account to enjoy premium features"
         desc="Deposit reflects after 2 network confirmations."
+        btn="Make Payment"
       />
       <TradingPlans />
     </div>

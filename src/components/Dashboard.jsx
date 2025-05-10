@@ -405,7 +405,7 @@ const DashboardLayout = () => {
               <KeyRound size={20} /> Withdrawal Pin
             </a>
             <a
-              href="/profile-settings"
+              href="/profile"
               className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <Settings size={20} /> Profile Settings
@@ -499,7 +499,7 @@ const DashboardLayout = () => {
           >
             <X />
           </div>
-          <nav className="flex flex-col space-y-6 font-montserrat">
+          <nav className="flex flex-col space-y-5 font-montserrat">
             <Link
               to="/dashboard"
               className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
@@ -550,7 +550,7 @@ const DashboardLayout = () => {
               <span className="text-base">Withdrawal Pin</span>
             </Link>
             <Link
-              to="/profile-settings"
+              to="/profile"
               className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faUserGear} className="text-xl" />

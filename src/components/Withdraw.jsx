@@ -37,7 +37,7 @@ const WithdrawFunds = () => {
       case "bitcoin":
         return (
           <div className="mb-4">
-            <h2 className="block text-sm text-gray-400 mb-2">
+            <h2 className="block text-sm text-gray-400 my-2">
               Bitcoin Wallet Address
             </h2>
             <input
@@ -54,7 +54,6 @@ const WithdrawFunds = () => {
       case "bank":
         return (
           <>
-            <CryptoTicker />
             <div className="mb-4">
               <h2 className="block text-sm mb-2">Account Name</h2>
               <input

@@ -40,6 +40,7 @@ import Whatsapp from "./components/Whatsapp";
 import UpgradeAccount from "./components/UpgradeAccount";
 import DepositHistory from "./components/DepositHistory";
 import KYCVerificationForm from "./components/KYCVerificationForm ";
+import WithdrawPin from "./components/WithdrawPin";
 
 // Custom wrapper to check route
 const AppRoutes = () => {
@@ -88,6 +89,7 @@ const AppRoutes = () => {
           <Route path="/confirm-success" element={<SuccessModal />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/withdraw" element={<Withdraw />} />
+          <Route path="/withdrawal-pin" element={<WithdrawPin />} />
           <Route path="/view-investment" element={<ViewInvestment />} />
           <Route path="/activity-overview" element={<ActivityOverview />} />
           <Route path="/verify-account" element={<KYCVerificationForm />} />

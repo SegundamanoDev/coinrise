@@ -8,7 +8,7 @@ import ForexRates from "./FRate";
 
 const coinOptions = ["BTC", "ETH", "LTC", "USDT"];
 
-const ReuseableForm = ({ heading, title, desc, note }) => {
+const ReuseableForm = ({ heading, title, desc, note, btn }) => {
   const [selectedCoin, setSelectedCoin] = useState("");
   const [file, setFile] = useState(null);
   const walletAddress = "bc1q5n7kkd6hmzsdrpvgl4223e";
@@ -99,16 +99,16 @@ const ReuseableForm = ({ heading, title, desc, note }) => {
           <h2 className="text-xs text-gray-300">{desc}</h2>
 
           <button className="w-full bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white py-2 px-4 rounded">
-            Deposit
+            {btn}
           </button>
         </div>
       </div>
       <div className="mt-10 mb-5 ">
-        <div className="mb-10">
-          <AdvancedChart />
-        </div>
         <div className="">
           <ForexRates />
+        </div>
+        <div className="mb-10">
+          <AdvancedChart />
         </div>
       </div>
     </div>
