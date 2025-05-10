@@ -18,11 +18,11 @@ const colors = [
 
 const Loader = () => {
   return (
-    <div className="w-full h-screen bg-black flex flex-col items-center justify-center">
+    <div className="w-full h-screen bg-black flex flex-col items-center justify-center rounded-[15px]">
       <img
         src={logo}
         alt="TrustVest Logo"
-        className="h-20 md:h-24 object-contain mb-4 animate-pulseSlow"
+        className="h-20 md:h-24 object-contain mb-4 animate-pulseSlow rounded-[15px]"
       />
       <div className="flex space-x-1 text-2xl md:text-3xl font-semibold tracking-wider">
         {letters.map((letter, index) => (

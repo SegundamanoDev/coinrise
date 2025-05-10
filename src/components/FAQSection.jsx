@@ -13,7 +13,7 @@ const faqs = [
   },
   {
     question: "Is there a minimum investment?",
-    answer: "Yes, you can start investing with as little as $250.",
+    answer: "Yes, you can start investing with as little as $500-1,000.",
   },
 ];
 
@@ -21,16 +21,16 @@ const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <section className="bg-gray-900 text-gray-300 py-20 px-6">
+    <section className=" py-20 px-6">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-10 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold  mb-10 text-center">
           Frequently Asked Questions
         </h2>
 
         {faqs.map((faq, index) => (
           <div
             key={index}
-            className="border-b border-gray-700 py-4"
+            className="border-b border-divider py-4"
             data-aos="fade-up"
             data-aos-duration="1200"
           >
@@ -40,13 +40,13 @@ const FAQSection = () => {
             >
               <span className="font-medium text-lg">{faq.question}</span>
               {openIndex === index ? (
-                <ChevronUp className="text-yellow-400" />
+                <ChevronUp className="" />
               ) : (
-                <ChevronDown className="text-yellow-400" />
+                <ChevronDown className="" />
               )}
             </button>
             {openIndex === index && (
-              <p className="mt-2 text-gray-400" data-aos="fade-up">
+              <p className="mt-2 " data-aos="fade-up">
                 {faq.answer}
               </p>
             )}

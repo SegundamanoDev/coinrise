@@ -1,31 +1,40 @@
-// About.jsx
-import React from "react";
-import Navbar from "./Navbar";
+import React, { useEffect, useRef, memo } from "react";
 
-const About = () => {
+function TradingViewWidget() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      autosize: true,
+      symbol: "NASDAQ:AAPL",
+      interval: "D",
+      timezone: "Etc/UTC",
+      theme: "dark",
+      style: "1",
+      locale: "en",
+      allow_symbol_change: true,
+      support_host: "https://www.tradingview.com",
+    });
+
+    if (containerRef.current) {
+      containerRef.current.innerHTML = ""; // Clear existing if hot reloaded
+      containerRef.current.appendChild(script);
+    }
+  }, []);
+
   return (
-    <>
-      <Navbar />
-      <section className="bg-gray-900 text-gray-300 py-20 px-6 min-h-screen">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            About Coinrise
-          </h2>
-          <p className="text-lg text-gray-400 leading-relaxed">
-            Coinrise is a secure, transparent, and user-focused cryptocurrency
-            investment and mining platform. Built with trust and simplicity in
-            mind, our mission is to make crypto investing accessible to everyone
-            — whether you're a beginner or an experienced investor.
-          </p>
-          <p className="mt-6 text-gray-400">
-            With real mining infrastructure, instant withdrawals, and
-            world-class support, Coinrise stands out as your go-to choice for
-            reliable crypto growth.
-          </p>
-        </div>
-      </section>
-    </>
+    <div className="w-full" style={{ minHeight: "450px" }}>
+      <div
+        className="tradingview-widget-container__widget"
+        ref={containerRef}
+        style={{ width: "100%", height: "100%" }}
+      />
+    </div>
   );
-};
+}
 
-export default About;
+export default memo(TradingViewWidget);

@@ -187,7 +187,7 @@ const testimonials = [
 
 export default function TestimonialSlider() {
   return (
-    <div className="bg-white py-10 px-4 md:px-10">
+    <div className=" py-10 px-4 md:px-10">
       <h2 className="text-3xl font-bold text-center mb-8">
         What Our Traders Say
       </h2>
@@ -203,18 +203,20 @@ export default function TestimonialSlider() {
       >
         {testimonials.map((user, index) => (
           <SwiperSlide key={index}>
-            <div className="bg-gray-50 rounded-xl shadow-md p-5 text-center">
+            <div className=" border border-divider rounded-xl shadow-md p-5 text-center">
               <img
                 src={user.image}
                 alt={user.name}
                 className="w-20 h-20 rounded-full mx-auto mb-4"
               />
-              <p className="text-lg font-semibold">{user.name}</p>
+              <span className="text-lg font-semibold text-[#ffffff]">
+                {user.name}
+              </span>
               <div className="flex justify-center items-center space-x-2 my-1">
                 <img src={user.flag} alt={user.country} className="w-5 h-5" />
-                <span className="text-sm text-gray-600">{user.country}</span>
+                <span className="text-sm">{user.country}</span>
               </div>
-              <p className="text-sm text-gray-700 mt-3">{user.feedback}</p>
+              <p className="text-sm mt-3">{user.feedback}</p>
             </div>
           </SwiperSlide>
         ))}

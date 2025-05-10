@@ -24,7 +24,7 @@ export default function Navbar() {
   return (
     <>
       {/* Sticky Top Navbar */}
-      <nav className="flex items-center justify-between font-[Montserrat] bg-[#111827] text-white px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
+      <nav className="flex items-center justify-between font-[Montserrat] bg-[#000000] text-[#ffffff] px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
         {/* Logo */}
         <Link to="/">
           <img className="h-10 object-contain" src={logo} alt="trustvest" />
@@ -33,22 +33,22 @@ export default function Navbar() {
         {/* Desktop Nav Links */}
         <ul className="hidden md:flex items-center space-x-6 font-[Montserrat]">
           <li>
-            <Link className="hover:text-yellow-400" to="/">
+            <Link className="hover:text-[#b3b3b3]" to="/">
               Home
             </Link>
           </li>
           <li>
-            <Link className="hover:text-yellow-400" to="/about">
+            <Link className="hover:text-[#b3b3b3]" to="/about">
               About
             </Link>
           </li>
           <li>
-            <Link className="hover:text-yellow-400" to="/mining-pool">
+            <Link className="hover:text-[#b3b3b3]" to="/mining-pool">
               Mining-Pool
             </Link>
           </li>
           <li>
-            <Link className="hover:text-yellow-400" to="/contact">
+            <Link className="hover:text-[#b3b3b3]" to="/contact">
               Contact
             </Link>
           </li>
@@ -60,19 +60,13 @@ export default function Navbar() {
 
         {/* Auth Links */}
         <div className="hidden md:flex items-center space-x-4">
-          <button onClick={toggleTheme} className="text-yellow-400">
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
-          <Link to="/sign-in" className="text-yellow-400 hover:underline">
+          <Link
+            to="/sign-in"
+            className="bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white px-3 py-1 rounded"
+          >
             Sign In
           </Link>
-          <Link
-            to="/sign-up"
-            className="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500"
-          >
-            Sign Up
-          </Link>
-          <Link className="hover:text-yellow-400" to="/dashboard">
+          <Link className="hover:text-[#b3b3b3]" to="/dashboard">
             <User size={24} />
           </Link>
         </div>
@@ -89,39 +83,34 @@ export default function Navbar() {
 
       {/* Mobile Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full max-w-[80vw] font-[Montserrat] w-64 bg-[#1f2937] text-white z-50 transform ${
+        className={`fixed top-0 left-0 h-full max-w-[80vw] font-[Montserrat] w-64 bg-[#000000] text-[#b3b3b3] z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300`}
       >
-        <div className="relative p-4 flex justify-between items-center border-b border-[#374151]">
+        <div className="relative p-4 flex justify-between items-center border-b border-divider">
           <span className="text-xl font-semibold">Menu</span>
           <button onClick={closeMenu} aria-label="Close Menu">
             <X size={24} />
           </button>
         </div>
 
-        <div className="p-4 flex justify-between items-center">
+        <div className="p-4 flex justify-center items-center">
           <button
             onClick={() => {
               navigate("/dashboard");
               closeMenu();
             }}
-            className="bg-yellow-400 p-2 rounded-full"
+            className=" text-[#b3b3b3] p-2 rounded-full flex-col items-center justify-center"
           >
             <User size={28} />
-          </button>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full text-yellow-400"
-          >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            <p>Dashboard</p>
           </button>
         </div>
 
-        <ul className="p-4 space-y-6 font-sans">
+        <ul className="p-4 space-y-6 font-[Montserrat]">
           <li className="flex items-center space-x-2 py-2">
             <FontAwesomeIcon icon={faHouse} />
-            <Link to="/" onClick={closeMenu} className="hover:text-yellow-400">
+            <Link to="/" onClick={closeMenu} className="hover:text-[#ffffff]">
               Home
             </Link>
           </li>
@@ -130,7 +119,7 @@ export default function Navbar() {
             <Link
               to="/about"
               onClick={closeMenu}
-              className="hover:text-yellow-400"
+              className="hover:text-[#b3b3b3]"
             >
               About
             </Link>
@@ -140,7 +129,7 @@ export default function Navbar() {
             <Link
               to="/mining-pool"
               onClick={closeMenu}
-              className="hover:text-yellow-400"
+              className="hover:text-[#b3b3b3]"
             >
               Mining-Pool
             </Link>
@@ -150,21 +139,19 @@ export default function Navbar() {
             <Link
               to="/contact"
               onClick={closeMenu}
-              className="hover:text-yellow-400"
+              className="hover:text-[#b3b3b3]"
             >
               Contact
             </Link>
           </li>
           <li className="flex items-center space-x-2 py-2">
             <FontAwesomeIcon icon={faSignInAlt} />
-            <Link to="/sign-in" onClick={closeMenu}>
+            <Link
+              onClick={closeMenu}
+              to="/sign-in"
+              className="bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white px-3 py-1 rounded"
+            >
               Sign In
-            </Link>
-          </li>
-          <li className="flex items-center space-x-2 py-2">
-            <FontAwesomeIcon icon={faUserPlus} />
-            <Link to="/sign-up" onClick={closeMenu}>
-              Sign Up
             </Link>
           </li>
         </ul>

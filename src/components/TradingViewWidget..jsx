@@ -19,7 +19,7 @@ const TradingViewWidget = ({ symbol }) => {
       chartOnly: false,
       scalePosition: "no",
       scaleMode: "percentage",
-      fontFamily: "Arial",
+      fontFamily: "Open-sans",
       fontSize: "12",
       noTimeScale: false,
       valuesTracking: "1",
@@ -39,13 +39,19 @@ const TradingViewWidget = ({ symbol }) => {
   );
 };
 
-const TvWidget = () => {
+const TvWidget = ({ heading }) => {
   return (
-    <div className="min-h-screen bg-gray-900 p-4 text-white">
-      <h1 className="text-xl font-bold mb-4">Market Overview</h1>
-      <TradingViewWidget symbol="FX:EURUSD" />
-      <TradingViewWidget symbol="BINANCE:BTCUSDT" />
-      <TradingViewWidget symbol="NYSE:LTC" />
+    <div>
+      <h1 className="text-xl font-bold mb-4">{heading}</h1>
+      <div className="mb-6">
+        <TradingViewWidget symbol="FX:EURUSD" />
+      </div>
+      <div className="mb-6">
+        <TradingViewWidget symbol="BINANCE:BTCUSDT" />
+      </div>
+      <div className="mb-6">
+        <TradingViewWidget symbol="NYSE:LTC" />
+      </div>
     </div>
   );
 };

@@ -22,7 +22,7 @@ const Home = () => {
       <TrustSection />
       <HowItWorksSection />
       <WhyChooseUsSection />
-      <InvestmentPlansSection />
+      <InvestmentPlansSection heading="TRADING PLANS" />
       <TestimonialSlider />
       <StatsCountersSection />
       <FAQSection />

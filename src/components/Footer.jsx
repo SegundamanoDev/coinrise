@@ -6,24 +6,18 @@ const Footer = () => {
   return (
     <footer className="bg-black text-white px-6 md:py-10 py-7">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Column 1 - Company Info */}
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-yellow-500">
-            TrustVestFx
-          </h2>
-          <p className="text-sm text-gray-400">
+          <h2 className="text-2xl font-bold mb-4 ">TrustVestFx</h2>
+          <span className="text-sm text-[#ffffff]">
             123 TrustVestFx Avenue, Silicon Valley, CA, USA
-          </p>
-          <p className="text-sm text-gray-400 mt-2">
-            &copy; 2008 - 2025 TrustVestFx. All rights reserved.
-          </p>
+          </span>
+          <span className="text-sm text-[#ffffff] mt-2">
+            &cospany; 2025 TrustVestFx. All rights reserved.
+          </span>
         </div>
 
-        {/* Column 2 - Useful Links */}
         <div>
-          <h3 className="text-xl font-semibold mb-4 text-yellow-500">
-            Useful Links
-          </h3>
+          <h2 className="text-xl font-semibold mb-4 ">Useful Links</h2>
           <ul className="space-y-2 text-sm">
             <li>
               <a href="/" className="hover:underline">
@@ -70,9 +64,9 @@ const Footer = () => {
 
         {/* Column 3 - Language */}
         <div className="flex flex-col items-start gap-4">
-          <h3 className="text-xl font-semibold text-yellow-500">Language</h3>
+          <h2 className="text-xl font-semibold ">Language</h2>
           <div className="flex items-center gap-2">
-            <Globe className="text-yellow-500" />
+            <Globe />
             <GoogleTranslate />
           </div>
         </div>

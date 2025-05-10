@@ -26,20 +26,12 @@ module.exports = {
         },
       },
       colors: {
-        // Dashboard Colors
-        dashboardBg: "#0D1117",
-        dashboardCard: "#161B22",
-        dashboardText: "#F1F1F1",
-        accent: "#F4B400",
-
-        // Homepage Colors
-        homeBg: "#111827", // Very dark background
-        homeCard: "#1f2937", // Slightly lighter dark for cards
-        homeCardBorder: "#374151", // Border color
-        homeText: "#f5f5f5", // Clean white text
-        homeHighlight: "#facc15", // Gold accent
-        homeButtonHover: "#eab308", // Darker hover yellow
-        homeButtonText: "#111827", // Button text
+        background: "#000000",
+        textPrimary: "#ffffff",
+        textSecondary: "#b3b3b3",
+        divider: "#2a2a2a",
+        highlightStart: "#00befe",
+        highlightEnd: "#a700ff",
       },
       borderRadius: {
         xl: "1rem",

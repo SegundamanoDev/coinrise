@@ -1,19 +1,37 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
-const CryptoTicker = () => {
+const cryptoTicker = () => {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      symbols: [
+        { proName: "FOREXCOM:SPXUSD", title: "S&P 500 Index" },
+        { proName: "FOREXCOM:NSXUSD", title: "US 100 Cash CFD" },
+        { proName: "FX_IDC:EURUSD", title: "EUR to USD" },
+        { proName: "BITSTAMP:BTCUSD", title: "Bitcoin" },
+        { proName: "BITSTAMP:ETHUSD", title: "Ethereum" },
+      ],
+      showSymbolLogo: true,
+      isTransparent: false,
+      displayMode: "adaptive",
+      colorTheme: "dark",
+      locale: "en",
+    });
+
+    if (containerRef.current) {
+      containerRef.current.innerHTML = ""; // Clear previous script (optional but good for rerenders)
+      containerRef.current.appendChild(script);
+    }
+  }, []);
+
   return (
-    <div className=" rounded overflow-hidden shadow">
-      {" "}
-      <iframe
-        src="https://s.tradingview.com/embed-widget/ticker-tape/?locale=en#%7B%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%2C%22displayMode%22%3A%22adaptive%22%2C%22locale%22%3A%22en%22%7D"
-        className="w-full h-14"
-        frameBorder="0"
-        scrolling="no"
-        allowTransparency="true"
-        title="Crypto Ticker"
-      ></iframe>{" "}
-    </div>
+    <div className="tradingview-widget-container" ref={containerRef}></div>
   );
 };
 
-export default CryptoTicker;
+export default cryptoTicker;

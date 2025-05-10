@@ -9,26 +9,26 @@ import {
 
 const steps = [
   {
-    icon: <UserPlus className="text-yellow-400 w-8 h-8" />,
+    icon: <UserPlus className="text-[#ffffff] w-8 h-8" />,
     title: "Create an Account",
     description:
       "Sign up in minutes to get started with your secure crypto journey.",
   },
   {
-    icon: <Wallet className="text-yellow-400 w-8 h-8" />,
+    icon: <Wallet className="text-[#ffffff] w-8 h-8" />,
     title: "Fund Your Wallet",
     description:
       "Deposit your preferred amount using Bitcoin or other crypto methods.",
   },
 
   {
-    icon: <TrendingUp className="text-yellow-400 w-8 h-8" />,
+    icon: <TrendingUp className="text-[#ffffff] w-8 h-8" />,
     title: "Earn Daily Profits",
     description:
       "Watch your returns grow automatically with consistent payouts.",
   },
   {
-    icon: <ArrowDownCircle className="text-yellow-400 w-8 h-8" />,
+    icon: <ArrowDownCircle className="text-[#ffffff] w-8 h-8" />,
     title: "Withdraw Anytime",
     description: "Withdraw your earnings securely at any time — no delays.",
   },
@@ -36,23 +36,16 @@ const steps = [
 
 const HowItWorksSection = () => {
   return (
-    <section
-      className="bg-[#111827] py-20 px-6 text-gray-200"
-      id="how-it-works"
-    >
+    <section className=" py-20 px-6" id="how-it-works">
       <div className="max-w-6xl mx-auto text-center">
         <h2
-          className="text-3xl md:text-4xl font-bold mb-4"
+          className="text-3xl text-[#ffffff] md:text-4xl font-bold mb-4"
           data-aos="fade-up"
           data-aos-duration="1000"
         >
           How It Works
         </h2>
-        <p
-          className="text-gray-400 mb-12"
-          data-aos="fade-up"
-          data-aos-delay="100"
-        >
+        <p className=" mb-12" data-aos="fade-up" data-aos-delay="100">
           Start investing in 5 easy steps
         </p>
 
@@ -60,14 +53,16 @@ const HowItWorksSection = () => {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="bg-[#1f2937] rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-xl transition duration-300"
+              className=" border border-divider rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-xl transition duration-300"
               data-aos="zoom-in"
               data-aos-delay={index * 150}
               data-aos-duration="800"
             >
               <div className="mb-4">{step.icon}</div>
-              <h3 className="text-lg font-semibold text-white">{step.title}</h3>
-              <p className="text-gray-400 text-sm mt-2">{step.description}</p>
+              <h3 className="text-lg font-semibold text-[#ffffff] ">
+                {step.title}
+              </h3>
+              <p className="text-sm mt-2">{step.description}</p>
             </div>
           ))}
         </div>

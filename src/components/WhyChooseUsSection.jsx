@@ -15,16 +15,14 @@ import {
 const features = [
   {
     icon: (
-      <FontAwesomeIcon icon={faHeadset} className="text-3xl text-yellow-400" />
+      <FontAwesomeIcon icon={faHeadset} className="text-3xl text-[#ffffff]" />
     ),
     title: "24/7 SUPPORT",
     description:
       "We provide an unbeatable 24/7 customer support service to ensure your experience is smooth.",
   },
   {
-    icon: (
-      <FontAwesomeIcon icon={faLock} className="text-3xl text-yellow-400" />
-    ),
+    icon: <FontAwesomeIcon icon={faLock} className="text-3xl text-[#ffffff]" />,
     title: "STRONG SECURITY",
     description:
       "We implemented extra security to make sure your funds and data are not lost or stolen by hackers.",
@@ -33,7 +31,7 @@ const features = [
     icon: (
       <FontAwesomeIcon
         icon={faMoneyBillWave}
-        className="text-3xl text-yellow-400"
+        className="text-3xl text-[#ffffff]"
       />
     ),
     title: "INSTANT WITHDRAW",
@@ -42,10 +40,7 @@ const features = [
   },
   {
     icon: (
-      <FontAwesomeIcon
-        icon={faPiggyBank}
-        className="text-3xl text-yellow-400"
-      />
+      <FontAwesomeIcon icon={faPiggyBank} className="text-3xl text-[#ffffff]" />
     ),
     title: "LUCRATIVE RETURNS",
     description:
@@ -53,10 +48,7 @@ const features = [
   },
   {
     icon: (
-      <FontAwesomeIcon
-        icon={faShieldAlt}
-        className="text-3xl text-yellow-400"
-      />
+      <FontAwesomeIcon icon={faShieldAlt} className="text-3xl text-[#ffffff]" />
     ),
     title: "REGULATED & INSURED",
     description:
@@ -66,7 +58,7 @@ const features = [
     icon: (
       <FontAwesomeIcon
         icon={faUserFriends}
-        className="text-3xl text-yellow-400"
+        className="text-3xl text-[#ffffff]"
       />
     ),
     title: "REFERRAL PROGRAM",
@@ -74,19 +66,14 @@ const features = [
       "Our rich referral commission system encourages the work of promoters, you can be part of the company.",
   },
   {
-    icon: (
-      <FontAwesomeIcon icon={faBook} className="text-3xl text-yellow-400" />
-    ),
+    icon: <FontAwesomeIcon icon={faBook} className="text-3xl text-[#ffffff]" />,
     title: "COMPREHENSIVE EDUCATION",
     description:
       "Our support section contains tutorials, mentorship, guides and various trading strategies.",
   },
   {
     icon: (
-      <FontAwesomeIcon
-        icon={faChartLine}
-        className="text-3xl text-yellow-400"
-      />
+      <FontAwesomeIcon icon={faChartLine} className="text-3xl text-[#ffffff]" />
     ),
     title: "TRADING ADVANTAGES",
     description:
@@ -96,10 +83,10 @@ const features = [
 
 const WhychooseUsSection = () => {
   return (
-    <section className="bg-[#111827] py-20 px-6 text-white text-center">
+    <section className=" py-20 px-6 text-center">
       {" "}
-      <h2 className="text-3xl font-bold mb-4">WHY US</h2>{" "}
-      <p className="max-w-2xl mx-auto mb-8 text-gray-400">
+      <h2 className="text-3xl font-bold mb-4 text-[#ffffff]">WHY US</h2>{" "}
+      <p className="max-w-2xl mx-auto mb-8">
         {" "}
         We have extensive experience in the field of cryptocurrencies, forex
         trading and the stock market. Our knowledge helps us earn money for our
@@ -110,15 +97,17 @@ const WhychooseUsSection = () => {
         {features.map((feature, index) => (
           <div
             key={index}
-            className="p-6 bg-[#1f2937] rounded-xl shadow-md hover:shadow-xl transition duration-300"
+            className="p-6 border border-divider rounded-xl shadow-md hover:shadow-xl transition duration-300"
           >
             <div className="mb-3 flex justify-center">{feature.icon}</div>
-            <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-            <p className="text-sm text-gray-400">{feature.description}</p>
+            <h3 className="text-xl font-semibold mb-2 text-[#ffffff]">
+              {feature.title}
+            </h3>
+            <p className="text-sm">{feature.description}</p>
           </div>
         ))}
       </div>
-      <div className="mt-10 text-yellow-500 font-bold text-lg">
+      <div className="mt-10 font-bold text-lg">
         <FontAwesomeIcon icon={faTrophy} className="mr-2" />
         BEST CRYPTO MINING ECN BROKER 2017
       </div>

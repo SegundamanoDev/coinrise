@@ -12,7 +12,7 @@ const plans = [
       { label: "5% commission", included: false },
       { label: "Capital Insurance: 1%", included: false },
     ],
-    buttonColor: "bg-yellow-500",
+    buttonColor: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
   },
   {
     title: "STANDARD",
@@ -25,7 +25,7 @@ const plans = [
       { label: "10% commission", included: true },
       { label: "Capital Insurance: 70%", included: true },
     ],
-    buttonColor: "bg-yellow-400",
+    buttonColor: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
   },
   {
     title: "PLATINUM",
@@ -38,7 +38,7 @@ const plans = [
       { label: "12% commission", included: true },
       { label: "Capital Insurance: 80%", included: true },
     ],
-    buttonColor: "bg-yellow-500",
+    buttonColor: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
   },
   {
     title: "DIAMOND",
@@ -51,28 +51,24 @@ const plans = [
       { label: "15% commission", included: true },
       { label: "Capital Insurance: 95%", included: true },
     ],
-    buttonColor: "bg-yellow-500",
+    buttonColor: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
   },
 ];
 
-const TradingPlans = () => {
+const TradingPlans = ({ heading }) => {
   return (
-    <section className="py-10 px-4 bg-[#111827] font-[Montserrat]">
-      <h2 className="text-2xl font-bold text-center mb-8 text-white">
-        TRADING PLANS
-      </h2>
+    <section className="py-10 px-4 font-[Montserrat]">
+      <h2 className="text-2xl font-bold text-center mb-8 text">{heading}</h2>
       <div className="flex flex-col gap-6 items-center max-w-3xl mx-auto">
         {plans.map((plan, idx) => (
           <div
             key={idx}
-            className="bg-[#1f2937] shadow-md rounded-xl p-6 w-full border"
+            className="shadow-md rounded-xl p-6 w-full border border-divider"
           >
-            <h3 className="text-center text-sm font-semibold uppercase mb-2 text-white">
+            <h3 className="text-center text-sm font-semibold uppercase mb-2">
               {plan.title}
             </h3>
-            <p className="text-3xl text-center text-white font-bold mb-4">
-              {plan.price}
-            </p>
+            <p className="text-3xl text-center font-bold mb-4">{plan.price}</p>
             <ul className="space-y-2 mb-4">
               {plan.features.map((feature, i) => (
                 <li key={i} className="flex items-center space-x-2">
