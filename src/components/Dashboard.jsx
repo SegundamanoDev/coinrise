@@ -285,8 +285,8 @@ import {
 import { Link } from "react-router-dom";
 import axios from "axios";
 import TradingViewChart from "./TradingViewChart";
-import TvWidget from "./TradingViewWidget.";
-import MarketOverview from "./MarketOverView";
+import AdvancedChart from "./AdChart";
+import ForexRates from "./FRate";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -441,24 +441,6 @@ const DashboardLayout = () => {
 
           <div className="pt-4 md:pt-8" />
 
-          {/* Account Type Banner */}
-          <div className="bg-[#1f2937] text-sm md:text-base text-gray-400 font-[Montserrat] p-4 mb-4 mx-4 md:mx-8 rounded-xl shadow border border-[#374151] flex items-center justify-between">
-            <div>
-              <span className="font-semibold text-yellow-400">
-                Account Type:{" "}
-              </span>
-              <span className="uppercase font-bold tracking-wide text-green-400">
-                {accountType}
-              </span>
-            </div>
-            <a
-              href="/settings"
-              className="text-blue-400 hover:underline text-sm"
-            >
-              Upgrade Account
-            </a>
-          </div>
-
           {/* TradingView Chart */}
           <div className="px-4 md:px-8 mb-3">
             <TradingViewChart />
@@ -469,23 +451,19 @@ const DashboardLayout = () => {
             {stats.map((card, index) => (
               <div
                 key={index}
-                className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]"
+                className=" p-5 rounded-xl shadow-lg border border-divider"
               >
-                <h3 className="text-lg font-semibold mb-2">{card.title}</h3>
-                <p className="text-3xl font-bold text-yellow-400">
-                  {card.value}
-                </p>
-                <span className="text-sm text-gray-400">{card.sub}</span>
+                <h2 className="text-lg font-semibold mb-2">{card.title}</h2>
+                <p className="text-3xl font-bold">{card.value}</p>
+                <p className="text-sm">{card.sub}</p>
               </div>
             ))}
 
             {/* Referral Code Card */}
-            <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]">
+            <div className=" p-5 rounded-xl shadow-lg border border-divider">
               <h3 className="text-lg font-semibold mb-2">Your Referral Code</h3>
               <div className="flex items-center justify-between">
-                <span className="text-yellow-400 font-mono">
-                  {referralCode}
-                </span>
+                <p className="text-yellow-400 font-mono">{referralCode}</p>
                 <button
                   onClick={() => navigator.clipboard.writeText(referralCode)}
                 >
@@ -497,10 +475,13 @@ const DashboardLayout = () => {
               </p>
             </div>
           </div>
-          <div>
-            <TvWidget />
-            <div className="mov">
-              <MarketOverview />
+          <div className="mb-5">
+            <div className="">
+              <AdvancedChart />
+            </div>
+
+            <div className="">
+              <ForexRates />
             </div>
           </div>
         </main>
@@ -512,9 +493,9 @@ const DashboardLayout = () => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="w-64 bg-[#1f2937] h-full p-6 shadow-lg">
+        <div className="w-64 h-full p-6 shadow-lg">
           <div
-            className="close flex justify-end text-gray-300"
+            className="close flex justify-end "
             onClick={() => setIsOpen(false)}
           >
             <X />

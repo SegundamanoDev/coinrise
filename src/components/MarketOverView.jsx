@@ -1,65 +1,52 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 
 const MarketOverview = () => {
-  const containerRef = useRef(null);
-
   useEffect(() => {
-    if (!containerRef.current) return;
-
     const script = document.createElement("script");
     script.src =
       "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
-    script.type = "text/javascript";
     script.async = true;
     script.innerHTML = JSON.stringify({
       colorTheme: "dark",
       dateRange: "12M",
       showChart: true,
       locale: "en",
-      largeChartUrl: "",
-      isTransparent: true,
       width: "100%",
-      height: 500,
+      height: "400",
+      largeChartUrl: "",
+      isTransparent: false,
       showSymbolLogo: true,
-      plotLineColorGrowing: "rgba(25, 118, 210, 1)",
-      plotLineColorFalling: "rgba(25, 118, 210, 1)",
-      gridLineColor: "rgba(42, 46, 57, 0)",
+      plotLineColorGrowing: "rgba(60, 188, 152, 1)",
+      plotLineColorFalling: "rgba(255, 74, 104, 1)",
+      gridLineColor: "rgba(240, 243, 250, 0)",
       scaleFontColor: "rgba(120, 123, 134, 1)",
-      belowLineFillColorGrowing: "rgba(33, 150, 243, 0.12)",
-      belowLineFillColorFalling: "rgba(33, 150, 243, 0.12)",
-      symbolActiveColor: "rgba(33, 150, 243, 0.12)",
+      belowLineFillColorGrowing: "rgba(60, 188, 152, 0.05)",
+      belowLineFillColorFalling: "rgba(255, 74, 104, 0.05)",
+      symbolActiveColor: "rgba(242, 250, 254, 1)",
       tabs: [
         {
           title: "Forex",
           symbols: [
             { s: "FX:EURUSD" },
-            { s: "FX:GBPUSD" },
             { s: "FX:USDJPY" },
-            { s: "FX:AUDUSD" },
+            { s: "FX:GBPUSD" },
+            { s: "FX:USDCHF" },
           ],
-          originalTitle: "Forex",
         },
         {
           title: "Crypto",
           symbols: [
-            { s: "BINANCE:BTCUSDT" },
-            { s: "BINANCE:ETHUSDT" },
-            { s: "BINANCE:LTCUSDT" },
+            { s: "BITSTAMP:BTCUSD" },
+            { s: "BITSTAMP:ETHUSD" },
+            { s: "BINANCE:BNBUSDT" },
           ],
-          originalTitle: "Crypto",
-        },
-        {
-          title: "Bonds",
-          symbols: [{ s: "CBOT:ZB1!" }, { s: "CBOT:UB1!" }],
-          originalTitle: "Bonds",
         },
       ],
     });
-
-    containerRef.current.appendChild(script);
+    document.getElementById("market-overview-container").appendChild(script);
   }, []);
 
-  return <div className="w-full max-w-full p-2" ref={containerRef}></div>;
+  return <div id="market-overview-container" className="w-full" />;
 };
 
 export default MarketOverview;

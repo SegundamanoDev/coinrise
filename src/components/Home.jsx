@@ -12,6 +12,9 @@ import CTACallToActionSection from "./CTACallToActionSection";
 import TrustSection from "./Trust";
 import EarningsPopup from "./EarningsPopup";
 import TestimonialSlider from "./UserTestimonialsSection";
+import MarketOverview from "./MarketOverView";
+import TechnicalAnalysis from "./TechnicalAnalysis";
+import ForexCrossRates from "./ForexCrossRates";
 
 const Home = () => {
   return (
@@ -20,11 +23,14 @@ const Home = () => {
       <CryptoTicker />
       <HeroSection />
       <TrustSection />
+      <MarketOverview />
       <HowItWorksSection />
       <WhyChooseUsSection />
+      <TechnicalAnalysis />
       <InvestmentPlansSection heading="TRADING PLANS" />
       <TestimonialSlider />
       <StatsCountersSection />
+      <ForexCrossRates />
       <FAQSection />
       <CTACallToActionSection />
       <EarningsPopup />
