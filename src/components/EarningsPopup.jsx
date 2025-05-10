@@ -31,7 +31,7 @@ const EarningsPopup = () => {
       <div className="flex items-center space-x-2">
         <span className="text-2xl">₿</span>
         <div>
-          <h2 className="font-bold">Transaction</h2>
+          <h2 className="font-bold">Transactions</h2>
           <p className="text-sm">
             {notification.name} from {notification.country} has just{" "}
             {notification.type}{" "}

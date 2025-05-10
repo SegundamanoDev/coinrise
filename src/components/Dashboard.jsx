@@ -411,7 +411,7 @@ const DashboardLayout = () => {
               <Settings size={20} /> Profile Settings
             </a>
             <a
-              href="/verified-account"
+              href="/verify-account"
               className="flex items-center gap-2 hover:text-[#ffffff]"
             >
               <ShieldCheck size={20} /> Verified Account
@@ -558,7 +558,7 @@ const DashboardLayout = () => {
               <span className="text-base">Profile Settings</span>
             </Link>
             <Link
-              to="/verified-account"
+              to="/verify-account"
               className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faCircleCheck} className="text-xl" />
