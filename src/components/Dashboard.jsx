@@ -477,11 +477,10 @@ const DashboardLayout = () => {
           </div>
           <div className="mb-5">
             <div className="">
-              <AdvancedChart />
-            </div>
-
-            <div className="">
               <ForexRates />
+            </div>
+            <div className="">
+              <AdvancedChart />
             </div>
           </div>
         </main>
