@@ -43,8 +43,8 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link className="hover:text-[#b3b3b3]" to="/mining-pool">
-              Mining-Pool
+            <Link className="hover:text-[#b3b3b3]" to="/affiliate">
+              Affiliate
             </Link>
           </li>
           <li>
@@ -127,11 +127,11 @@ export default function Navbar() {
           <li className="flex items-center space-x-2 py-2">
             <FontAwesomeIcon icon={faServer} />
             <Link
-              to="/mining-pool"
+              to="/affiliate"
               onClick={closeMenu}
               className="hover:text-[#b3b3b3]"
             >
-              Mining-Pool
+              Affiliate
             </Link>
           </li>
           <li className="flex items-center space-x-2 py-2">

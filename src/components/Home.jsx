@@ -1,7 +1,6 @@
 import React from "react";
 import Navbar from "./Navbar";
 import CryptoTicker from "./CryptoTicker";
-import Footer from "./Footer";
 import HeroSection from "./HeroSection";
 import HowItWorksSection from "./HowItWorksSection";
 import WhyChooseUsSection from "./WhyChooseUsSection";
@@ -32,12 +31,10 @@ const Home = () => {
       <TestimonialSlider />
       <StatsCountersSection />
       <ForexCrossRates />
-
       <FAQSection />
       <CertificateSection />
       <CTACallToActionSection />
       <EarningsPopup />
-      <Footer />
     </>
   );
 };

@@ -40,8 +40,9 @@ import UpgradeAccount from "./components/UpgradeAccount";
 import DepositHistory from "./components/DepositHistory";
 import KYCVerificationForm from "./components/KYCVerificationForm ";
 import WithdrawPin from "./components/WithdrawPin";
+import AffiliateProgram from "./components/AffiliateProgram";
+import Footer from "./components/Footer";
 
-// Custom wrapper to check route
 const AppRoutes = () => {
   useEffect(() => {
     AOS.init({ once: true });
@@ -52,7 +53,6 @@ const AppRoutes = () => {
   const [showRoutes, setShowRoutes] = useState(false);
 
   useLayoutEffect(() => {
-    // Before render: hide routes and show loader
     setShowRoutes(false);
     setLoading(true);
   }, [location]);
@@ -67,6 +67,7 @@ const AppRoutes = () => {
 
   const hideSupportBar = ["/sign-in", "/sign-up"].includes(location.pathname);
   const hidewhatsapp = ["/sign-in", "/sign-up"].includes(location.pathname);
+  const footer = ["/sign-in", "/sign-up"].includes(location.pathname);
 
   return (
     <>
@@ -95,6 +96,7 @@ const AppRoutes = () => {
             path="/invest/confirm/:planId"
             element={<ConfirmInvestment />}
           />
+          <Route path="/affiliate" element={<AffiliateProgram />} />
 
           {/* Admin */}
           <Route path="/admin" element={<AdminDashboard />} />
@@ -112,9 +114,9 @@ const AppRoutes = () => {
         </Routes>
       )}
 
-      {/* Only show support on allowed pages */}
       {!hideSupportBar && <StickySupportBar />}
       {!hidewhatsapp && <Whatsapp />}
+      {!footer && <Footer />}
     </>
   );
 };

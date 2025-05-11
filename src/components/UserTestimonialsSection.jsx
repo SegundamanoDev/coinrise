@@ -195,30 +195,28 @@ export default function TestimonialSlider() {
   }, []);
 
   return (
-    <div className="bg-black text-white py-16 px-4 md:px-10">
+    <div className="bg-black text-white py-16 px-4 md:px-10 overflow-x-hidden">
       <h2 className="text-3xl font-bold text-center mb-12">
         What Our Traders Say
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-screen-xl mx-auto">
         {/* Testimonials Slider */}
         <div
           data-aos="fade-right"
           data-aos-delay="200"
           data-aos-duration="1000"
+          className="w-full"
         >
           <Swiper
             spaceBetween={20}
             slidesPerView={1}
             pagination={{ clickable: true }}
             modules={[Pagination]}
-            breakpoints={{
-              768: { slidesPerView: 1 },
-              1024: { slidesPerView: 1 },
-            }}
+            className="w-full"
           >
             {testimonials.map((user, index) => (
-              <SwiperSlide key={index}>
+              <SwiperSlide key={index} className="!w-full">
                 <div className="border border-gray-700 rounded-xl shadow-lg p-6 text-center bg-[#111]">
                   <img
                     src={user.image}
@@ -242,7 +240,7 @@ export default function TestimonialSlider() {
           data-aos="fade-left"
           data-aos-delay="400"
           data-aos-duration="1000"
-          className="bg-[#111] rounded-xl p-8 shadow-lg"
+          className="bg-[#111] rounded-xl p-8 shadow-lg w-full"
         >
           <h3 className="text-2xl font-semibold mb-6 text-white">
             Send Us Your Feedback
