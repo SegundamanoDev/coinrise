@@ -451,16 +451,18 @@ const DashboardLayout = () => {
             {stats.map((card, index) => (
               <div
                 key={index}
-                className=" p-5 rounded-xl shadow-lg border border-divider"
+                className=" p-5 rounded-xl shadow-lg bg-[#121212]"
               >
-                <h2 className="text-lg font-semibold mb-2">{card.title}</h2>
+                <h3 className="text-lg bg-gradient-to-r from-[#00befe] to-[#a700ff] bg-clip-text text-transparent font-bold mb-2">
+                  {card.title}
+                </h3>
                 <p className="text-3xl font-bold">{card.value}</p>
-                <p className="text-sm">{card.sub}</p>
+                <p className="text-sm mt-1">{card.sub}</p>
               </div>
             ))}
 
             {/* Referral Code Card */}
-            <div className=" p-5 rounded-xl shadow-lg border border-divider">
+            <div className=" p-5 rounded-xl shadow-lg bg-gradient-to-r from-[#00befe] to-[#a700ff] bg-clip-text text-transparent ">
               <h3 className="text-lg font-semibold mb-2">Your Referral Code</h3>
               <div className="flex items-center justify-between">
                 <p className="text-[#ffffff] font-mono">{referralCode}</p>

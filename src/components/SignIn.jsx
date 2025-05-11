@@ -87,7 +87,10 @@ const SignIn = () => {
         </button>
         <p className="text-sm text-center mt-2 text-gray-600">
           Don't have an account?{" "}
-          <a href="/sign-up" className="text-yellow-600 font-medium">
+          <a
+            href="/sign-up"
+            className="bg-gradient-to-r from-[#00befe] to-[#a700ff] bg-clip-text text-transparent font-medium"
+          >
             Sign Up
           </a>
         </p>

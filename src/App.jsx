@@ -62,7 +62,7 @@ const AppRoutes = () => {
     const timer = setTimeout(() => {
       setLoading(false);
       setShowRoutes(true);
-    }, 3000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, [location]);
 
