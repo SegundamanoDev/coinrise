@@ -1,11 +1,9 @@
 import React from "react";
-import certi from "../assets/certificate.png";
-import certii from "../assets/certificatei.png";
-import certiii from "../assets/certificateii.png";
+
 const Certificate = () => {
   return (
-    <div className="p-5">
-      <p className="mb-5">
+    <div className="px-15">
+      <p className="mb-10">
         REGULATION AND SAFETY OF FUNDS is a regulated broker so trading with us
         is absolutely safe. Where is registered and regulated? Registered by the
         Company House, The Registrar of Companies for England and Wales as a
@@ -19,13 +17,13 @@ const Certificate = () => {
         under section 14 of the Financial Services Act since 11th August 2000
       </p>
       <div className="w-full h-auto object-cover mb-5">
-        <img className="w-full" src={certi} alt="certi" />
+        <img className="w-full" src="/certificate.png" alt="certificate" />
       </div>
       <div className="w-full h-auto object-cover mb-5">
-        <img className="w-full" src={certii} alt="certi" />
+        <img className="w-full" src="/certificatei.png" alt="certi" />
       </div>
       <div className="w-full h-auto object-cover mb-5">
-        <img className="w-full" src={certiii} alt="certi" />
+        <img className="w-full" src="/certificateii.png" alt="certi" />
       </div>
     </div>
   );
