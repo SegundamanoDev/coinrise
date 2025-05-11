@@ -1,7 +1,11 @@
+import { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 const testimonials = [
   {
     name: "John Doe",
@@ -10,7 +14,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1506748686213-1e8e99c9f6d7?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8MXx8cGVyZmVjdCUyMHN0b2NrdHxlbnwwfDB8fHwyfDE",
     feedback:
-      "TrustVest Fx provided me with excellent trading tools and guidance. My investments have seen great growth!",
+      "It was my first time investing in crypto and forex I was a bit scared but thanks to the good customer support who helped me understood everything perfectly. I just got my payout today and I am very happy not only will I continue investing but I will refer my friends. Thank you .",
   },
   {
     name: "Emily Clark",
@@ -19,7 +23,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1594851328428-c7b0cce72b7e?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8NXx8Y2VsZmljfGVufDB8fHx8fDE",
     feedback:
-      "I've been using TrustVest Fx for a few months, and the platform is easy to use and reliable. Highly recommend!",
+      "I have been trading in forex for 3 years in all my years of experience I have never found any platform like that makes it very simple and easy for everyone to join the wagon I totally recommend to anyone out there looking for a way to make passive income",
   },
   {
     name: "Michael Smith",
@@ -28,7 +32,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1569732199-6a7046d5994a?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8cGVyZmVjdCUyMG1lbnxlbnwwfDB8fHwyfDE",
     feedback:
-      "The customer service at TrustVest Fx is top-notch. I always feel supported, and my investments are doing well.",
+      " I never believed in online investment as a friend of mine was scammed off a thousand dollars investing with bitdouble scam platform. but then I was convinced to give a trial here, and to my greatest surprise, I got my payouts with no stress. Thank you for your openness! ",
   },
   {
     name: "Sophia Johnson",
@@ -37,7 +41,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1512561251284-d017568dc5c7?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8NHx8cGVyZmVjdCUyMGZlbWFsZSUyMHdhbGx8ZW58fDB8fHx8fDE",
     feedback:
-      "I had a fantastic experience with TrustVest Fx. They helped me grow my portfolio significantly in just a few months!",
+      " I let do my trading for me because they know what they are doing and the returns are great. I just walk to the bank with a big smile across my face every Friday. deserve my full endorsement",
   },
   {
     name: "Lucas White",
@@ -46,7 +50,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1606287653512-ef55a8285d65?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OXx8bWVufGVufDB8fHx8fDE",
     feedback:
-      "The trading experience with TrustVest Fx is smooth, and the platform provides great tools to maximize profits.",
+      " Overall one of the easiest to use, I recommend to anyone. Awesome broker, Great withdrawals, the Customer Support is 2nd to none! Fair, Caring, Knowledgable, and Quick to respond. Been here about a year, and support staff is patient and respectful... Love these guys!",
   },
   {
     name: "Olivia Brown",
@@ -55,7 +59,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1516835031164-d51e77dbff8e?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OHx8cGVyZmVjdCUyMGdyb3dlfGVufDB8fHx8fDE",
     feedback:
-      "TrustVest Fx is great for beginners. The tutorials and tips have helped me a lot in my trading journey.",
+      " I am having the best experience using . I like the concept behind the investments. The only broker that help you to trade and earn money, I would recommend this platform for beginners.",
   },
   {
     name: "Ethan Wilson",
@@ -64,7 +68,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1491295152030-3be5be945c73?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8OXx8Y2VydC1lbnRlcnByZXllfGVufDB8fHx8fDE",
     feedback:
-      "I’ve traded with several platforms, but TrustVest Fx stands out for its transparency and support.",
+      " has very friendly user-interface, which helps to see you trade progress, open/close trades all at one go. The copy feature when used can add to generous passive income. I would recommend BTC to all",
   },
   {
     name: "Ava Taylor",
@@ -100,7 +104,7 @@ const testimonials = [
     image:
       "https://images.unsplash.com/photo-1518711770430-87bb1a7f4f5f?crop=entropy&cs=tinysrgb&fit=max&ixid=MnwzNjUyOXwwfDF8c2VhY2h8Mnx8Y2VydC1lbnRlcnByZXllfGVufDB8fHx8fDE",
     feedback:
-      "TrustVest Fx has made trading accessible for me. I’m seeing steady gains, and the platform is reliable.",
+      " Hello friends, is the only broker that i can trust....best support team ever",
   },
   {
     name: "Mia Robinson",
@@ -186,41 +190,94 @@ const testimonials = [
 ];
 
 export default function TestimonialSlider() {
+  useEffect(() => {
+    AOS.init({ once: true });
+  }, []);
+
   return (
-    <div className=" py-10 px-4 md:px-10">
-      <h2 className="text-3xl font-bold text-center mb-8">
+    <div className="bg-black text-white py-16 px-4 md:px-10">
+      <h2 className="text-3xl font-bold text-center mb-12">
         What Our Traders Say
       </h2>
-      <Swiper
-        spaceBetween={20}
-        slidesPerView={1}
-        pagination={{ clickable: true }}
-        modules={[Pagination]}
-        breakpoints={{
-          768: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 },
-        }}
-      >
-        {testimonials.map((user, index) => (
-          <SwiperSlide key={index}>
-            <div className=" border border-divider rounded-xl shadow-md p-5 text-center">
-              <img
-                src={user.image}
-                alt={user.name}
-                className="w-20 h-20 rounded-full mx-auto mb-4"
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Testimonials Slider */}
+        <div
+          data-aos="fade-right"
+          data-aos-delay="200"
+          data-aos-duration="1000"
+        >
+          <Swiper
+            spaceBetween={20}
+            slidesPerView={1}
+            pagination={{ clickable: true }}
+            modules={[Pagination]}
+            breakpoints={{
+              768: { slidesPerView: 1 },
+              1024: { slidesPerView: 1 },
+            }}
+          >
+            {testimonials.map((user, index) => (
+              <SwiperSlide key={index}>
+                <div className="border border-gray-700 rounded-xl shadow-lg p-6 text-center bg-[#111]">
+                  <img
+                    src={user.image}
+                    alt={user.name}
+                    className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+                  />
+                  <span className="text-lg font-semibold">{user.name}</span>
+                  <div className="flex justify-center items-center space-x-2 my-1">
+                    <span className="text-xl">{user.flag}</span>
+                    <span className="text-sm">{user.country}</span>
+                  </div>
+                  <p className="text-sm mt-3 text-gray-300">{user.feedback}</p>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        {/* Contact / Feedback Form */}
+        <div
+          data-aos="fade-left"
+          data-aos-delay="400"
+          data-aos-duration="1000"
+          className="bg-[#111] rounded-xl p-8 shadow-lg"
+        >
+          <h3 className="text-2xl font-semibold mb-6 text-white">
+            Send Us Your Feedback
+          </h3>
+          <form className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium mb-1">Name</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 bg-black border border-gray-700 rounded-md text-white focus:outline-none focus:border-white"
               />
-              <span className="text-lg font-semibold text-[#ffffff]">
-                {user.name}
-              </span>
-              <div className="flex justify-center items-center space-x-2 my-1">
-                <img src={user.flag} alt={user.country} className="w-5 h-5" />
-                <span className="text-sm">{user.country}</span>
-              </div>
-              <p className="text-sm mt-3">{user.feedback}</p>
             </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                className="w-full px-4 py-2 bg-black border border-gray-700 rounded-md text-white focus:outline-none focus:border-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Message</label>
+              <textarea
+                rows={4}
+                className="w-full px-4 py-2 bg-black border border-gray-700 rounded-md text-white focus:outline-none focus:border-white"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-white text-black font-semibold px-6 py-2 rounded-md hover:bg-gray-300 transition-colors"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

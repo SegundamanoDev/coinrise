@@ -1,75 +1,99 @@
-import { Globe } from "lucide-react";
-import React from "react";
-import GoogleTranslate from "./GoogleTranslate";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faMapMarkerAlt,
+  faEnvelope,
+  faLock,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faFacebookF,
+  faTwitter,
+  faInstagram,
+} from "@fortawesome/free-brands-svg-icons";
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-white px-6 md:py-10 py-7">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="bg-black text-white py-10 px-6 md:px-20 text-sm">
+      <div className="grid md:grid-cols-3 gap-10">
+        {/* CONTACT US */}
         <div>
-          <h2 className="text-2xl font-bold mb-4 ">TrustVestFx</h2>
-          <span className="text-sm text-[#ffffff]">
-            123 TrustVestFx Avenue, Silicon Valley, CA, USA
-          </span>
-          <span className="text-sm text-[#ffffff] mt-2">
-            &cospany; 2025 TrustVestFx. All rights reserved.
-          </span>
+          <h3 className="text-lg font-bold mb-4">CONTACT US</h3>
+          <p className="flex items-start gap-2">
+            <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1" />1
+            Trustvest Road, Austin, Texas 78725, United State of America.
+          </p>
+          <p className="flex items-center gap-2 mt-3">
+            <FontAwesomeIcon icon={faEnvelope} />
+            info@trustvestfx.com
+          </p>
+          <p className="flex items-center gap-2 mt-2">
+            <FontAwesomeIcon icon={faEnvelope} />
+            info@trustvestfx.com
+          </p>
         </div>
 
+        {/* LINKS */}
         <div>
-          <h2 className="text-xl font-semibold mb-4 ">Useful Links</h2>
-          <ul className="space-y-2 text-sm">
+          <h3 className="text-lg font-bold mb-4">LINKS</h3>
+          <ul className="space-y-2">
             <li>
-              <a href="/" className="hover:underline">
-                Home
+              <a href="#" className="hover:underline">
+                Buy crypto
               </a>
             </li>
             <li>
-              <a href="/about" className="hover:underline">
-                About
-              </a>
-            </li>
-            <li>
-              <a href="/contact" className="hover:underline">
-                Contact Us
-              </a>
-            </li>
-            <li>
-              <a href="/faq" className="hover:underline">
+              <a href="#" className="hover:underline">
                 FAQ
               </a>
             </li>
             <li>
-              <a href="/aml-policy" className="hover:underline">
-                AML Policy
-              </a>
-            </li>
-            <li>
-              <a href="/terms-conditions" className="hover:underline">
+              <a href="#" className="hover:underline">
                 Terms & Conditions
               </a>
             </li>
             <li>
-              <a href="/privacy-policy" className="hover:underline">
-                Privacy & Policy
+              <a href="#" className="hover:underline">
+                Privacy Policy
               </a>
             </li>
             <li>
-              <a href="/payment-policy" className="hover:underline">
-                Payment Policy
+              <a href="#" className="hover:underline">
+                Conflict Handling Policy
               </a>
             </li>
           </ul>
         </div>
 
-        {/* Column 3 - Language */}
-        <div className="flex flex-col items-start gap-4">
-          <h2 className="text-xl font-semibold ">Language</h2>
-          <div className="flex items-center gap-2">
-            <Globe />
-            <GoogleTranslate />
+        {/* SOCIAL MEDIA */}
+        <div>
+          <h3 className="text-lg font-bold mb-4">SOCIAL MEDIA</h3>
+          <div className="flex space-x-4 mb-4">
+            <a href="#" className="hover:text-yellow-500">
+              <FontAwesomeIcon icon={faFacebookF} />
+            </a>
+            <a href="#" className="hover:text-yellow-500">
+              <FontAwesomeIcon icon={faTwitter} />
+            </a>
+            <a href="#" className="hover:text-yellow-500">
+              <FontAwesomeIcon icon={faInstagram} />
+            </a>
           </div>
+          <p className="flex items-center gap-2">
+            <FontAwesomeIcon icon={faLock} className="text-yellow-500" />
+            SSL Encryption
+          </p>
         </div>
+      </div>
+
+      {/* FOOTER BOTTOM */}
+      <div className="border-t border-gray-700 mt-10 pt-4 text-xs text-center">
+        <p>
+          All materials and services provided on this site are subject to
+          copyright and belong to "Trustvest Limited".
+          <br />
+          Any use of materials must be approved by an official representative.
+          In case of violation, they will be prosecuted.
+        </p>
+        <p className="mt-3">Copyright© 2025 - All Rights Reserved</p>
       </div>
     </footer>
   );

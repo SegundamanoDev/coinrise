@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const KYCVerificationForm = () => {
   const [formData, setFormData] = useState({
-    fullName: "Alex Vega",
+    fullName: "",
     dateOfBirth: "",
     houseAddress: "",
     phoneNumber: "",

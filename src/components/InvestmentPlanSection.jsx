@@ -1,5 +1,7 @@
 import { Check, X } from "lucide-react";
-
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { useEffect } from "react";
 const plans = [
   {
     title: "BASIC",
@@ -56,14 +58,23 @@ const plans = [
 ];
 
 const TradingPlans = ({ heading }) => {
+  useEffect(() => {
+    AOS.init({ once: true });
+  }, []);
+
   return (
-    <section className="py-5 px-4 font-[Montserrat]">
-      <h2 className="text-2xl font-bold text-center mb-8 text">{heading}</h2>
-      <div className="flex flex-col gap-6 items-center max-w-3xl mx-auto">
+    <section className="py-10 px-4 font-[Montserrat] bg-black text-white">
+      <h2 className="text-3xl font-bold text-center mb-10">{heading}</h2>
+
+      {/* Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {plans.map((plan, idx) => (
           <div
             key={idx}
-            className="shadow-md rounded-xl p-6 w-full border border-divider"
+            data-aos="fade-up"
+            data-aos-delay={idx * 100}
+            data-aos-duration="800"
+            className="shadow-lg rounded-xl p-6 border border-gray-700 bg-[#111]"
           >
             <h3 className="text-center text-sm font-semibold uppercase mb-2">
               {plan.title}
@@ -73,9 +84,9 @@ const TradingPlans = ({ heading }) => {
               {plan.features.map((feature, i) => (
                 <li key={i} className="flex items-center space-x-2">
                   {feature.included ? (
-                    <Check className="text-green-600 w-5 h-5" />
+                    <Check className="text-green-500 w-5 h-5" />
                   ) : (
-                    <X className="text-gray-400 w-5 h-5" />
+                    <X className="text-gray-500 w-5 h-5" />
                   )}
                   <span
                     className={`${

@@ -15,7 +15,6 @@ import Settings from "./components/Settings";
 import Withdraw from "./components/Withdraw";
 import ConfirmInvestment from "./components/ConfirmInvest";
 import SuccessModal from "./components/SuccMsg";
-import ViewInvestment from "./components/ViewInvestment";
 import ActivityOverview from "./components/ActivityOverview";
 import StickySupportBar from "./components/SupportChat";
 import AOS from "aos";
@@ -90,7 +89,6 @@ const AppRoutes = () => {
           <Route path="/settings" element={<Settings />} />
           <Route path="/withdraw" element={<Withdraw />} />
           <Route path="/withdrawal-pin" element={<WithdrawPin />} />
-          <Route path="/view-investment" element={<ViewInvestment />} />
           <Route path="/activity-overview" element={<ActivityOverview />} />
           <Route path="/verify-account" element={<KYCVerificationForm />} />
           <Route
