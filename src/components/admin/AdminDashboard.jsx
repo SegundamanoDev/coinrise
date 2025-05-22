@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminDashboard } from "../../features/admin/adminSlice";
 import AdminLayout from "./AdminLayout";
@@ -19,11 +19,46 @@ const AdminDashboard = () => {
     (state) => state.admin
   );
 
+  const [investmentFilter, setInvestmentFilter] = useState("all");
+
   useEffect(() => {
     dispatch(fetchAdminDashboard());
   }, [dispatch]);
 
-  const statCards = [
+  const filteredInvestmentStats = () => {
+    if (!stats.investments) return [];
+
+    const all = stats.investments;
+    const filtered =
+      investmentFilter === "active"
+        ? all.filter((inv) => inv.status === "active")
+        : investmentFilter === "completed"
+        ? all.filter((inv) => inv.status === "completed")
+        : all;
+
+    const totalVolume = filtered.reduce((sum, inv) => sum + inv.amount, 0);
+    const avgROI =
+      filtered.length > 0
+        ? (
+            filtered.reduce((sum, inv) => sum + inv.roi, 0) / filtered.length
+          ).toFixed(2)
+        : 0;
+
+    return [
+      {
+        title: "Investment Volume",
+        value: `$${totalVolume.toLocaleString()}`,
+        sub: `Total invested (${investmentFilter})`,
+      },
+      {
+        title: "Average ROI",
+        value: `${avgROI}%`,
+        sub: `Across ${filtered.length} plans`,
+      },
+    ];
+  };
+
+  const baseStatCards = [
     {
       title: "Total Users",
       value: stats.totalUsers,
@@ -49,11 +84,6 @@ const AdminDashboard = () => {
       value: `$${stats.referralBonuses?.toLocaleString()}`,
       sub: "Across all accounts",
     },
-    {
-      title: "System Wallet Balance",
-      value: `$${stats.systemWallet?.toLocaleString()}`,
-      sub: "Operational balance",
-    },
   ];
 
   return (
@@ -71,17 +101,39 @@ const AdminDashboard = () => {
           <>
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-              {statCards.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]"
+              {[...baseStatCards, ...filteredInvestmentStats()].map(
+                (item, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151]"
+                  >
+                    <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                    <p className="text-3xl font-bold text-yellow-400">
+                      {item.value}
+                    </p>
+                    <span className="text-sm text-gray-400">{item.sub}</span>
+                  </div>
+                )
+              )}
+            </div>
+
+            {/* Investment Filter */}
+            <div className="mb-6 flex flex-wrap gap-3">
+              <span className="text-white font-semibold">
+                Filter investments:
+              </span>
+              {["all", "active", "completed"].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setInvestmentFilter(status)}
+                  className={`px-4 py-1 rounded-full text-sm ${
+                    investmentFilter === status
+                      ? "bg-yellow-400 text-black"
+                      : "bg-gray-700 text-gray-200"
+                  }`}
                 >
-                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                  <p className="text-3xl font-bold text-yellow-400">
-                    {item.value}
-                  </p>
-                  <span className="text-sm text-gray-400">{item.sub}</span>
-                </div>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </button>
               ))}
             </div>
 
@@ -90,7 +142,7 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold mb-4 text-white">
                 Weekly Overview
               </h3>
-              {charts && charts.data && charts.data.length > 0 ? (
+              {charts?.data?.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={charts.data}>
                     <CartesianGrid stroke="#374151" />
@@ -131,7 +183,7 @@ const AdminDashboard = () => {
                   <span className="text-green-400">
                     ${snapshot.lastDeposit?.amount || "N/A"}
                   </span>{" "}
-                  from user {snapshot.lastDeposit?.userId || "N/A"}
+                  from user {snapshot.lastDeposit?.fullName || "N/A"}
                 </li>
                 <li>
                   Last withdrawal:{" "}
@@ -143,7 +195,7 @@ const AdminDashboard = () => {
               </ul>
             </div>
 
-            {/* Recent Logs Table */}
+            {/* Recent Logs */}
             <div className="bg-[#1f2937] p-5 rounded-xl border border-[#374151]">
               <h3 className="text-lg font-semibold mb-4 text-white">
                 Recent Activity Logs

@@ -9,7 +9,6 @@ import MiningPoolPage from "./components/MiningPool";
 import DashboardLayout from "./components/Dashboard";
 import Transactions from "./components/Transaction";
 import Deposit from "./components/Deposit";
-import Invest from "./components/Invest";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
 import Withdraw from "./components/Withdraw";
@@ -21,10 +20,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import Users from "./components/admin/User";
-import Investments from "./components/admin/Investment";
 import AdminTransactions from "./components/admin/Transaction";
-import Referrals from "./components/admin/Referral";
-import Logs from "./components/admin/Log";
 import Setting from "./components/admin/Settings";
 import ScrollToTop from "react-scroll-to-top";
 import ScrollToTops from "./components/ScrollToTop";
@@ -42,6 +38,12 @@ import KYCVerificationForm from "./components/KYCVerificationForm ";
 import WithdrawPin from "./components/WithdrawPin";
 import AffiliateProgram from "./components/AffiliateProgram";
 import Footer from "./components/Footer";
+
+// Import ToastContainer and toast styles
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import InvestmentPlans from "./components/CreateInvestmentPlan";
+import AdminInvestmentsDashboard from "./components/admin/Investment";
 
 const AppRoutes = () => {
   useEffect(() => {
@@ -84,7 +86,7 @@ const AppRoutes = () => {
           <Route path="/transaction-history" element={<Transactions />} />
           <Route path="/deposit" element={<Deposit />} />
           <Route path="/deposit-history" element={<DepositHistory />} />
-          <Route path="/invest" element={<Invest />} />
+          <Route path="/create-investmentplan" element={<InvestmentPlans />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/confirm-success" element={<SuccessModal />} />
           <Route path="/settings" element={<Settings />} />
@@ -102,10 +104,11 @@ const AppRoutes = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<Users />} />
           <Route path="/admin/users/:id" element={<Users />} />
-          <Route path="/admin/investments" element={<Investments />} />
+          <Route
+            path="/admin/investments"
+            element={<AdminInvestmentsDashboard />}
+          />
           <Route path="/admin/transactions" element={<AdminTransactions />} />
-          <Route path="/admin/referrals" element={<Referrals />} />
-          <Route path="/admin/logs" element={<Logs />} />
           <Route path="/admin/settings" element={<Setting />} />
           <Route path="/terms-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -117,6 +120,18 @@ const AppRoutes = () => {
       {!hideSupportBar && <StickySupportBar />}
       {!hidewhatsapp && <Whatsapp />}
       {!footer && <Footer />}
+
+      {/* Toast notifications container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </>
   );
 };

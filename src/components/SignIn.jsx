@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import AuthFormWrapper from "./AuthFormWrapper";
 import { signinUser } from "../features/users/authSlice";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +25,15 @@ const SignIn = () => {
     }
   }, [token, navigate]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (statusMessage) {
+      toast.success(statusMessage);
+    }
+  }, [error, statusMessage]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -40,11 +50,6 @@ const SignIn = () => {
   return (
     <AuthFormWrapper title="Welcome Back">
       <form onSubmit={handleSubmit} className="space-y-5">
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        {statusMessage && (
-          <p className="text-green-500 text-center">{statusMessage}</p>
-        )}
-
         <div className="relative">
           <Mail className="absolute left-3 top-3 text-gray-400" />
           <input
@@ -85,6 +90,7 @@ const SignIn = () => {
         >
           {loading ? "Signing In..." : "Sign In"}
         </button>
+
         <p className="text-sm text-center mt-2 text-gray-600">
           Don't have an account?{" "}
           <a

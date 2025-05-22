@@ -283,16 +283,23 @@ import {
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
-import axios from "axios";
 import TradingViewChart from "./TradingViewChart";
 import AdvancedChart from "./AdChart";
 import ForexRates from "./FRate";
 import Loader from "./LoadingSpinner";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDashboardData } from "../features/dashboard/dashboard";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector((state) => state.dashboard);
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(fetchDashboardData());
+  }, [dispatch]);
 
   const formatMoney = (value, currency = "USD") =>
     value?.toLocaleString("en-US", {
@@ -300,20 +307,6 @@ const DashboardLayout = () => {
       currency,
       minimumFractionDigits: 2,
     }) || "0.00";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get("/api/users/dashboard");
-        setData(res.data);
-      } catch (err) {
-        console.error("Failed to load dashboard data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
 
   const stats = [
     {
@@ -333,22 +326,18 @@ const DashboardLayout = () => {
     },
     {
       title: "Referral Earnings",
-      value: formatMoney(data?.referralBonus, data?.currency),
+      value: formatMoney(data?.referralEarnings, data?.currency),
       sub: "Referral commissions",
     },
     {
       title: "Pending Withdrawals",
-      value: formatMoney(data?.totalPendingWithdrawals, data?.currency),
+      value: formatMoney(data?.pendingWithdrawals, data?.currency),
       sub: "Awaiting approval",
     },
   ];
 
-  if (loading)
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
+  if (loading) return <Loader />;
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   const referralCode = data?.referralCode || "N/A";
 
@@ -429,7 +418,9 @@ const DashboardLayout = () => {
         <main className="flex-1 overflow-y-auto bg-[#0d1117] min-h-screen">
           {/* Mobile Header */}
           <div className="md:hidden fixed w-full top-0 z-40 bg-[#0d1117] py-5 px-4 shadow-md flex justify-between items-center mb-6">
-            <h1 className="text-lg font-semibold">Welcome back!</h1>
+            <h1 className="text-lg font-semibold">
+              Welcome back, {user?.fullName}!
+            </h1>
             <button
               onClick={() => setIsOpen(true)}
               className="p-2 rounded-md hover:bg-[#1f2937] transition mx-2"

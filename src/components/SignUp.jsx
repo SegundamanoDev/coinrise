@@ -14,50 +14,36 @@ const SignUp = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
-    referralCode: "",
+    referredBy: "", // <-- Changed this from "referralCode"
     agreeTerms: false,
     ageConfirmed: false,
+    country: "",
+    currency: "",
   });
-
-  const [country, setCountry] = useState(null);
-  const [phone, setPhone] = useState(null);
-  const [currency, setCurrency] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]:
         type === "checkbox" ? checked : type === "file" ? files[0] : value,
-    });
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.agreeTerms) {
-      alert("You must agree to the Terms & Conditions");
-      return;
-    }
-    if (!formData.ageConfirmed) {
-      alert("You must be at least 18 years old");
-      return;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
 
-    const payload = {
-      ...formData,
-      country,
-      phone,
-      currency,
-    };
+    if (!formData.agreeTerms)
+      return alert("You must agree to the Terms & Conditions");
+    if (!formData.ageConfirmed)
+      return alert("You must be at least 18 years old");
+    if (formData.password !== formData.confirmPassword)
+      return alert("Passwords do not match");
 
-    dispatch(signupUser(payload));
-    console.log(payload);
+    dispatch(signupUser(formData));
   };
 
   return (
@@ -76,6 +62,7 @@ const SignUp = () => {
           name="fullName"
           type="text"
           placeholder="Full Name"
+          value={formData.fullName}
           onChange={handleChange}
           required
           className="w-full p-2 border border-divider rounded"
@@ -84,20 +71,22 @@ const SignUp = () => {
           name="email"
           type="email"
           placeholder="Email Address"
+          value={formData.email}
           onChange={handleChange}
           required
           className="w-full p-2 border border-divider rounded"
         />
         <PhoneInput
           placeholder="Enter phone number"
-          value={phone}
-          onChange={setPhone}
+          value={formData.phone}
+          onChange={(phone) => setFormData((prev) => ({ ...prev, phone }))}
           defaultCountry="US"
         />
         <input
           name="password"
           type="password"
           placeholder="Password"
+          value={formData.password}
           onChange={handleChange}
           required
           className="w-full p-2 border border-divider rounded"
@@ -106,20 +95,23 @@ const SignUp = () => {
           name="confirmPassword"
           type="password"
           placeholder="Confirm Password"
+          value={formData.confirmPassword}
           onChange={handleChange}
           required
           className="w-full p-2 border border-divider rounded"
         />
         <input
-          name="referralCode"
+          name="referredBy"
           type="text"
           placeholder="Referral Code (Optional)"
+          value={formData.referredBy}
           onChange={handleChange}
           className="w-full p-2 border border-divider rounded"
         />
+
         <ReactFlagsSelect
-          selected={country}
-          onSelect={(code) => setCountry(code)}
+          selected={formData.country}
+          onSelect={(country) => setFormData((prev) => ({ ...prev, country }))}
           placeholder="Select country"
           searchable
           searchPlaceholder="Search countries"
@@ -127,8 +119,9 @@ const SignUp = () => {
 
         <select
           className="w-full p-2 border border-divider rounded"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
+          name="currency"
+          value={formData.currency}
+          onChange={handleChange}
           required
         >
           <option value="">Select Currency</option>
@@ -149,6 +142,7 @@ const SignUp = () => {
           />
           <span>I agree to the Terms & Conditions</span>
         </label>
+
         <label className="flex items-center space-x-2">
           <input
             name="ageConfirmed"
@@ -159,6 +153,7 @@ const SignUp = () => {
           />
           <span>I confirm I am 18 years or older</span>
         </label>
+
         <button
           type="submit"
           disabled={loading}

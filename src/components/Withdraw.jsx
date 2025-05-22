@@ -1,10 +1,15 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createTransactionW } from "../features/transaction/transaction"; // Updated thunk
 import CryptoTicker from "./CryptoTicker";
 
 const WithdrawFunds = () => {
+  const dispatch = useDispatch();
+  const { creating, createError } = useSelector((state) => state.transaction);
+
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [formData, setFormData] = useState({});
+  const [details, setDetails] = useState({});
 
   const handleWithdraw = () => {
     if (!amount || !paymentMethod) {
@@ -12,7 +17,6 @@ const WithdrawFunds = () => {
       return;
     }
 
-    // Validate based on payment method
     const requiredFields = {
       bitcoin: ["walletAddress"],
       bank: ["accountName", "accountNumber", "bankName", "swiftCode"],
@@ -20,123 +24,113 @@ const WithdrawFunds = () => {
       paypal: ["paypalEmail"],
     };
 
-    const missing = requiredFields[paymentMethod].some(
-      (field) => !formData[field]
+    const missingField = requiredFields[paymentMethod].some(
+      (field) => !details[field]
     );
-    if (missing) {
+    if (missingField) {
       alert("Please complete all payment details.");
       return;
     }
 
-    // Trigger upgrade modal
-    setShowUpgradeModal(true);
+    const methodMap = {
+      bitcoin: "BTC",
+      bank: "Bank Transfer",
+      cashapp: "CashApp",
+      paypal: "PayPal",
+    };
+
+    dispatch(
+      createTransactionW({
+        type: "withdrawal",
+        amount: parseFloat(amount),
+        method: methodMap[paymentMethod],
+        details,
+      })
+    );
+
+    setAmount("");
+    setPaymentMethod("");
+    setDetails({});
   };
 
   const renderPaymentFields = () => {
     switch (paymentMethod) {
       case "bitcoin":
         return (
-          <div className="mb-4">
-            <h2 className="block text-sm text-gray-400 my-2">
-              Bitcoin Wallet Address
-            </h2>
-            <input
-              type="text"
-              value={formData.walletAddress || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, walletAddress: e.target.value })
-              }
-              placeholder="Enter BTC Wallet Address"
-              className="w-full p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
-            />
-          </div>
+          <input
+            type="text"
+            value={details.walletAddress || ""}
+            onChange={(e) =>
+              setDetails({ ...details, walletAddress: e.target.value })
+            }
+            placeholder="Enter BTC Wallet Address"
+            className="w-full p-3 bg-transparent text-white rounded-md border border-divider"
+          />
         );
       case "bank":
         return (
           <>
-            <div className="mb-4">
-              <h2 className="block text-sm mb-2">Account Name</h2>
-              <input
-                type="text"
-                value={formData.accountName || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, accountName: e.target.value })
-                }
-                placeholder="Enter Account Name"
-                className="w-full p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <h2 className="block text-sm text-gray-400 mb-2">
-                Account Number
-              </h2>
-              <input
-                type="text"
-                value={formData.accountNumber || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, accountNumber: e.target.value })
-                }
-                placeholder="Enter Account Number"
-                className="w-full p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <h2 className="block text-sm  mb-2">Bank Name</h2>
-              <input
-                type="text"
-                value={formData.bankName || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, bankName: e.target.value })
-                }
-                placeholder="Enter Bank Name"
-                className="w-full p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
-              />
-            </div>
-            <div className="mb-4">
-              <h2 className="block text-sm text-gray-400 mb-2">
-                SWIFT/IBC Code
-              </h2>
-              <input
-                type="text"
-                value={formData.swiftCode || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, swiftCode: e.target.value })
-                }
-                placeholder="Enter SWIFT or IBC Code"
-                className="w-full p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
-              />
-            </div>
+            <input
+              type="text"
+              value={details.accountName || ""}
+              onChange={(e) =>
+                setDetails({ ...details, accountName: e.target.value })
+              }
+              placeholder="Account Name"
+              className="w-full p-3 mb-2 bg-transparent text-white rounded-md border border-divider"
+            />
+            <input
+              type="text"
+              value={details.accountNumber || ""}
+              onChange={(e) =>
+                setDetails({ ...details, accountNumber: e.target.value })
+              }
+              placeholder="Account Number"
+              className="w-full p-3 mb-2 bg-transparent text-white rounded-md border border-divider"
+            />
+            <input
+              type="text"
+              value={details.bankName || ""}
+              onChange={(e) =>
+                setDetails({ ...details, bankName: e.target.value })
+              }
+              placeholder="Bank Name"
+              className="w-full p-3 mb-2 bg-transparent text-white rounded-md border border-divider"
+            />
+            <input
+              type="text"
+              value={details.swiftCode || ""}
+              onChange={(e) =>
+                setDetails({ ...details, swiftCode: e.target.value })
+              }
+              placeholder="SWIFT/IBC Code"
+              className="w-full p-3 bg-transparent text-white rounded-md border border-divider"
+            />
           </>
         );
       case "cashapp":
         return (
-          <div className="mb-4">
-            <h2 className="block text-sm mb-2">CashApp Tag</h2>
-            <input
-              type="text"
-              value={formData.cashTag || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, cashTag: e.target.value })
-              }
-              placeholder="Enter your $CashTag"
-              className="w-full p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
-            />
-          </div>
+          <input
+            type="text"
+            value={details.cashTag || ""}
+            onChange={(e) =>
+              setDetails({ ...details, cashTag: e.target.value })
+            }
+            placeholder="CashApp Tag ($CashTag)"
+            className="w-full p-3 bg-transparent text-white rounded-md border border-divider"
+          />
         );
       case "paypal":
         return (
-          <div className="mb-4">
-            <h2 className="block text-sm  mb-2">PayPal Email</h2>
-            <input
-              type="email"
-              value={formData.paypalEmail || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, paypalEmail: e.target.value })
-              }
-              placeholder="Enter PayPal Email"
-              className="w-full p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
-            />
-          </div>
+          <input
+            type="email"
+            value={details.paypalEmail || ""}
+            onChange={(e) =>
+              setDetails({ ...details, paypalEmail: e.target.value })
+            }
+            placeholder="PayPal Email"
+            className="w-full p-3 bg-transparent text-white rounded-md border border-divider"
+          />
         );
       default:
         return null;
@@ -144,57 +138,40 @@ const WithdrawFunds = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen">
+    <div className="p-6 min-h-screen text-white bg-black">
       <CryptoTicker />
       <h2 className="text-3xl font-bold text-center mb-6">Withdraw Funds</h2>
 
-      <div className=" p-6 rounded-xl shadow-lg border border-divider mb-6">
+      <div className="p-6 rounded-xl shadow-lg border border-divider">
         <div className="mb-4">
-          <h2 className="block text-sm text-gray-400 mb-2">
-            Amount to Withdraw (₿)
-          </h2>
+          <label className="block text-sm mb-2">Amount to Withdraw</label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full placeholder:text-[#ffffff] p-3 bg-transparent text-[#ffffff] rounded-md border border-divider focus:outline-none"
             placeholder="Enter Amount"
+            className="w-full p-3 bg-transparent text-white rounded-md border border-divider"
           />
         </div>
 
         <div className="mb-4">
-          <h2 className="block text-sm  mb-2">
-            How do you want to receive payment?
-          </h2>
+          <label className="block text-sm mb-2">Select Payment Method</label>
           <div className="flex flex-wrap gap-2">
             {[
-              {
-                label: "BITCOIN (BTC)",
-                value: "bitcoin",
-                color: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
-              },
-              {
-                label: "DIRECT BANK PAYMENT",
-                value: "bank",
-                color: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
-              },
-              {
-                label: "CASH APP",
-                value: "cashapp",
-                color: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
-              },
-              {
-                label: "PAYPAL",
-                value: "paypal",
-                color: "bg-gradient-to-r from-[#00befe] to-[#a700ff]",
-              },
+              { label: "Bitcoin", value: "bitcoin" },
+              { label: "Bank Transfer", value: "bank" },
+              { label: "CashApp", value: "cashapp" },
+              { label: "PayPal", value: "paypal" },
             ].map((method) => (
               <button
                 key={method.value}
+                type="button"
                 onClick={() => setPaymentMethod(method.value)}
-                className={`px-4 py-2 text-sm rounded font-semibold text-white ${
-                  method.color
-                } ${paymentMethod === method.value ? "ring-2 ring-white" : ""}`}
+                className={`px-4 py-2 rounded ${
+                  paymentMethod === method.value
+                    ? "bg-purple-600"
+                    : "bg-gray-700"
+                }`}
               >
                 {method.label}
               </button>
@@ -202,13 +179,18 @@ const WithdrawFunds = () => {
           </div>
         </div>
 
-        {renderPaymentFields()}
+        <div className="mb-4">{renderPaymentFields()}</div>
+
+        {createError && (
+          <p className="text-red-400 mb-3">Error: {createError}</p>
+        )}
 
         <button
           onClick={handleWithdraw}
-          className="w-full bg-gradient-to-r from-[#00befe] to-[#a700ff] text-[#ffffff] px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition duration-300"
+          disabled={creating}
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50"
         >
-          Request Withdrawal
+          {creating ? "Processing..." : "Submit Withdrawal"}
         </button>
       </div>
     </div>

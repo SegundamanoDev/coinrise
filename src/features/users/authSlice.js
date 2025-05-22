@@ -1,18 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_URL } from "../../backendUrl";
 
-// API URL
-const API_URL = "https://coinrise-backend.onrender.com";
-
-// Sign Up User
 export const signupUser = createAsyncThunk(
   "auth/signupUser",
   async (userData, thunkAPI) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/api/auth/register`,
-        userData
-      );
+      const response = await axios.post(`${API_URL}/auth/register`, userData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -22,15 +20,17 @@ export const signupUser = createAsyncThunk(
   }
 );
 
-// Sign In User
 export const signinUser = createAsyncThunk(
   "auth/signinUser",
   async (userData, thunkAPI) => {
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, userData);
-      // Persist user and token
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("authUser", JSON.stringify(user));
+      const response = await axios.post(`${API_URL}/auth/login`, userData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      localStorage.setItem("authToken", response.data.token);
+      localStorage.setItem("authUser", JSON.stringify(response.data.user));
 
       return response.data;
     } catch (error) {

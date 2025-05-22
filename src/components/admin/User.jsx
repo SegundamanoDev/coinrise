@@ -1,88 +1,213 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import AdminLayout from "../admin/AdminLayout";
-import { Link } from "react-router-dom";
-import { fetchUsers } from "../../features/users/userSlice";
+import {
+  fetchUsers,
+  deleteUser,
+  toggleUserStatus,
+  topupUserProfit,
+  clearStatusMessage,
+} from "../../features/users/userSlice";
+import { toast } from "react-toastify";
+import { AlertTriangle } from "lucide-react";
 
 const Users = () => {
   const dispatch = useDispatch();
-  const { users, loading, error } = useSelector((state) => state.users);
+  const { users, loading, error, statusMessage } = useSelector(
+    (state) => state.users
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [topupUserId, setTopupUserId] = useState(null);
+  const [topupAmount, setTopupAmount] = useState("");
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedUserToDelete, setSelectedUserToDelete] = useState(null);
 
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (statusMessage) {
+      toast.success(statusMessage);
+      dispatch(clearStatusMessage());
+    }
+  }, [statusMessage, dispatch]);
+
+  const handleToggleStatus = (id) => {
+    dispatch(toggleUserStatus(id));
+  };
+
+  const openTopupModal = (userId) => {
+    setTopupUserId(userId);
+    setTopupAmount("");
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTopupUserId(null);
+  };
+
+  const submitTopup = () => {
+    const amount = parseFloat(topupAmount);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+    dispatch(topupUserProfit({ id: topupUserId, amount }));
+    closeModal();
+  };
+
+  const confirmDeleteUser = () => {
+    if (!selectedUserToDelete) return;
+    dispatch(deleteUser(selectedUserToDelete._id));
+    setIsDeleteModalOpen(false);
+    setSelectedUserToDelete(null);
+  };
+
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount || 0);
+
   return (
-    <AdminLayout>
-      <h2 className="text-2xl font-bold text-yellow-400 mb-6">
-        User Management
-      </h2>
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">All Users</h2>
 
-      {loading && <p className="text-gray-400">Loading users...</p>}
-      {error && <p className="text-red-400">{error}</p>}
+      {loading && <p>Loading users...</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
-      <div className="overflow-x-auto rounded-xl border border-[#374151] bg-[#1f2937]">
-        <table className="min-w-full text-sm text-left text-gray-300">
-          <thead className="bg-[#111827] text-gray-400 uppercase text-xs">
+      {!loading && users.length === 0 && <p>No users found.</p>}
+
+      {!loading && users.length > 0 && (
+        <table className="w-full border-collapse border border-gray-300">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-3">User</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3">Deposits</th>
-              <th className="px-6 py-3">Investments</th>
-              <th className="px-6 py-3">Referrals</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Actions</th>
+              <th className="border p-2">Name</th>
+              <th className="border p-2">Email</th>
+              <th className="border p-2">Balance</th>
+              <th className="border p-2">Profit</th>
+              <th className="border p-2">Admin</th>
+              <th className="border p-2">Status</th>
+              <th className="border p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr
-                key={user._id}
-                className="border-t border-[#374151] hover:bg-[#2c3441] cursor-pointer"
-              >
-                <td className="px-6 py-4 font-medium">
-                  <Link
-                    to={`/admin/users/${user._id}`}
-                    className="hover:underline text-yellow-400"
-                  >
-                    {user.name}
-                  </Link>
+              <tr key={user._id} className="text-center">
+                <td className="border p-2">{user.fullName}</td>
+                <td className="border p-2">{user.email}</td>
+                <td className="border p-2">{user.balance}</td>
+                <td className="border p-2">
+                  {formatCurrency(user.totalProfits)}
                 </td>
-                <td className="px-6 py-4">{user.email}</td>
-                <td className="px-6 py-4">${user.deposits || 0}</td>
-                <td className="px-6 py-4">${user.investments || 0}</td>
-                <td className="px-6 py-4">{user.referrals || 0}</td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-semibold ${
-                      user.status === "Active"
-                        ? "text-green-400"
-                        : "text-red-400"
-                    }`}
-                  >
-                    {user.status}
-                  </span>
+                {user.isAdmin ? (
+                  <td className="border p-2">True</td>
+                ) : (
+                  <td className="border p-2">False</td>
+                )}
+                <td className="border p-2">
+                  {user.isBlocked ? (
+                    <span className="text-red-600 font-semibold">Blocked</span>
+                  ) : (
+                    <span className="text-green-600 font-semibold">Active</span>
+                  )}
                 </td>
-                <td className="px-6 py-4 space-x-2">
-                  <Link
-                    to={`/admin/users/${user._id}`}
-                    className="text-yellow-400 hover:underline"
+                <td className="border p-2 space-x-2">
+                  <button
+                    onClick={() => openTopupModal(user._id)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                   >
-                    View
-                  </Link>
-                  <button className="text-blue-400 hover:underline">
-                    Reset
+                    Top Up
                   </button>
-                  <button className="text-red-400 hover:underline">
-                    {user.status === "Active" ? "Suspend" : "Unsuspend"}
+                  <button
+                    onClick={() => handleToggleStatus(user._id)}
+                    className={`${
+                      user.isBlocked ? "bg-green-500" : "bg-yellow-500"
+                    } text-white px-3 py-1 rounded hover:opacity-90`}
+                  >
+                    {user.isBlocked ? "Unblock" : "Block"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedUserToDelete(user);
+                      setIsDeleteModalOpen(true);
+                    }}
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
-    </AdminLayout>
+      )}
+
+      {/* Top-up Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
+            <h3 className="text-lg font-bold mb-4">Top Up Profit</h3>
+            <input
+              type="number"
+              placeholder="Enter amount"
+              className="w-full border rounded px-3 py-2 mb-4"
+              value={topupAmount}
+              onChange={(e) => setTopupAmount(e.target.value)}
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={closeModal}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitTopup}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
+            <div className="flex items-center mb-4">
+              <AlertTriangle className="w-6 h-6 text-red-500 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-800">
+                Delete User
+              </h3>
+            </div>
+            <p className="mb-6 text-gray-600">
+              Are you sure you want to delete{" "}
+              <strong>{selectedUserToDelete?.fullName}</strong>? This action
+              cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteUser}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,99 +1,108 @@
-import React, { useState } from "react";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserTransactions } from "../features/transaction/transaction";
 
-const transactionsData = [
-  {
-    id: 1,
-    type: "Deposit",
-    amount: 0.25,
-    status: "Completed",
-    date: "2025-04-24",
-  },
-  {
-    id: 2,
-    type: "Withdrawal",
-    amount: 0.1,
-    status: "Pending",
-    date: "2025-04-23",
-  },
-  {
-    id: 3,
-    type: "Investment",
-    amount: 0.15,
-    status: "Completed",
-    date: "2025-04-22",
-  },
-];
-
-const statusColors = {
-  Completed: "text-green-400",
-  Pending: "text-yellow-400",
-  Failed: "text-red-400",
+const typeColors = {
+  deposit: "bg-green-600",
+  withdrawal: "bg-red-600",
+  invest: "bg-blue-600",
+  "referral bonus": "bg-purple-600",
 };
 
-const Transactions = () => {
-  const [search, setSearch] = useState("");
+const statusColors = {
+  completed: "text-green-400",
+  pending: "text-yellow-400",
+  failed: "text-red-500",
+};
 
-  const filtered = transactionsData.filter((tx) =>
-    tx.type.toLowerCase().includes(search.toLowerCase())
+const negativeTypes = ["withdrawal", "invest"];
+const positiveTypes = ["deposit", "referral bonus", "investment return"];
+
+const Transactions = () => {
+  const dispatch = useDispatch();
+  const { userTransactions, loading, error } = useSelector(
+    (state) => state.transaction
   );
 
+  useEffect(() => {
+    dispatch(fetchUserTransactions());
+  }, [dispatch]);
+
   return (
-    <div className="bg-[#0d1117] min-h-screen text-white p-6 font-sans">
-      <h2 className="text-2xl font-bold mb-4">Transaction History</h2>
+    <div className="bg-black text-white p-4 rounded-lg shadow-lg">
+      <h2 className="text-xl font-bold mb-4">My Transactions</h2>
 
-      <input
-        type="text"
-        placeholder="Search transaction type..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-2 mb-6 rounded bg-[#1f2937] text-white border border-[#374151]"
-      />
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-[#1f2937] rounded-xl overflow-hidden">
-          <thead>
-            <tr className="text-left text-gray-400 border-b border-[#374151]">
-              <th className="p-4">Type</th>
-              <th className="p-4">Amount (₿)</th>
-              <th className="p-4">Status</th>
-              <th className="p-4">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length > 0 ? (
-              filtered.map((tx) => (
-                <tr
-                  key={tx.id}
-                  className="border-b border-[#374151] hover:bg-[#2a3342]"
-                >
-                  <td className="p-4 flex items-center gap-2">
-                    {tx.type === "Deposit" ? (
-                      <ArrowDown className="text-green-400" />
-                    ) : (
-                      <ArrowUp className="text-red-400" />
-                    )}
-                    {tx.type}
-                  </td>
-                  <td className="p-4 text-yellow-400 font-medium">
-                    {tx.amount}
-                  </td>
-                  <td className={`p-4 ${statusColors[tx.status]}`}>
-                    {tx.status}
-                  </td>
-                  <td className="p-4 text-gray-300">{tx.date}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="p-4 text-center text-gray-400" colSpan="4">
-                  No transactions found.
-                </td>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm border border-gray-700 text-center">
+            <thead>
+              <tr className="bg-gray-900">
+                <th className="px-4 py-2 border border-gray-700">Date</th>
+                <th className="px-4 py-2 border border-gray-700">Type</th>
+                <th className="px-4 py-2 border border-gray-700">Amount</th>
+                <th className="px-4 py-2 border border-gray-700">Method</th>
+                <th className="px-4 py-2 border border-gray-700">Details</th>
+                <th className="px-4 py-2 border border-gray-700">Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {userTransactions.map((tx) => {
+                const type = tx.type.toLowerCase();
+                const typeColor = typeColors[type] || "bg-gray-600";
+                const statusColor =
+                  statusColors[tx.status.toLowerCase()] || "text-white";
+
+                const isNegative = negativeTypes.includes(type);
+                const isPositive = positiveTypes.includes(type);
+                const prefix = isNegative ? "−" : isPositive ? "+" : "";
+
+                return (
+                  <tr key={tx._id} className="text-white">
+                    <td className="px-4 py-2 border border-gray-700">
+                      {new Date(tx.createdAt).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-700 capitalize">
+                      <span
+                        className={`inline-block px-2 py-1 text-xs rounded ${typeColor}`}
+                      >
+                        {tx.type}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-700">
+                      <span
+                        className={
+                          isNegative ? "text-red-400" : "text-green-400"
+                        }
+                      >
+                        {prefix}${tx.amount.toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-700">
+                      {tx.method || "—"}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-700 text-left max-w-xs whitespace-pre-wrap break-words">
+                      {tx.details
+                        ? Object.entries(tx.details)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join("\n")
+                        : "—"}
+                    </td>
+                    <td
+                      className={`px-4 py-2 border border-gray-700 ${statusColor}`}
+                    >
+                      {tx.status}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

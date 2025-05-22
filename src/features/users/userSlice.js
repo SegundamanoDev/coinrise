@@ -2,80 +2,143 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_URL } from "../../backendUrl";
 
-// Fetch all users
+const getToken = () => localStorage.getItem("authToken");
+
+// =====================
+// Thunks
+// =====================
+
+// 1. Fetch all users
 export const fetchUsers = createAsyncThunk(
-  "users/fetchUsers",
+  "users/fetchAll",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get(`${API_URL}/api/admin/users`);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch users"
-      );
-    }
-  }
-);
-
-// Fetch single user by ID
-export const fetchUserById = createAsyncThunk(
-  "users/fetchUserById",
-  async (id, thunkAPI) => {
-    try {
-      const res = await axios.get(`${API_URL}/api/admin/users/${id}`);
+      const token = getToken();
+      const res = await axios.get(`${API_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.message || err.message
+        err.response?.data?.message || "Failed to fetch users"
       );
     }
   }
 );
 
-// Update user
+// 2. Fetch user by ID
+export const fetchUserById = createAsyncThunk(
+  "users/fetchById",
+  async (id, thunkAPI) => {
+    try {
+      const token = getToken();
+      const res = await axios.get(`${API_URL}/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Failed to fetch user"
+      );
+    }
+  }
+);
+
+// 3. Update user
 export const updateUser = createAsyncThunk(
-  "users/updateUser",
+  "users/update",
   async ({ id, updates }, thunkAPI) => {
     try {
-      const res = await axios.put(`${API_URL}/api/admin/users/${id}`, updates);
+      const token = getToken();
+      const res = await axios.put(`${API_URL}/users/${id}`, updates, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.message || err.message
+        err.response?.data?.message || "Failed to update user"
       );
     }
   }
 );
 
-// Delete user
+// 4. Delete user
 export const deleteUser = createAsyncThunk(
-  "users/deleteUser",
+  "users/delete",
   async (id, thunkAPI) => {
     try {
-      await axios.delete(`${API_URL}/api/admin/users/${id}`);
+      const token = getToken();
+      await axios.delete(`${API_URL}/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return id;
     } catch (err) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.message || err.message
+        err.response?.data?.message || "Failed to delete user"
       );
     }
   }
 );
 
-// Toggle user status (block/unblock)
+// 5. Toggle user status (block/unblock)
 export const toggleUserStatus = createAsyncThunk(
-  "users/toggleUserStatus",
+  "users/toggleStatus",
   async (id, thunkAPI) => {
     try {
-      const res = await axios.patch(`${API_URL}/api/admin/users/${id}/status`);
+      const token = getToken();
+      const res = await axios.patch(
+        `${API_URL}/users/${id}/status`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       return { id, message: res.data.message };
     } catch (err) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.message || err.message
+        err.response?.data?.message || "Failed to toggle status"
       );
     }
   }
 );
+
+// 6. Top up profit
+export const topupUserProfit = createAsyncThunk(
+  "users/topupProfit",
+  async ({ id, amount }, thunkAPI) => {
+    try {
+      const token = getToken();
+      const res = await axios.post(
+        `${API_URL}/users/topup-profit/${id}`,
+        { amount },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return res.data.user;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Failed to top up profit"
+      );
+    }
+  }
+);
+
+// =====================
+// Initial State
+// =====================
 
 const initialState = {
   users: [],
@@ -85,12 +148,19 @@ const initialState = {
   statusMessage: null,
 };
 
-const usersSlice = createSlice({
+// =====================
+// Slice
+// =====================
+
+const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    clearUserMessage: (state) => {
+    clearStatusMessage: (state) => {
       state.statusMessage = null;
+    },
+    clearSelectedUser: (state) => {
+      state.selectedUser = null;
     },
   },
   extraReducers: (builder) => {
@@ -171,10 +241,32 @@ const usersSlice = createSlice({
       .addCase(toggleUserStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Top Up Profit
+      .addCase(topupUserProfit.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(topupUserProfit.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.users.findIndex(
+          (u) => u._id === action.payload._id
+        );
+        if (index !== -1) state.users[index] = action.payload;
+        state.statusMessage = "Profit topped up successfully";
+      })
+      .addCase(topupUserProfit.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearUserMessage } = usersSlice.actions;
+// =====================
+// Exports
+// =====================
 
-export default usersSlice.reducer;
+export const { clearStatusMessage, clearSelectedUser } = userSlice.actions;
+
+export default userSlice.reducer;

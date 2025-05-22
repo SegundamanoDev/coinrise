@@ -2,20 +2,23 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_URL } from "../../backendUrl";
 
-// Async thunk to fetch dashboard data
+const getToken = () => localStorage.getItem("authToken");
+
 export const fetchAdminDashboard = createAsyncThunk(
   "admin/fetchDashboard",
-  async (_, thunkAPI) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/admin/dashboard`, {
+      const token = getToken();
+      const res = await axios.get(`${API_URL}/admin/dashboard`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to load admin dashboard"
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Error loading dashboard"
       );
     }
   }
@@ -26,7 +29,7 @@ const adminSlice = createSlice({
   initialState: {
     stats: {},
     snapshot: {},
-    charts: {},
+    charts: { data: [] },
     recentLogs: [],
     loading: false,
     error: null,
@@ -37,10 +40,6 @@ const adminSlice = createSlice({
       .addCase(fetchAdminDashboard.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.stats = [];
-        state.snapshot = {};
-        state.charts = {};
-        state.recentLogs = [];
       })
       .addCase(fetchAdminDashboard.fulfilled, (state, action) => {
         state.loading = false;
@@ -48,12 +47,12 @@ const adminSlice = createSlice({
         state.snapshot = action.payload.snapshot;
         state.charts = action.payload.charts;
         state.recentLogs = action.payload.recentLogs;
-        state.error = null;
       })
       .addCase(fetchAdminDashboard.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || action.error.message;
+        state.error = action.payload;
       });
   },
 });
+
 export default adminSlice.reducer;
