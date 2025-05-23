@@ -7,6 +7,7 @@ const UpgradeAccount = () => {
   return (
     <div>
       <CryptoTicker />
+      <TradingPlans />
       <ReuseableForm
         heading="Upgrade your account"
         title="Make sure that you are sending funds to the correct wallet
@@ -17,7 +18,6 @@ const UpgradeAccount = () => {
         desc="Deposit reflects after 2 network confirmations."
         btn="Make Payment"
       />
-      <TradingPlans />
     </div>
   );
 };

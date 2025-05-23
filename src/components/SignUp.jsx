@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AuthFormWrapper from "./AuthFormWrapper";
 import ReactFlagsSelect from "react-flags-select";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import countries from "./countryCurrency";
-import { signupUser } from "../features/users/authSlice";
+import { signupUser, clearAuthMessage } from "../features/users/authSlice";
 
 const SignUp = () => {
   const dispatch = useDispatch();
-  const { loading, error, successMessage } = useSelector((state) => state.auth);
+  const { loading, error, statusMessage } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -17,12 +19,25 @@ const SignUp = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    referredBy: "", // <-- Changed this from "referralCode"
+    referredBy: "",
     agreeTerms: false,
     ageConfirmed: false,
     country: "",
     currency: "",
   });
+
+  useEffect(() => {
+    if (statusMessage) {
+      toast.success(statusMessage);
+      dispatch(clearAuthMessage());
+    }
+  }, [statusMessage, dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -53,10 +68,6 @@ const SignUp = () => {
         className="max-w-xl mx-auto p-6 bg-[#000000] rounded-xl shadow-md space-y-5"
       >
         <h2 className="text-2xl font-bold text-center">Create an Account</h2>
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        {successMessage && (
-          <p className="text-green-500 text-sm text-center">{successMessage}</p>
-        )}
 
         <input
           name="fullName"

@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../components/context/ThemeContext";
-import { Menu, X, User, Globe, Moon, Sun } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/trustvest.png";
-import GoogleTranslate from "./GoogleTranslate";
+import { logout as logoutAction } from "../features/users/authSlice";
+
+import { Menu, X, User, Globe, LogOut } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -11,21 +12,33 @@ import {
   faServer,
   faEnvelope,
   faSignInAlt,
-  faUserPlus,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
+
+import logo from "../assets/trustvest.png";
+import GoogleTranslate from "./GoogleTranslate";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { user } = useSelector((state) => state.auth);
+
   const closeMenu = () => setIsOpen(false);
-  const { theme, toggleTheme } = useTheme();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    dispatch(logoutAction());
+    closeMenu();
+    navigate("/sign-in");
+  };
 
   return (
     <>
       {/* Sticky Top Navbar */}
       <nav className="flex items-center justify-between font-[Montserrat] bg-[#000000] text-[#ffffff] px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
-        {/* Logo */}
         <Link to="/">
           <img className="h-10 object-contain" src={logo} alt="trustvest" />
         </Link>
@@ -58,20 +71,32 @@ export default function Navbar() {
           </li>
         </ul>
 
-        {/* Auth Links */}
+        {/* Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link
-            to="/sign-in"
-            className="bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white px-3 py-1 rounded"
-          >
-            Sign In
-          </Link>
-          <Link className="hover:text-[#b3b3b3]" to="/dashboard">
-            <User size={24} />
-          </Link>
+          {!user ? (
+            <Link
+              to="/sign-in"
+              className="bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white px-3 py-1 rounded"
+            >
+              Sign In
+            </Link>
+          ) : (
+            <>
+              <button
+                onClick={handleLogout}
+                className="text-red-400 hover:text-white transition"
+                title="Logout"
+              >
+                <LogOut size={24} />
+              </button>
+              <Link className="hover:text-[#b3b3b3]" to="/dashboard">
+                <User size={24} />
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Hamburger Menu Button */}
+        {/* Hamburger Menu */}
         <button
           className="md:hidden"
           onClick={() => setIsOpen(true)}
@@ -83,7 +108,7 @@ export default function Navbar() {
 
       {/* Mobile Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full max-w-[80vw] font-[Montserrat] w-64 bg-[#000000] text-[#b3b3b3] z-50 transform ${
+        className={`fixed top-0 left-0 h-full max-w-[80vw] w-64 font-[Montserrat] bg-[#000000] text-[#b3b3b3] z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300`}
       >
@@ -94,18 +119,20 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div className="p-4 flex justify-center items-center">
-          <button
-            onClick={() => {
-              navigate("/dashboard");
-              closeMenu();
-            }}
-            className=" text-[#b3b3b3] p-2 rounded-full flex-col items-center justify-center"
-          >
-            <User size={28} />
-            <p>Dashboard</p>
-          </button>
-        </div>
+        {user && (
+          <div className="p-4 flex justify-center items-center">
+            <button
+              onClick={() => {
+                navigate("/dashboard");
+                closeMenu();
+              }}
+              className="text-[#b3b3b3] p-2 rounded-full flex-col items-center justify-center"
+            >
+              <User size={28} />
+              <p>Dashboard</p>
+            </button>
+          </div>
+        )}
 
         <ul className="p-4 space-y-6 font-[Montserrat]">
           <li className="flex items-center space-x-2 py-2">
@@ -144,16 +171,26 @@ export default function Navbar() {
               Contact
             </Link>
           </li>
-          <li className="flex items-center space-x-2 py-2">
-            <FontAwesomeIcon icon={faSignInAlt} />
-            <Link
-              onClick={closeMenu}
-              to="/sign-in"
-              className="bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white px-3 py-1 rounded"
-            >
-              Sign In
-            </Link>
-          </li>
+
+          {!user ? (
+            <li className="flex items-center space-x-2 py-2">
+              <FontAwesomeIcon icon={faSignInAlt} />
+              <Link
+                to="/sign-in"
+                onClick={closeMenu}
+                className="bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white px-3 py-1 rounded"
+              >
+                Sign In
+              </Link>
+            </li>
+          ) : (
+            <li className="flex items-center space-x-2 py-2 text-red-400">
+              <FontAwesomeIcon icon={faSignOutAlt} />
+              <button onClick={handleLogout} className="hover:text-white">
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
 
         <div className="flex items-center space-x-2 ml-4 py-2">
