@@ -29,12 +29,45 @@ const Transactions = () => {
     dispatch(fetchUserTransactions());
   }, [dispatch]);
 
+  const formatCurrency = (amount, currency = "USD") => {
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency,
+        minimumFractionDigits: 2,
+      }).format(amount);
+    } catch {
+      return `$${Number(amount).toFixed(2)}`;
+    }
+  };
+
   return (
     <div className="bg-black text-white p-4 rounded-lg shadow-lg">
       <h2 className="text-xl font-bold mb-4">My Transactions</h2>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="flex justify-center items-center py-10">
+          <svg
+            className="animate-spin h-8 w-8 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+        </div>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
@@ -79,7 +112,8 @@ const Transactions = () => {
                           isNegative ? "text-red-400" : "text-green-400"
                         }
                       >
-                        {prefix}${tx.amount.toFixed(2)}
+                        {prefix}
+                        {formatCurrency(tx.amount, tx.currency)}
                       </span>
                     </td>
                     <td className="px-4 py-2 border border-gray-700">

@@ -85,7 +85,8 @@ const Users = () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="border p-2">Name</th>
-              <th className="border p-2">Email</th>
+              <th className="border p-2">Country</th>
+              <th className="border p-2">Currency</th>
               <th className="border p-2">Balance</th>
               <th className="border p-2">Profit</th>
               <th className="border p-2">Admin</th>
@@ -97,7 +98,8 @@ const Users = () => {
             {users.map((user) => (
               <tr key={user._id} className="text-center">
                 <td className="border p-2">{user.fullName}</td>
-                <td className="border p-2">{user.email}</td>
+                <td className="border p-2">{user.country}</td>
+                <td className="border p-2">{user.currency}</td>
                 <td className="border p-2">{user.balance}</td>
                 <td className="border p-2">
                   {formatCurrency(user.totalProfits)}
