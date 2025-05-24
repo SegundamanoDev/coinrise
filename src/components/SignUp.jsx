@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthFormWrapper from "./AuthFormWrapper";
@@ -11,6 +12,7 @@ import { signupUser, clearAuthMessage } from "../features/users/authSlice";
 
 const SignUp = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, error, statusMessage } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
@@ -30,8 +32,12 @@ const SignUp = () => {
     if (statusMessage) {
       toast.success(statusMessage);
       dispatch(clearAuthMessage());
+      // Redirect to sign-in after a brief delay
+      setTimeout(() => {
+        navigate("/signin");
+      }, 2000);
     }
-  }, [statusMessage, dispatch]);
+  }, [statusMessage, dispatch, navigate]);
 
   useEffect(() => {
     if (error) {

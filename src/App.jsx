@@ -44,6 +44,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InvestmentPlans from "./components/CreateInvestmentPlan";
 import AdminInvestmentsDashboard from "./components/admin/Investment";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 const AppRoutes = () => {
   useEffect(() => {
@@ -88,6 +90,8 @@ const AppRoutes = () => {
           <Route path="/deposit-history" element={<DepositHistory />} />
           <Route path="/create-investmentplan" element={<InvestmentPlans />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/confirm-success" element={<SuccessModal />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/withdraw" element={<Withdraw />} />
