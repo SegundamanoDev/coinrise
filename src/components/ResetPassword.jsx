@@ -8,17 +8,17 @@ const ResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { loading, error, statusMessage } = useSelector((state) => state.auth);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-    dispatch(resetPassword({ token, password }));
+    dispatch(resetPassword({ token, newPassword, confirmPassword }));
   };
 
   useEffect(() => {
@@ -46,9 +46,9 @@ const ResetPassword = () => {
         <input
           type="password"
           placeholder="New Password"
-          value={password}
+          value={newPassword}
           required
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setNewPassword(e.target.value)}
           className="w-full border px-4 py-3 rounded-md"
         />
 

@@ -65,11 +65,11 @@ export const forgotPassword = createAsyncThunk(
 
 export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
-  async ({ token, password }, thunkAPI) => {
+  async ({ token, newPassword, confirmPassword }, thunkAPI) => {
     try {
       const response = await axios.put(
         `${API_URL}/auth/reset-password/${token}`,
-        { password }
+        { newPassword, confirmPassword }
       );
       return response.data.message;
     } catch (error) {
