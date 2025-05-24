@@ -112,7 +112,7 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.statusMessage = "User signed up successfully!";
+        state.statusMessage = "Signed up successfully!";
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.loading = false;
@@ -128,7 +128,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.statusMessage = "User signed in successfully!";
+        state.statusMessage = "Signed in successfully!";
       })
       .addCase(signinUser.rejected, (state, action) => {
         state.loading = false;

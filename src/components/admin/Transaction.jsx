@@ -57,7 +57,7 @@ const AdminTransactions = () => {
                     : "—"}
                 </td>
                 <td className="p-3 capitalize">{txn.status}</td>
-                <td className="p-3 space-x-2">
+                <td className="p-3 space-x-2 space-y-2">
                   {txn.status === "pending" ? (
                     <>
                       <button

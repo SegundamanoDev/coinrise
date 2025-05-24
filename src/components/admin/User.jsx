@@ -114,12 +114,12 @@ const Users = () => {
                     <span className="text-green-600 font-semibold">Active</span>
                   )}
                 </td>
-                <td className="border p-2 space-x-2">
+                <td className="border p-2 space-x-2 space-y-2">
                   <button
                     onClick={() => openTopupModal(user._id)}
                     className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                   >
-                    Top Up
+                    Top
                   </button>
                   <button
                     onClick={() => handleToggleStatus(user._id)}

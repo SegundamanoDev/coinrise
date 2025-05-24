@@ -88,7 +88,7 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="pt-12 md:pt-0">
+      <div className="pt-14 md:pt-0">
         <h2 className="text-2xl font-bold text-yellow-400 mb-6">
           Admin Dashboard Overview
         </h2>

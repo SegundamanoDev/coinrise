@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserTransactions } from "../features/transaction/transaction";
+import { format } from "date-fns";
 
 const typeColors = {
   deposit: "bg-green-600",
@@ -63,7 +64,7 @@ const Transactions = () => {
                 return (
                   <tr key={tx._id} className="text-white">
                     <td className="px-4 py-2 border border-gray-700">
-                      {new Date(tx.createdAt).toLocaleString()}
+                      {format(new Date(tx.createdAt), "PPpp")}
                     </td>
                     <td className="px-4 py-2 border border-gray-700 capitalize">
                       <span

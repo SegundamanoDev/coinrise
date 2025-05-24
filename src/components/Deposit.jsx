@@ -6,12 +6,15 @@ import { toast } from "react-toastify";
 import { createTransaction } from "../features/transaction/transaction";
 import ForexRates from "./FRate";
 import AdvancedChart from "./AdChart";
+import { useNavigate } from "react-router-dom";
 
 const Deposits = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [selectedCoin, setSelectedCoin] = useState("");
   const [amount, setAmount] = useState("");
+  const [file, setFile] = useState(null);
 
   const walletAddress = "bc1q5n7kkd6hmzsdrpvgl4223e";
 
@@ -24,7 +27,7 @@ const Deposits = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!amount || !selectedCoin) {
+    if (!amount || !selectedCoin || !file) {
       return toast.error("Please fill in all fields.");
     }
 
@@ -37,8 +40,10 @@ const Deposits = () => {
     const action = await dispatch(createTransaction(data));
     if (createTransaction.fulfilled.match(action)) {
       toast.success("Deposit submitted successfully!");
+      navigate("/transaction-history");
       setAmount("");
       setSelectedCoin("");
+      setFile(null);
     }
   };
 
@@ -83,6 +88,17 @@ const Deposits = () => {
                   <Copy size={16} className="text-white" />
                 </button>
               </div>
+            </div>
+            <div>
+              <label className="block text-sm mb-1">
+                Upload Payment Proof (Image or PDF)
+              </label>
+              <input
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={(e) => setFile(e.target.files[0])}
+                className="w-full text-white file:bg-gray-700 file:text-white file:rounded file:border-none"
+              />
             </div>
 
             <div className="flex justify-center">
