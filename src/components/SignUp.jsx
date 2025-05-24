@@ -34,7 +34,7 @@ const SignUp = () => {
       dispatch(clearAuthMessage());
       // Redirect to sign-in after a brief delay
       setTimeout(() => {
-        navigate("/signin");
+        navigate("/sign-in");
       }, 2000);
     }
   }, [statusMessage, dispatch, navigate]);
