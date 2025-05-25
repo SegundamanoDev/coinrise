@@ -294,7 +294,7 @@ const DashboardLayout = () => {
               <span className="text-base">Upgrade Account</span>
             </Link>
             <Link
-              to="/investment-plan"
+              to="/investment-plans"
               className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faKey} className="text-xl" />
