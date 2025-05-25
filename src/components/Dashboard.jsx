@@ -35,6 +35,18 @@ import Loader from "./LoadingSpinner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDashboardData } from "../features/dashboard/dashboard";
 
+const formatMoney = (amount, currency = "USD") => {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount || 0);
+  } catch (error) {
+    return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
+  }
+};
+
 const DashboardLayout = () => {
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -52,42 +64,34 @@ const DashboardLayout = () => {
     dispatch(fetchDashboardData());
   }, [dispatch]);
 
-  const preferredCurrency = user?.currency || data?.currency;
-
-  const formatMoney = (value, currency = preferredCurrency) =>
-    value?.toLocaleString("en-US", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-    }) || "0.00";
-
   const stats = [
     {
       title: "Available Balance",
-      value: formatMoney(data?.availableBalance),
+      value: formatMoney(data?.availableBalance, user?.currency),
       sub: "Withdrawable funds",
     },
     {
       title: "Total Deposited",
-      value: formatMoney(data?.totalDeposited),
+      value: formatMoney(data?.totalDeposited, user?.currency),
       sub: "Sum of all deposits",
     },
     {
       title: "Total Profits Earned",
-      value: formatMoney(data?.totalProfits),
+      value: formatMoney(data?.totalProfits, user?.currency),
       sub: "Cumulative profit",
     },
     {
       title: "Referral Earnings",
-      value: formatMoney(data?.referralEarnings),
+      value: formatMoney(data?.referralEarnings, user?.currency),
       sub: "Referral commissions",
     },
     {
       title: "Pending Withdrawals",
-      value: formatMoney(data?.pendingWithdrawals),
+      value: formatMoney(data?.pendingWithdrawals, user?.currency),
       sub: "Awaiting approval",
     },
   ];
+
   if (loading) return <Loader />;
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
@@ -140,10 +144,10 @@ const DashboardLayout = () => {
               <TrendingUp size={20} /> Upgrade Account
             </a>
             <a
-              href="/withdrawal-pin"
+              href="/investment-plans"
               className="flex items-center gap-2 hover:text-[#ffffff]"
             >
-              <KeyRound size={20} /> Withdrawal Pin
+              <KeyRound size={20} /> Trading Plans
             </a>
             <a
               href="/profile"
@@ -290,11 +294,11 @@ const DashboardLayout = () => {
               <span className="text-base">Upgrade Account</span>
             </Link>
             <Link
-              to="/withdrawal-pin"
+              to="/investment-plan"
               className="flex items-center space-x-3 py-2 text-gray-400 font-[Montserrat] hover:text-[#ffffff]"
             >
               <FontAwesomeIcon icon={faKey} className="text-xl" />
-              <span className="text-base">Withdrawal Pin</span>
+              <span className="text-base">Trading Plans</span>
             </Link>
             <Link
               to="/profile"

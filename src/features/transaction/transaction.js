@@ -15,6 +15,7 @@ export const createTransaction = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
+
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
@@ -35,9 +36,12 @@ export const createTransactionW = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
+
       return res.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data?.message || "Error");
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Transaction creation failed"
+      );
     }
   }
 );
@@ -101,7 +105,6 @@ export const fetchUserTransactions = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res);
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
@@ -205,6 +208,20 @@ const transactionSlice = createSlice({
       .addCase(fetchUserDeposits.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // User withdraw (createTransactionW)
+      .addCase(createTransactionW.pending, (state) => {
+        state.createError = true;
+        state.createError = null;
+      })
+      .addCase(createTransactionW.fulfilled, (state, action) => {
+        state.createError = false;
+        state.userTransactions.unshift(action.payload); // Add withdrawal to list
+      })
+      .addCase(createTransactionW.rejected, (state, action) => {
+        state.createError = false;
+        state.createError = action.payload;
       });
   },
 });

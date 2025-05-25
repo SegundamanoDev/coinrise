@@ -5,10 +5,22 @@ import {
   updateTransactionStatus,
 } from "../../features/transaction/transaction";
 
+const formatMoney = (amount, currency = "USD") => {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount || 0);
+  } catch (error) {
+    return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
+  }
+};
+
 const AdminTransactions = () => {
   const dispatch = useDispatch();
   const { items, loading, error } = useSelector((state) => state.transaction);
-
+  console.log(items);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
   const [actionType, setActionType] = useState("");
@@ -35,18 +47,6 @@ const AdminTransactions = () => {
         updateTransactionStatus({ id: selectedTx._id, action: actionType })
       );
       closeModal();
-    }
-  };
-
-  const formatCurrency = (amount, currency) => {
-    try {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: currency || "USD",
-        minimumFractionDigits: 2,
-      }).format(amount);
-    } catch {
-      return `$${Number(amount).toFixed(2)}`; // fallback
     }
   };
 
@@ -101,8 +101,9 @@ const AdminTransactions = () => {
                     </td>
                     <td className="p-3 capitalize">{txn.type}</td>
                     <td className="p-3">
-                      {formatCurrency(txn.amount, txn.currency)}
+                      {formatMoney(txn?.amount, txn?.user?.currency)}
                     </td>
+
                     <td className="p-3">{txn.method || "—"}</td>
                     <td className="p-3 text-left max-w-xs whitespace-pre-wrap break-words">
                       {txn.details
@@ -151,10 +152,14 @@ const AdminTransactions = () => {
               Are you sure you want to <strong>{actionType}</strong> this
               transaction for{" "}
               <strong>
-                {formatCurrency(selectedTx.amount, selectedTx.currency)}
+                {formatCurrency(
+                  selectedTx.amount,
+                  selectedTx.currency || "USD"
+                )}
               </strong>
               ?
             </p>
+
             <div className="flex justify-end space-x-4">
               <button
                 onClick={closeModal}

@@ -22,7 +22,6 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import Users from "./components/admin/User";
 import AdminTransactions from "./components/admin/Transaction";
 import Setting from "./components/admin/Settings";
-import ScrollToTop from "react-scroll-to-top";
 import ScrollToTops from "./components/ScrollToTop";
 import { store } from "./redux/store";
 import { Provider } from "react-redux";
@@ -46,6 +45,7 @@ import InvestmentPlans from "./components/CreateInvestmentPlan";
 import AdminInvestmentsDashboard from "./components/admin/Investment";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import TradingPlans from "./components/InvestmentPlanSection";
 
 const AppRoutes = () => {
   useEffect(() => {
@@ -89,6 +89,7 @@ const AppRoutes = () => {
           <Route path="/deposit" element={<Deposit />} />
           <Route path="/deposit-history" element={<DepositHistory />} />
           <Route path="/create-investmentplan" element={<InvestmentPlans />} />
+          <Route path="/investment-plans" element={<TradingPlans />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
@@ -143,24 +144,7 @@ const AppRoutes = () => {
 const App = () => (
   <BrowserRouter>
     <ScrollToTops />
-    <ScrollToTop
-      smooth
-      color="#fff"
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        backgroundColor: "#333",
-        borderRadius: "50%",
-        zIndex: 9999,
-        width: "50px",
-        height: "50px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    />
+
     <Provider store={store}>
       <ThemeProvider>
         <AppRoutes />

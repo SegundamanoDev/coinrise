@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createTransactionW } from "../features/transaction/transaction"; // Updated thunk
+import { createTransactionW } from "../features/transaction/transaction";
 import CryptoTicker from "./CryptoTicker";
+import { toast } from "react-toastify";
 
 const WithdrawFunds = () => {
   const dispatch = useDispatch();
@@ -11,9 +12,16 @@ const WithdrawFunds = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [details, setDetails] = useState({});
 
+  // Show toast if there's an error
+  useEffect(() => {
+    if (createError) {
+      toast.error(createError);
+    }
+  }, [createError]);
+
   const handleWithdraw = () => {
     if (!amount || !paymentMethod) {
-      alert("Please fill out all required fields.");
+      toast.warning("Please fill out all required fields.");
       return;
     }
 
@@ -28,7 +36,7 @@ const WithdrawFunds = () => {
       (field) => !details[field]
     );
     if (missingField) {
-      alert("Please complete all payment details.");
+      toast.warning("Please complete all payment details.");
       return;
     }
 
@@ -138,9 +146,11 @@ const WithdrawFunds = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen text-white bg-black">
+    <div className="p-6 min-h-screen bg-[#000000]">
       <CryptoTicker />
-      <h2 className="text-3xl font-bold text-center mb-6">Withdraw Funds</h2>
+      <h2 className="text-3xl font-bold text-center text-[#ffffff] my-6">
+        Withdraw Funds
+      </h2>
 
       <div className="p-6 rounded-xl shadow-lg border border-divider">
         <div className="mb-4">
@@ -180,10 +190,6 @@ const WithdrawFunds = () => {
         </div>
 
         <div className="mb-4">{renderPaymentFields()}</div>
-
-        {createError && (
-          <p className="text-red-400 mb-3">Error: {createError}</p>
-        )}
 
         <button
           onClick={handleWithdraw}

@@ -10,7 +10,6 @@ const TradingPlans = ({ heading }) => {
   const dispatch = useDispatch();
   const { plans, loading } = useSelector((state) => state.investmentPlan);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  console.log(selectedPlan);
   const [showModal, setShowModal] = useState(false);
   const [amount, setAmount] = useState("");
 

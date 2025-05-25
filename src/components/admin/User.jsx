@@ -10,6 +10,18 @@ import {
 import { toast } from "react-toastify";
 import { AlertTriangle } from "lucide-react";
 
+const formatMoney = (amount, currency = "USD") => {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount || 0);
+  } catch (error) {
+    return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
+  }
+};
+
 const Users = () => {
   const dispatch = useDispatch();
   const { users, loading, error, statusMessage } = useSelector(
@@ -65,12 +77,6 @@ const Users = () => {
     setSelectedUserToDelete(null);
   };
 
-  const formatCurrency = (amount) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount || 0);
-
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">All Users</h2>
@@ -100,9 +106,11 @@ const Users = () => {
                 <td className="border p-2">{user.fullName}</td>
                 <td className="border p-2">{user.country}</td>
                 <td className="border p-2">{user.currency}</td>
-                <td className="border p-2">{user.balance}</td>
                 <td className="border p-2">
-                  {formatCurrency(user.totalProfits)}
+                  {formatMoney(user?.balance, user?.currency)}
+                </td>
+                <td className="border p-2">
+                  {formatMoney(user.totalProfits, user?.currency)}
                 </td>
                 {user.isAdmin ? (
                   <td className="border p-2">True</td>

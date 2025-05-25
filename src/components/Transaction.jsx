@@ -19,6 +19,18 @@ const statusColors = {
 const negativeTypes = ["withdrawal", "invest"];
 const positiveTypes = ["deposit", "referral bonus", "investment return"];
 
+const formatMoney = (amount, currency = "USD") => {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount || 0);
+  } catch (error) {
+    return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
+  }
+};
+
 const Transactions = () => {
   const dispatch = useDispatch();
   const { userTransactions, loading, error } = useSelector(
@@ -28,18 +40,6 @@ const Transactions = () => {
   useEffect(() => {
     dispatch(fetchUserTransactions());
   }, [dispatch]);
-
-  const formatCurrency = (amount, currency = "USD") => {
-    try {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency,
-        minimumFractionDigits: 2,
-      }).format(amount);
-    } catch {
-      return `$${Number(amount).toFixed(2)}`;
-    }
-  };
 
   return (
     <div className="bg-black text-white p-4 rounded-lg shadow-lg">
@@ -113,7 +113,7 @@ const Transactions = () => {
                         }
                       >
                         {prefix}
-                        {formatCurrency(tx.amount, tx.currency)}
+                        {formatMoney(tx?.amount, tx?.user?.currency)}
                       </span>
                     </td>
                     <td className="px-4 py-2 border border-gray-700">
