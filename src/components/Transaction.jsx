@@ -188,9 +188,9 @@ const Transactions = () => {
           {/* Modal for transaction details */}
           {modalOpen && selectedTransaction && (
             <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-              <div className="bg-white rounded-xl max-w-md w-full p-6 relative">
+              <div className="bg-black/10 backdrop-blur-md rounded-xl max-w-md w-full p-6 relative">
                 <button
-                  className="absolute top-2 right-2 text-gray-600 hover:text-black"
+                  className="absolute top-2 right-2 text-white hover:text-black"
                   onClick={handleCloseModal}
                 >
                   <X size={20} />
@@ -198,30 +198,54 @@ const Transactions = () => {
                 <h3 className="text-lg font-semibold mb-4">
                   Transaction Details
                 </h3>
-                <p>
-                  <strong>Type:</strong> {selectedTransaction.type}
-                </p>
-                <p>
-                  <strong>Method:</strong> {selectedTransaction.method || "—"}
-                </p>
-                <p>
-                  <strong>Status:</strong> {selectedTransaction.status}
-                </p>
-                <p>
-                  <strong>Amount:</strong>{" "}
-                  {formatMoney(
-                    selectedTransaction.amount,
-                    selectedTransaction?.user?.currency
-                  )}
-                </p>
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {format(new Date(selectedTransaction.createdAt), "PPpp")}
-                </p>
-                {selectedTransaction.note && (
+                <div className="flex justify-between">
                   <p>
-                    <strong>Note:</strong> {selectedTransaction.note}
+                    <strong>Type</strong>
+                    <p>{selectedTransaction.type} </p>
                   </p>
+                </div>
+
+                <div className="flex justify-between">
+                  <p>
+                    <strong>Method</strong>
+                  </p>
+                  <p>{selectedTransaction.method}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>
+                    <strong>Status</strong>
+                  </p>
+                  <p>{selectedTransaction.status}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>
+                    <strong>Amount</strong>{" "}
+                  </p>
+                  <p>
+                    {" "}
+                    {formatMoney(
+                      selectedTransaction.amount,
+                      selectedTransaction?.user?.currency
+                    )}
+                  </p>
+                </div>
+
+                <div className="flex justify-between">
+                  <p>
+                    <strong>Date</strong>{" "}
+                  </p>
+                  <p>
+                    {format(new Date(selectedTransaction.createdAt), "PPpp")}
+                  </p>
+                </div>
+
+                {selectedTransaction.note && (
+                  <div className="flex justify-between">
+                    <p>
+                      <strong>Note</strong>
+                    </p>
+                    <p>{selectedTransaction.note}</p>
+                  </div>
                 )}
               </div>
             </div>
