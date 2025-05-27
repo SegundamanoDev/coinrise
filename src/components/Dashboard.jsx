@@ -113,11 +113,20 @@ const DashboardLayout = () => {
       >
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md">
-            <div className="bg-black/35 backdrop-blur-md rounded-2xl shadow-xl p-6 w-full max-w-md mx-4 text-center space-y-4">
+            <div className="relative bg-black/35 backdrop-blur-md rounded-2xl shadow-xl p-6 w-full max-w-md mx-4 text-center space-y-4">
+              {/* X Icon */}
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 text-white hover:text-red-400 transition"
+                aria-label="Close Modal"
+              >
+                <X size={20} />
+              </button>
+
               <h2 className="text-xl font-semibold">Fund your account</h2>
-              <p className="text-gray-600">
+              <p className="text-gray-300">
                 Transfer Crypto to start trading now. Make use of the various
-                option to trade whichever cryptocurrency you like best.
+                options to trade whichever cryptocurrency you like best.
               </p>
               <button
                 onClick={() => {
