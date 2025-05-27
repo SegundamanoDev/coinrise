@@ -27,13 +27,14 @@ import {
   Home,
 } from "lucide-react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TradingViewChart from "./TradingViewChart";
 import AdvancedChart from "./AdChart";
 import ForexRates from "./FRate";
 import Loader from "./LoadingSpinner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDashboardData } from "../features/dashboard/dashboard";
+import MarketOverviewWidget from "./MarketOverviewWidget";
 
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -55,7 +56,8 @@ const DashboardLayout = () => {
     return "Good evening";
   };
   const [isOpen, setIsOpen] = useState(false);
-
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.dashboard);
   const { user } = useSelector((state) => state.auth);
@@ -64,6 +66,11 @@ const DashboardLayout = () => {
     dispatch(fetchDashboardData());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (data?.availableBalance === 0) {
+      setShowModal(true);
+    }
+  }, [data?.availableBalance]);
   const stats = [
     {
       title: "Available Balance",
@@ -104,6 +111,27 @@ const DashboardLayout = () => {
           isOpen ? "opacity-60 pointer-events-none" : "opacity-100"
         } bg-[#000000]`}
       >
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md">
+            <div className="bg-black/35 backdrop-blur-md rounded-2xl shadow-xl p-6 w-full max-w-md mx-4 text-center space-y-4">
+              <h2 className="text-xl font-semibold">Fund your account</h2>
+              <p className="text-gray-600">
+                Transfer Crypto to start trading now. Make use of the various
+                option to trade whichever cryptocurrency you like best.
+              </p>
+              <button
+                onClick={() => {
+                  navigate("/deposit");
+                  setShowModal(false);
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl transition duration-200"
+              >
+                Deposit
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Sidebar - Desktop */}
         <aside className="hidden md:flex w-64 bg-[#000000] flex-col p-6 border-r border-[#374151] min-h-screen font-montserrat">
           <nav className="flex flex-col gap-6 text-lg text-gray-400 font-[Montserrat]">
@@ -230,8 +258,9 @@ const DashboardLayout = () => {
             <div className="">
               <ForexRates />
             </div>
+
             <div className="">
-              <AdvancedChart />
+              <MarketOverviewWidget />
             </div>
           </div>
         </main>
