@@ -5,6 +5,7 @@ import {
   fetchTransactions,
   updateTransactionStatus,
 } from "../../features/transaction/transaction";
+import { ArrowDownCircle, ArrowUpCircle, Info, Loader2 } from "lucide-react";
 
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -51,110 +52,127 @@ const AdminTransactions = () => {
   };
 
   return (
-    <div className="p-6 text-white">
-      <h2 className="text-2xl font-bold mb-4">All Transactions</h2>
-
+    <div className="p-4 md:p-6 max-w-6xl mx-auto text-white">
+      {" "}
+      <h2 className="text-2xl font-semibold mb-6">All Transactions</h2>
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <svg
-            className="w-12 h-12 text-white animate-spin"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            ></path>
-          </svg>
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="animate-spin w-8 h-8 text-white" />
+        </div>
+      ) : error ? (
+        <p className="text-red-500 text-center">{error}</p>
+      ) : items.length === 0 ? (
+        <div className="text-center text-gray-400 mt-10">
+          <Info className="mx-auto w-8 h-8 mb-2" />
+          No transactions found.
         </div>
       ) : (
-        <>
-          {error && <p className="text-red-500">{error}</p>}
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm border border-divider text-center">
-              <thead className="bg-gray-800">
-                <tr>
-                  <th className="p-3">User</th>
-                  <th className="p-3">Type</th>
-                  <th className="p-3">Amount</th>
-                  <th className="p-3">Method</th>
-                  <th className="p-3">Details</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((txn) => (
-                  <tr key={txn._id} className="border-t border-divider">
-                    <td className="p-3">
-                      {txn.user?.fullName || txn.details?.name || "N/A"}
-                    </td>
-                    <td className="p-3 capitalize">{txn.type}</td>
-                    <td className="p-3">
-                      {formatMoney(txn?.amount, txn?.user?.currency)}
-                    </td>
+        <div className="space-y-4">
+          {items.map((tx) => {
+            const type = tx.type.toLowerCase();
+            const isNegative = ["withdrawal", "invest"].includes(type);
+            const isPositive = [
+              "deposit",
+              "referral bonus",
+              "investment return",
+            ].includes(type);
+            const prefix = isNegative ? "−" : isPositive ? "" : "";
+            const statusStyles = {
+              completed: "bg-green-100 text-green-700",
+              pending: "bg-yellow-100 text-yellow-700",
+              failed: "bg-red-100 text-red-700",
+            };
+            const statusStyle =
+              statusStyles[tx.status.toLowerCase()] ||
+              "bg-gray-100 text-gray-700";
 
-                    <td className="p-3">{txn.method || "—"}</td>
-                    <td className="px-4 py-2 border border-gray-700 text-left max-w-xs whitespace-pre-wrap break-words">
-                      {txn.details
-                        ? Object.entries(txn.details)
-                            .map(([key, value]) => {
-                              if (key.toLowerCase().includes("date")) {
-                                try {
-                                  return `${key}: ${format(
-                                    new Date(value),
-                                    "PPpp"
-                                  )}`;
-                                } catch (e) {
-                                  return `${key}: ${value}`;
-                                }
-                              }
-                              return `${key}: ${value}`;
-                            })
-                            .join("\n")
-                        : "—"}
-                    </td>
+            return (
+              <div
+                key={tx._id}
+                className="bg-gray-900 rounded-xl p-4 shadow-sm flex items-start justify-between flex-wrap md:flex-nowrap gap-4"
+              >
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                  {type === "deposit" ? (
+                    <ArrowDownCircle className="text-green-400" size={24} />
+                  ) : (
+                    <ArrowUpCircle className="text-red-400" size={24} />
+                  )}
+                  <div>
+                    <div className="font-semibold text-white capitalize">
+                      {tx.type}
+                    </div>
+                    <div className="text-sm text-gray-400">
+                      {format(new Date(tx.createdAt), "PPpp")}
+                    </div>
+                  </div>
+                </div>
 
-                    <td className="p-3 capitalize">{txn.status}</td>
-                    <td className="p-3 space-x-2 space-y-2">
-                      {txn.status === "pending" ? (
-                        <>
-                          <button
-                            onClick={() => openModal(txn, "approve")}
-                            className="px-3 py-1 bg-green-600 rounded hover:opacity-80"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => openModal(txn, "decline")}
-                            className="px-3 py-1 bg-red-600 rounded hover:opacity-80"
-                          >
-                            Decline
-                          </button>
-                        </>
-                      ) : (
-                        <span>—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+                <div className="text-lg font-semibold w-full md:w-48 text-right md:text-left">
+                  <span
+                    className={isNegative ? "text-red-400" : "text-green-400"}
+                  >
+                    {prefix}
+                    {formatMoney(tx?.amount, tx?.user?.currency)}
+                  </span>
+                  <div className="text-sm text-gray-400">
+                    {tx.method || "—"}
+                  </div>
+                </div>
+
+                <div className="text-sm text-gray-300 w-full md:flex-1">
+                  {tx.details
+                    ? Object.entries(tx.details).map(([key, value]) => {
+                        let formattedKey = key
+                          .replace(/([A-Z])/g, " $1")
+                          .toLowerCase();
+                        if (formattedKey.includes("date")) {
+                          try {
+                            value = format(new Date(value), "PPpp");
+                          } catch (e) {}
+                        }
+                        return (
+                          <div key={key} className="mb-1">
+                            <span className="text-gray-400 font-medium">
+                              {formattedKey}:
+                            </span>{" "}
+                            <span className="break-words">{value}</span>
+                          </div>
+                        );
+                      })
+                    : "—"}
+                </div>
+
+                <div
+                  className={`text-xs px-3 py-1 rounded-full w-max ${statusStyle}`}
+                >
+                  {tx.status}
+                </div>
+
+                <div className="space-x-2 mt-2 md:mt-0">
+                  {tx.status === "pending" ? (
+                    <>
+                      <button
+                        onClick={() => openModal(tx, "approve")}
+                        className="px-3 py-1 bg-green-600 rounded hover:opacity-80"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => openModal(tx, "decline")}
+                        className="px-3 py-1 bg-red-600 rounded hover:opacity-80"
+                      >
+                        Decline
+                      </button>
+                    </>
+                  ) : (
+                    <span>—</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
-
-      {/* Modal (in the same component) */}
       {modalOpen && selectedTx && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white text-black rounded-lg p-6 w-full max-w-sm shadow-lg">

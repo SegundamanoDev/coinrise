@@ -130,6 +130,24 @@ export const fetchUserDeposits = createAsyncThunk(
     }
   }
 );
+
+export const fetchTransactionById = createAsyncThunk(
+  "transactions/fetchTransactionById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      const res = await axios.get(`${API_URL}/transactions/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
 const transactionSlice = createSlice({
   name: "transactions",
   initialState: {
@@ -137,7 +155,7 @@ const transactionSlice = createSlice({
     userTransactions: [], // User's view
     loading: false, // Fetch/update loading
     error: null, // Fetch/update error
-
+    selectedTransaction: null,
     creating: false, // Creating transaction
     createError: null, // Error while creating
   },
@@ -222,6 +240,17 @@ const transactionSlice = createSlice({
       .addCase(createTransactionW.rejected, (state, action) => {
         state.createError = false;
         state.createError = action.payload;
+      })
+      .addCase(fetchTransactionById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchTransactionById.fulfilled, (state, action) => {
+        state.selectedTransaction = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchTransactionById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });

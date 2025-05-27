@@ -1,19 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserTransactions } from "../features/transaction/transaction";
+import {
+  fetchUserTransactions,
+  fetchTransactionById,
+} from "../features/transaction/transaction";
 import { format } from "date-fns";
+import { ArrowDownCircle, ArrowUpCircle, Info, Loader2, X } from "lucide-react";
 
 const typeColors = {
-  deposit: "bg-green-600",
-  withdrawal: "bg-red-600",
-  invest: "bg-blue-600",
-  "referral bonus": "bg-purple-600",
+  deposit: "text-green-500",
+  withdrawal: "text-red-500",
+  invest: "text-blue-500",
+  "referral bonus": "text-purple-500",
 };
 
 const statusColors = {
-  completed: "text-green-400",
-  pending: "text-yellow-400",
-  failed: "text-red-500",
+  completed: "bg-green-100 text-green-700",
+  pending: "bg-yellow-100 text-yellow-700",
+  failed: "bg-red-100 text-red-700",
 };
 
 const negativeTypes = ["withdrawal", "invest"];
@@ -33,122 +37,195 @@ const formatMoney = (amount, currency = "USD") => {
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  const { userTransactions, loading, error } = useSelector(
+  const { userTransactions, loading, error, selectedTransaction } = useSelector(
     (state) => state.transaction
   );
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedTxId, setSelectedTxId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchUserTransactions());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (selectedTxId) {
+      dispatch(fetchTransactionById(selectedTxId));
+    }
+  }, [dispatch, selectedTxId]);
+
+  const handleOpenModal = (id) => {
+    setSelectedTxId(id);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTxId(null);
+    setModalOpen(false);
+  };
+
   return (
-    <div className="bg-black text-white p-4 rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4">My Transactions</h2>
+    <div className="p-4 md:p-6 max-w-6xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6 text-white">
+        Recent Transactions
+      </h2>
 
       {loading ? (
-        <div className="flex justify-center items-center py-10">
-          <svg
-            className="animate-spin h-8 w-8 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            />
-          </svg>
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="animate-spin w-8 h-8 text-white" />
         </div>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-500 text-center">{error}</p>
+      ) : userTransactions.length === 0 ? (
+        <div className="text-center text-gray-400 mt-10">
+          <Info className="mx-auto w-8 h-8 mb-2" />
+          No transactions found.
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm border border-gray-700 text-center">
-            <thead>
-              <tr className="bg-gray-900">
-                <th className="px-4 py-2 border border-gray-700">Date</th>
-                <th className="px-4 py-2 border border-gray-700">Type</th>
-                <th className="px-4 py-2 border border-gray-700">Amount</th>
-                <th className="px-4 py-2 border border-gray-700">Method</th>
-                <th className="px-4 py-2 border border-gray-700">Details</th>
-                <th className="px-4 py-2 border border-gray-700">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {userTransactions.map((tx) => {
-                const type = tx.type.toLowerCase();
-                const typeColor = typeColors[type] || "bg-gray-600";
-                const statusColor =
-                  statusColors[tx.status.toLowerCase()] || "text-white";
+        <div className="space-y-4">
+          <div className="hidden md:grid grid-cols-5 text-sm font-semibold text-gray-400 px-4 mb-2">
+            <div>Title</div>
+            <div>Type</div>
+            <div>Date</div>
+            <div>Amount</div>
+            <div>Status</div>
+          </div>
 
-                const isNegative = negativeTypes.includes(type);
-                const isPositive = positiveTypes.includes(type);
-                const prefix = isNegative ? "−" : isPositive ? "+" : "";
+          {userTransactions.map((tx) => {
+            const type = tx.type.toLowerCase();
+            const typeColor = typeColors[type] || "text-gray-400";
+            const statusStyle =
+              statusColors[tx.status.toLowerCase()] ||
+              "bg-gray-100 text-gray-700";
+            const isNegative = negativeTypes.includes(type);
+            const isPositive = positiveTypes.includes(type);
+            const prefix = isNegative ? "−" : isPositive ? "+" : "";
 
-                return (
-                  <tr key={tx._id} className="text-white">
-                    <td className="px-4 py-2 border border-gray-700">
-                      {format(new Date(tx.createdAt), "PPpp")}
-                    </td>
-                    <td className="px-4 py-2 border border-gray-700 capitalize">
-                      <span
-                        className={`inline-block px-2 py-1 text-xs rounded ${typeColor}`}
-                      >
+            return (
+              <div
+                key={tx._id}
+                className="bg-gray-900 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-gray-800"
+                onClick={() => handleOpenModal(tx._id)}
+              >
+                <div className="flex flex-col gap-2 md:hidden">
+                  <div className="flex items-center gap-3">
+                    {type === "deposit" ? (
+                      <ArrowDownCircle className="text-green-400" size={24} />
+                    ) : (
+                      <ArrowUpCircle className="text-red-400" size={24} />
+                    )}
+                    <div className="flex-1">
+                      <div className="text-white font-semibold capitalize">
                         {tx.type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 border border-gray-700">
-                      <span
-                        className={
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {format(new Date(tx.createdAt), "PP")}
+                      </div>
+                    </div>
+                    <div className="text-sm font-medium text-right">
+                      <div
+                        className={`${
                           isNegative ? "text-red-400" : "text-green-400"
-                        }
+                        }`}
                       >
                         {prefix}
                         {formatMoney(tx?.amount, tx?.user?.currency)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 border border-gray-700">
-                      {tx.method || "—"}
-                    </td>
-                    <td className="px-4 py-2 border border-gray-700 text-left max-w-xs whitespace-pre-wrap break-words">
-                      {tx.details
-                        ? Object.entries(tx.details)
-                            .map(([key, value]) => {
-                              if (key.toLowerCase().includes("date")) {
-                                try {
-                                  return `${key}: ${format(
-                                    new Date(value),
-                                    "PPpp"
-                                  )}`;
-                                } catch (e) {
-                                  return `${key}: ${value}`;
-                                }
-                              }
-                              return `${key}: ${value}`;
-                            })
-                            .join("\n")
-                        : "—"}
-                    </td>
-
-                    <td
-                      className={`px-4 py-2 border border-gray-700 ${statusColor}`}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-300">
+                    <span>{tx.method || "—"}</span>
+                    <span
+                      className={`text-xs px-3 py-1 rounded-full ${statusStyle}`}
                     >
                       {tx.status}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="hidden md:grid grid-cols-5 items-center gap-4">
+                  <div className="flex items-center gap-3">
+                    {type === "deposit" ? (
+                      <ArrowDownCircle className="text-green-400" size={24} />
+                    ) : (
+                      <ArrowUpCircle className="text-red-400" size={24} />
+                    )}
+                    <div>
+                      <div className="text-white font-medium capitalize">
+                        {tx.type}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {format(new Date(tx.createdAt), "pp")}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-300 capitalize">
+                    {tx.method || "—"}
+                  </div>
+                  <div className="text-sm text-gray-300">
+                    {format(new Date(tx.createdAt), "PP")}
+                  </div>
+                  <div
+                    className={`text-sm font-semibold ${
+                      isNegative ? "text-red-400" : "text-green-400"
+                    }`}
+                  >
+                    {prefix}
+                    {formatMoney(tx?.amount, tx?.user?.currency)}
+                  </div>
+                  <div>
+                    <span
+                      className={`text-xs px-3 py-1 rounded-full ${statusStyle}`}
+                    >
+                      {tx.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Modal for transaction details */}
+          {modalOpen && selectedTransaction && (
+            <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
+              <div className="bg-white rounded-xl max-w-md w-full p-6 relative">
+                <button
+                  className="absolute top-2 right-2 text-gray-600 hover:text-black"
+                  onClick={handleCloseModal}
+                >
+                  <X size={20} />
+                </button>
+                <h3 className="text-lg font-semibold mb-4">
+                  Transaction Details
+                </h3>
+                <p>
+                  <strong>Type:</strong> {selectedTransaction.type}
+                </p>
+                <p>
+                  <strong>Method:</strong> {selectedTransaction.method || "—"}
+                </p>
+                <p>
+                  <strong>Status:</strong> {selectedTransaction.status}
+                </p>
+                <p>
+                  <strong>Amount:</strong>{" "}
+                  {formatMoney(
+                    selectedTransaction.amount,
+                    selectedTransaction?.user?.currency
+                  )}
+                </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {format(new Date(selectedTransaction.createdAt), "PPpp")}
+                </p>
+                {selectedTransaction.note && (
+                  <p>
+                    <strong>Note:</strong> {selectedTransaction.note}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
