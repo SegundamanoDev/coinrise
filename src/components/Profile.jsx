@@ -1,121 +1,108 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import CryptoTicker from "./CryptoTicker";
+import React, { useEffect } from "react";
+import { fetchProfile } from "../features/users/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-const UserProfile = () => {
-  const navigate = useNavigate();
-  const user = {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    phone: "+1234567890",
-    investments: [
-      {
-        id: "plan1",
-        name: "Basic Plan",
-        amount: 100,
-        profit: 10,
-        status: "Active",
-      },
-      {
-        id: "plan2",
-        name: "Gold Plan",
-        amount: 1000,
-        profit: 100,
-        status: "Completed",
-      },
-    ],
-    recentActivities: [
-      "Deposited ₿100",
-      "Withdrew ₿50",
-      "Invested in Gold Plan",
-    ],
-  };
+const ProfilePage = () => {
+  const dispatch = useDispatch();
+  const { profile, loading, error } = useSelector((state) => state.users);
+  console.log(profile);
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
   return (
-    <div className="p-6 bg-[#1f2937] text-white min-h-screen">
-      <CryptoTicker />
-      {/* Profile Header */}
-      <div className="flex items-center mb-6">
-        <div className="w-20 h-20 rounded-full bg-gray-400 flex justify-center items-center text-2xl font-bold text-white">
-          {user.name[0]} {/* Display first letter of the name */}
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md">
+      <h2 className="text-2xl font-bold mb-4">👤 Profile</h2>
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <svg
+            className="animate-spin h-8 w-8 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
         </div>
-        <div className="ml-4">
-          <h2 className="text-3xl font-semibold text-yellow-400">
-            {user.name}
-          </h2>
-          <p className="text-lg text-gray-400">{user.email}</p>
-          <p className="text-sm text-gray-500">{user.phone}</p>
-        </div>
-      </div>
-
-      {/* Account Details Card */}
-      <div className="bg-[#374151] p-6 rounded-xl shadow-lg border border-[#2d3a47] mb-6">
-        <h3 className="text-xl font-semibold text-yellow-400 mb-4">
-          Account Details
-        </h3>
-        <div className="text-sm text-gray-400 mb-2">Email: {user.email}</div>
-        <div className="text-sm text-gray-400 mb-2">Phone: {user.phone}</div>
-        <button
-          onClick={() => navigate("/settings")}
-          className="bg-yellow-400 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition duration-300 mt-4"
-        >
-          Edit Profile
-        </button>
-      </div>
-
-      {/* Investment Overview */}
-      <div className="bg-[#374151] p-6 rounded-xl shadow-lg border border-[#2d3a47] mb-6">
-        <h3 className="text-xl font-semibold text-yellow-400 mb-4">
-          Investment Overview
-        </h3>
-        <div className="space-y-4">
-          {user.investments.map((plan) => (
-            <div key={plan.id} className="flex justify-between">
-              <div>
-                <h4 className="text-lg font-semibold text-gray-300">
-                  {plan.name}
-                </h4>
-                <p className="text-sm text-gray-500">Profit: ₿{plan.profit}</p>
-              </div>
-              <p
-                className={`text-sm ${
-                  plan.status === "Active" ? "text-green-500" : "text-gray-500"
-                }`}
-              >
-                {plan.status}
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-gray-500">Full Name</p>
+              <p>{profile.fullName}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">Email</p>
+              <p>{profile.email}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">Phone</p>
+              <p>{profile.phone || "Not Provided"}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">Country</p>
+              <p>{profile.country || "N/A"}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">Referral Code</p>
+              <p className="flex items-center gap-2">
+                {profile.referralCode}
+                <button
+                  className="text-sm text-blue-600"
+                  onClick={() =>
+                    navigator.clipboard.writeText(profile.referralCode)
+                  }
+                >
+                  Copy
+                </button>
               </p>
             </div>
-          ))}
-        </div>
-        <button
-          onClick={() => navigate("/view-investment")}
-          className="bg-yellow-400 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition duration-300 mt-4"
-        >
-          View Investments
-        </button>
-      </div>
+            <div>
+              <p className="text-gray-500">Referred By</p>
+              <p>{profile.referredBy || "N/A"}</p>
+            </div>
+          </div>
 
-      {/* Recent Activities */}
-      <div className="bg-[#374151] p-6 rounded-xl shadow-lg border border-[#2d3a47]">
-        <h3 className="text-xl font-semibold text-yellow-400 mb-4">
-          Recent Activities
-        </h3>
-        <div className="space-y-2">
-          {user.recentActivities.map((activity, index) => (
-            <p key={index} className="text-sm text-gray-400">
-              {activity}
-            </p>
-          ))}
+          <hr className="my-6" />
+
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg shadow-sm">
+              <p className="text-sm text-gray-500">Balance</p>
+              <p className="text-lg font-bold">
+                {profile.currency} {profile.balance.toFixed(2)}
+              </p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg shadow-sm">
+              <p className="text-sm text-gray-500">Total Profits</p>
+              <p className="text-lg font-bold">
+                {profile.currency} {profile.totalProfits.toFixed(2)}
+              </p>
+            </div>
+            <div className="bg-yellow-50 p-4 rounded-lg shadow-sm">
+              <p className="text-sm text-gray-500">Referral Earnings</p>
+              <p className="text-lg font-bold">
+                {profile.currency} {profile.referralEarnings.toFixed(2)}
+              </p>
+            </div>
+          </div>
         </div>
-        <button
-          onClick={() => navigate("/activity-overview")}
-          className="bg-yellow-400 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition duration-300 mt-4"
-        >
-          View All Activities
-        </button>
-      </div>
+      )}
     </div>
   );
 };
 
-export default UserProfile;
+export default ProfilePage;

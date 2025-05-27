@@ -122,10 +122,23 @@ const Transactions = () => {
                     <td className="px-4 py-2 border border-gray-700 text-left max-w-xs whitespace-pre-wrap break-words">
                       {tx.details
                         ? Object.entries(tx.details)
-                            .map(([key, value]) => `${key}: ${value}`)
+                            .map(([key, value]) => {
+                              if (key.toLowerCase().includes("date")) {
+                                try {
+                                  return `${key}: ${format(
+                                    new Date(value),
+                                    "PPpp"
+                                  )}`;
+                                } catch (e) {
+                                  return `${key}: ${value}`;
+                                }
+                              }
+                              return `${key}: ${value}`;
+                            })
                             .join("\n")
                         : "—"}
                     </td>
+
                     <td
                       className={`px-4 py-2 border border-gray-700 ${statusColor}`}
                     >

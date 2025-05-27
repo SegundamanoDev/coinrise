@@ -136,6 +136,26 @@ export const topupUserProfit = createAsyncThunk(
   }
 );
 
+// 7. Fetch JWT user's profile
+export const fetchProfile = createAsyncThunk(
+  "users/fetchProfile",
+  async (_, thunkAPI) => {
+    try {
+      const token = getToken();
+      const res = await axios.get(`${API_URL}/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Failed to fetch profile"
+      );
+    }
+  }
+);
+
 // =====================
 // Initial State
 // =====================
@@ -143,6 +163,7 @@ export const topupUserProfit = createAsyncThunk(
 const initialState = {
   users: [],
   selectedUser: null,
+  profile: null,
   loading: false,
   error: null,
   statusMessage: null,
@@ -257,6 +278,20 @@ const userSlice = createSlice({
         state.statusMessage = "Profit topped up successfully";
       })
       .addCase(topupUserProfit.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Fetch Profile
+      .addCase(fetchProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.profile = action.payload;
+      })
+      .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -46,6 +46,7 @@ import AdminInvestmentsDashboard from "./components/admin/Investment";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import TradingPlans from "./components/InvestmentPlanSection";
+import ProfilePage from "./components/Profile";
 
 const AppRoutes = () => {
   useEffect(() => {
@@ -90,7 +91,7 @@ const AppRoutes = () => {
           <Route path="/deposit-history" element={<DepositHistory />} />
           <Route path="/create-investmentplan" element={<InvestmentPlans />} />
           <Route path="/investment-plans" element={<TradingPlans />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/confirm-success" element={<SuccessModal />} />

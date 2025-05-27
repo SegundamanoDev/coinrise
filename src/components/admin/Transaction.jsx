@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { format } from "date-fns";
 import {
   fetchTransactions,
   updateTransactionStatus,
@@ -20,7 +21,6 @@ const formatMoney = (amount, currency = "USD") => {
 const AdminTransactions = () => {
   const dispatch = useDispatch();
   const { items, loading, error } = useSelector((state) => state.transaction);
-  console.log(items);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
   const [actionType, setActionType] = useState("");
@@ -105,13 +105,26 @@ const AdminTransactions = () => {
                     </td>
 
                     <td className="p-3">{txn.method || "—"}</td>
-                    <td className="p-3 text-left max-w-xs whitespace-pre-wrap break-words">
+                    <td className="px-4 py-2 border border-gray-700 text-left max-w-xs whitespace-pre-wrap break-words">
                       {txn.details
                         ? Object.entries(txn.details)
-                            .map(([key, value]) => `${key}: ${value}`)
+                            .map(([key, value]) => {
+                              if (key.toLowerCase().includes("date")) {
+                                try {
+                                  return `${key}: ${format(
+                                    new Date(value),
+                                    "PPpp"
+                                  )}`;
+                                } catch (e) {
+                                  return `${key}: ${value}`;
+                                }
+                              }
+                              return `${key}: ${value}`;
+                            })
                             .join("\n")
                         : "—"}
                     </td>
+
                     <td className="p-3 capitalize">{txn.status}</td>
                     <td className="p-3 space-x-2 space-y-2">
                       {txn.status === "pending" ? (
@@ -152,10 +165,7 @@ const AdminTransactions = () => {
               Are you sure you want to <strong>{actionType}</strong> this
               transaction for{" "}
               <strong>
-                {formatCurrency(
-                  selectedTx.amount,
-                  selectedTx.currency || "USD"
-                )}
+                {formatMoney(selectedTx?.amount, selectedTx?.user?.currency)}
               </strong>
               ?
             </p>

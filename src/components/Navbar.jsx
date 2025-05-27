@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { useTheme } from "../components/context/ThemeContext";
 import { logout as logoutAction } from "../features/users/authSlice";
 
-import { Menu, X, User, Globe, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -16,14 +15,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import logo from "../assets/trustvest.png";
-import GoogleTranslate from "./GoogleTranslate";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { user } = useSelector((state) => state.auth);
 
   const closeMenu = () => setIsOpen(false);
@@ -35,16 +35,31 @@ export default function Navbar() {
     navigate("/sign-in");
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 30);
+      setHidden(currentScrollY > lastScrollY.current && currentScrollY > 100);
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      {/* Sticky Top Navbar */}
-      <nav className="flex items-center justify-between font-[Montserrat] bg-[#000000] text-[#ffffff] px-4 py-2 sticky top-0 z-50 shadow-md overflow-x-hidden">
+      {/* Navbar */}
+      <nav
+        className={`fixed top-0 w-full z-50 px-4 py-2 transition-all duration-300 flex items-center justify-between font-[Montserrat] text-white shadow-md
+        ${scrolled ? "bg-black/10 backdrop-blur-md" : "bg-transparent"} 
+        ${hidden ? "-translate-y-full" : "translate-y-0"}`}
+      >
         <Link to="/">
           <img className="h-10 object-contain" src={logo} alt="trustvest" />
         </Link>
 
-        {/* Desktop Nav Links */}
-        <ul className="hidden md:flex items-center space-x-6 font-[Montserrat]">
+        <ul className="hidden md:flex items-center space-x-6">
           <li>
             <Link className="hover:text-[#b3b3b3]" to="/">
               Home
@@ -65,13 +80,8 @@ export default function Navbar() {
               Contact
             </Link>
           </li>
-          <li className="flex items-center space-x-2">
-            <Globe />
-            <GoogleTranslate />
-          </li>
         </ul>
 
-        {/* Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
           {!user ? (
             <Link
@@ -84,49 +94,44 @@ export default function Navbar() {
             <>
               <button
                 onClick={handleLogout}
-                className="text-red-400 hover:text-white transition"
-                title="Logout"
+                className="text-red-400 hover:text-white"
               >
                 <LogOut size={24} />
               </button>
-              <Link className="hover:text-[#b3b3b3]" to="/dashboard">
+              <Link to="/dashboard" className="hover:text-[#b3b3b3]">
                 <User size={24} />
               </Link>
             </>
           )}
         </div>
 
-        {/* Hamburger Menu */}
-        <button
-          className="md:hidden"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open Menu"
-        >
+        {/* Mobile Menu Button */}
+        <button className="md:hidden z-50" onClick={() => setIsOpen(true)}>
           <Menu size={28} />
         </button>
       </nav>
 
-      {/* Mobile Sidebar */}
+      {/* Sidebar Mobile Menu */}
       <div
-        className={`fixed top-0 left-0 h-full max-w-[80vw] w-64 font-[Montserrat] bg-[#000000] text-[#b3b3b3] z-50 transform ${
+        className={`fixed top-0 left-0 h-full w-64 max-w-[80vw] font-[Montserrat] bg-black text-[#b3b3b3] z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300`}
+        } transition-transform duration-300 overflow-y-auto`}
       >
-        <div className="relative p-4 flex justify-between items-center border-b border-divider">
+        <div className="relative p-4 flex justify-between items-center border-b border-gray-600">
           <span className="text-xl font-semibold">Menu</span>
-          <button onClick={closeMenu} aria-label="Close Menu">
+          <button onClick={closeMenu}>
             <X size={24} />
           </button>
         </div>
 
         {user && (
-          <div className="p-4 flex justify-center items-center">
+          <div className="p-4 flex justify-center">
             <button
               onClick={() => {
                 navigate("/dashboard");
                 closeMenu();
               }}
-              className="text-[#b3b3b3] p-2 rounded-full flex-col items-center justify-center"
+              className="text-[#b3b3b3] p-2 rounded-full flex-col items-center"
             >
               <User size={28} />
               <p>Dashboard</p>
@@ -134,44 +139,31 @@ export default function Navbar() {
           </div>
         )}
 
-        <ul className="p-4 space-y-6 font-[Montserrat]">
+        <ul className="p-4 space-y-6">
           <li className="flex items-center space-x-2 py-2">
             <FontAwesomeIcon icon={faHouse} />
-            <Link to="/" onClick={closeMenu} className="hover:text-[#ffffff]">
+            <Link to="/" onClick={closeMenu}>
               Home
             </Link>
           </li>
           <li className="flex items-center space-x-2 py-2">
             <FontAwesomeIcon icon={faInfoCircle} />
-            <Link
-              to="/about"
-              onClick={closeMenu}
-              className="hover:text-[#b3b3b3]"
-            >
+            <Link to="/about" onClick={closeMenu}>
               About
             </Link>
           </li>
           <li className="flex items-center space-x-2 py-2">
             <FontAwesomeIcon icon={faServer} />
-            <Link
-              to="/affiliate"
-              onClick={closeMenu}
-              className="hover:text-[#b3b3b3]"
-            >
+            <Link to="/affiliate" onClick={closeMenu}>
               Affiliate
             </Link>
           </li>
           <li className="flex items-center space-x-2 py-2">
             <FontAwesomeIcon icon={faEnvelope} />
-            <Link
-              to="/contact"
-              onClick={closeMenu}
-              className="hover:text-[#b3b3b3]"
-            >
+            <Link to="/contact" onClick={closeMenu}>
               Contact
             </Link>
           </li>
-
           {!user ? (
             <li className="flex items-center space-x-2 py-2">
               <FontAwesomeIcon icon={faSignInAlt} />
@@ -186,20 +178,13 @@ export default function Navbar() {
           ) : (
             <li className="flex items-center space-x-2 py-2 text-red-400">
               <FontAwesomeIcon icon={faSignOutAlt} />
-              <button onClick={handleLogout} className="hover:text-white">
-                Logout
-              </button>
+              <button onClick={handleLogout}>Logout</button>
             </li>
           )}
         </ul>
-
-        <div className="flex items-center space-x-2 ml-4 py-2">
-          <Globe />
-          <GoogleTranslate />
-        </div>
       </div>
 
-      {/* Backdrop */}
+      {/* Backdrop Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
