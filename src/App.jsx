@@ -47,6 +47,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import TradingPlans from "./components/InvestmentPlanSection";
 import ProfilePage from "./components/Profile";
+import DashboardPage from "./components/DhPage";
 
 const AppRoutes = () => {
   useEffect(() => {
@@ -105,6 +106,7 @@ const AppRoutes = () => {
             element={<ConfirmInvestment />}
           />
           <Route path="/affiliate" element={<AffiliateProgram />} />
+          <Route path="/dh" element={<DashboardPage />} />
 
           {/* Admin */}
           <Route path="/admin" element={<AdminDashboard />} />

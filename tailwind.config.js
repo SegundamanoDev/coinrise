@@ -6,7 +6,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Poppins", "Roboto", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
+        montserrat: ["Montserrat", "sans-serif"],
       },
       animation: {
         "spin-slow": "spin 2.5s linear infinite",
@@ -26,12 +27,17 @@ module.exports = {
         },
       },
       colors: {
-        background: "#000000",
-        textPrimary: "#ffffff",
-        textSecondary: "#b3b3b3",
-        divider: "#2a2a2a",
-        highlightStart: "#00befe",
-        highlightEnd: "#a700ff",
+        // Define your custom colors for consistency
+        darkBackground: "#0d1117",
+        cardBackground: "#121212",
+        sidebarBackground: "#000000",
+        borderColor: "#374151",
+        textPrimary: "#f5f5f5",
+        textSecondary: "#a0a0a0",
+        blueAccent: "#00befe",
+        purpleAccent: "#a700ff",
+        greenSuccess: "#10B981",
+        redError: "#EF4444",
       },
       borderRadius: {
         xl: "1rem",
