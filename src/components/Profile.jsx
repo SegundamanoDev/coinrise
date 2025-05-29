@@ -145,7 +145,7 @@ const ProfilePage = () => {
             {profile?.fullName}
           </h3>
           <p className="text-blue-400 font-medium text-lg mb-1">
-            Level: {profile?.accountLevel}
+            Level: {profile?.currentPlan}
           </p>
           <p className="text-gray-400 text-sm mb-4">Email: {profile?.email}</p>
           <div className="flex items-center justify-center text-gray-400 text-sm mb-2">

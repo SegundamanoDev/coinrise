@@ -577,7 +577,7 @@ const DashboardLayout = () => {
               <ShieldCheck size={24} className="text-green-400" />
               <p className="font-semibold text-lg text-textPrimary">
                 Account-Type: <br />
-                {user.accountLevel || "Starter"}
+                {user?.currentPlan}
               </p>
             </div>
             <div

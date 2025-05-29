@@ -188,8 +188,17 @@ const transactionSlice = createSlice({
     selectedTransaction: null,
     creating: false, // Creating transaction
     createError: null, // Error while creating
+    depositStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    depositError: null,
+    depositMessage: null,
   },
-  reducers: {},
+  reducers: {
+    resetDepositStatus: (state) => {
+      state.depositStatus = "idle";
+      state.depositError = null;
+      state.depositMessage = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // User create (Deposit, potentially other types)
@@ -303,5 +312,5 @@ const transactionSlice = createSlice({
       });
   },
 });
-
+export const { resetDepositStatus } = transactionSlice.actions;
 export default transactionSlice.reducer;

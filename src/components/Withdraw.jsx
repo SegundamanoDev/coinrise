@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { createTransactionW } from "../features/transaction/transaction";
 import CryptoTicker from "./CryptoTicker";
 import { toast } from "react-toastify";
@@ -11,40 +12,54 @@ import {
   Banknote,
   CreditCard,
   DollarSign,
+  Loader2, // Import Loader2 for consistent loading state
 } from "lucide-react"; // Icons for payment methods and notes
+
+import UpgradeRequiredModal from "./UpgradeRequiredModal"; // Import the new modal
 
 const WithdrawFunds = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize navigate hook
 
-  // Assuming theme is managed in Redux at state.ui.theme
-  // Adjust the path if your theme state is located elsewhere in your Redux store
   const theme = useSelector((state) => state.ui?.theme || "dark");
-
-  // Get user balance from Redux to display it
-  // Adjust the path if your user object is located elsewhere in your Redux store
   const user = useSelector((state) => state.auth.user);
-  const availableBalance = user?.balance || 0; // Default to 0 if balance is not available
+  const availableBalance = user?.balance || 0;
+  // Get the user's current plan (assuming it's part of the user object)
+  const currentUserPlan = user?.currentPlan || "free"; // Default to 'free' if not set
 
-  const { creating, createError } = useSelector((state) => state.transaction);
+  const { creating, createError, createSuccess, createMessage } = useSelector(
+    (state) => state.transaction
+  ); // Added createSuccess, createMessage
 
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [details, setDetails] = useState({});
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false); // New state for modal visibility
 
-  // Payment method options with their corresponding icons
   const paymentMethods = [
     { label: "Bitcoin", value: "bitcoin", icon: <Bitcoin size={18} /> },
     { label: "Bank Transfer", value: "bank", icon: <Banknote size={18} /> },
-    { label: "CashApp", value: "cashapp", icon: <DollarSign size={18} /> }, // Using DollarSign icon
-    { label: "PayPal", value: "paypal", icon: <CreditCard size={18} /> }, // Using CreditCard icon
+    { label: "CashApp", value: "cashapp", icon: <DollarSign size={18} /> },
+    { label: "PayPal", value: "paypal", icon: <CreditCard size={18} /> },
   ];
 
-  // Show toast if there's an error
+  // Effect to handle success/error messages after transaction creation attempt
   useEffect(() => {
-    if (createError) {
+    if (createSuccess) {
+      toast.success(
+        createMessage || "Withdrawal request submitted successfully!"
+      );
+      // Reset form fields after successful dispatch
+      setAmount("");
+      setPaymentMethod("");
+      setDetails({});
+      // Optionally dispatch an action to clear transaction status if needed
+      // dispatch(resetCreateTransactionStatus()); // if you have such an action
+    } else if (createError) {
       toast.error(createError);
     }
-  }, [createError]);
+    // No need to reset createError directly here, Redux state handles it
+  }, [createSuccess, createError, createMessage, dispatch]);
 
   const handleWithdraw = () => {
     // Basic validation
@@ -71,13 +86,22 @@ const WithdrawFunds = () => {
     };
 
     // Check for missing payment method specific details
-    const missingField = requiredFields[paymentMethod].some(
+    // Ensure `requiredFields[paymentMethod]` exists before calling .some
+    const isMissingDetails = requiredFields[paymentMethod]?.some(
       (field) => !details[field] || details[field].trim() === ""
     );
-    if (missingField) {
+
+    if (isMissingDetails) {
       toast.warning("Please complete all required payment details.");
       return;
     }
+
+    // --- NEW: Check user's current plan before proceeding ---
+    if (currentUserPlan === "free") {
+      setShowUpgradeModal(true); // Display the upgrade modal
+      return; // Stop the withdrawal process here
+    }
+    // --- END NEW CHECK ---
 
     const methodMap = {
       bitcoin: "BTC",
@@ -95,10 +119,13 @@ const WithdrawFunds = () => {
       })
     );
 
-    // Reset form fields after dispatching
-    setAmount("");
-    setPaymentMethod("");
-    setDetails({});
+    // Form fields are now reset in the useEffect after successful dispatch
+  };
+
+  const handleUpgradeNow = () => {
+    setShowUpgradeModal(false); // Close the modal
+    // Redirect to the deposit-upgrade page, which uses ReuseableForm for upgrades
+    navigate("/deposit-upgrade"); // Make sure this route is configured in your App.js
   };
 
   const renderPaymentFields = () => {
@@ -211,11 +238,10 @@ const WithdrawFunds = () => {
       }
     `}
     >
-      <CryptoTicker /> {/* This component is at the top */}
+      <CryptoTicker />
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-textPrimary">
         Withdraw Funds
       </h1>
-      {/* Withdrawal Form Card */}
       <div
         className={`rounded-2xl shadow-lg border p-6 mb-8
         ${
@@ -233,7 +259,6 @@ const WithdrawFunds = () => {
           Withdrawal Request
         </h2>
 
-        {/* Available Balance Display */}
         <div
           className={`mb-6 p-4 rounded-lg
           ${
@@ -257,9 +282,14 @@ const WithdrawFunds = () => {
           >
             ${availableBalance.toFixed(2)}
           </p>
+          <p className="text-sm text-gray-400 mt-2">
+            Your Current Plan:{" "}
+            <span className="font-semibold text-blue-300 capitalize">
+              {currentUserPlan}
+            </span>
+          </p>
         </div>
 
-        {/* Amount to Withdraw */}
         <div className="mb-4">
           <label
             htmlFor="amount-input"
@@ -285,7 +315,6 @@ const WithdrawFunds = () => {
           />
         </div>
 
-        {/* Select Payment Method */}
         <div className="mb-6">
           <label
             className={`block text-sm font-semibold mb-2 ${
@@ -322,7 +351,6 @@ const WithdrawFunds = () => {
           </div>
         </div>
 
-        {/* Payment Details Fields */}
         <div className="mb-6">
           <label
             className={`block text-sm font-semibold mb-2 ${
@@ -334,7 +362,6 @@ const WithdrawFunds = () => {
           {renderPaymentFields()}
         </div>
 
-        {/* Important Notes */}
         <div
           className={`p-4 rounded-lg ${
             theme === "dark"
@@ -371,7 +398,6 @@ const WithdrawFunds = () => {
           </p>
         )}
 
-        {/* Submit Button */}
         <button
           onClick={handleWithdraw}
           disabled={
@@ -379,23 +405,39 @@ const WithdrawFunds = () => {
             !amount ||
             parseFloat(amount) <= 0 ||
             !paymentMethod ||
-            Object.values(details).some((val) => !val || val.trim() === "")
-          }
-          className={`w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 mt-6
+            (paymentMethod &&
+              Object.values(details).some((val) => !val || val.trim() === ""))
+          } // Refined disabled condition
+          className={`w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 mt-6 flex items-center justify-center
             ${
               creating ||
               !amount ||
               parseFloat(amount) <= 0 ||
               !paymentMethod ||
-              Object.values(details).some((val) => !val || val.trim() === "")
+              (paymentMethod &&
+                Object.values(details).some((val) => !val || val.trim() === ""))
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01]"
             }
           `}
         >
-          {creating ? "Processing Withdrawal..." : "Submit Withdrawal Request"}
+          {creating ? (
+            <>
+              <Loader2 className="animate-spin w-5 h-5 mr-3" /> Processing
+              Withdrawal...
+            </>
+          ) : (
+            "Submit Withdrawal Request"
+          )}
         </button>
       </div>
+
+      {/* The Upgrade Required Modal - Rendered here */}
+      <UpgradeRequiredModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onUpgradeClick={handleUpgradeNow}
+      />
     </div>
   );
 };

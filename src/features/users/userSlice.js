@@ -257,10 +257,7 @@ const userSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.statusMessage = "User updated successfully";
-        const index = state.users.findIndex(
-          (u) => u._id === action.payload._id
-        );
-        if (index !== -1) state.users[index] = action.payload;
+        
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;

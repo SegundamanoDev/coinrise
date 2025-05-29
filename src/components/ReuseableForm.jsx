@@ -1,13 +1,24 @@
 // components/ReuseableForm.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, UploadCloud, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import {
+  Copy,
+  UploadCloud,
+  CheckCircle,
+  XCircle,
+  Loader2,
+  Star,
+  TrendingUp,
+} from "lucide-react"; // Added Star, TrendingUp icons
 import Barcode from "react-barcode";
-import { useDispatch } from "react-redux"; // Assuming Redux for dispatching actions
-// Import your Redux transaction slice action (e.g., for deposit or upgrade)
-import { initiateUpgradeDeposit } from "../features/transaction/transaction"; // You'll need to create this action
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import {
+  initiateUpgradeDeposit,
+  resetDepositStatus,
+} from "../features/transaction/transaction";
 
-// Placeholder for dynamic wallet addresses. In a real app, this would come from an API.
+// Placeholder for dynamic wallet addresses (from an API in real app)
 const WALLET_ADDRESSES = {
   BTC: "bc1q5n7kkd6hmzsdrpvgl4223e7s8g2g8s",
   ETH: "0x742d35Cc6634C0532925a3b844Bc454e4438f444",
@@ -18,53 +29,98 @@ const WALLET_ADDRESSES = {
 // Coin options
 const coinOptions = ["BTC", "ETH", "LTC", "USDT"];
 
+// Plan data (This would typically come from an API in a real application)
+const UPGRADE_PLANS = [
+  {
+    id: "basic",
+    name: "Basic Tier",
+    amount: 950,
+    description: "Unlock essential features with our Basic Tier.",
+    incentiveText: "Great for starters!",
+    highlight: false,
+  },
+  {
+    id: "standard",
+    name: "Standard Pro",
+    amount: 2500,
+    description:
+      "Access advanced tools, priority support, and enhanced returns.",
+    incentiveText: "🚀 Our Most Popular Choice!", // The "trick" text
+    highlight: true, // Visually highlight this one
+  },
+  {
+    id: "premium",
+    name: "Premium Elite",
+    amount: 5500,
+    description:
+      "Exclusive features, dedicated account manager, and top-tier returns.",
+    incentiveText: "💎 Maximize Your Earnings! The ultimate experience.", // The "trick" text
+    highlight: false,
+  },
+];
+
 const ReuseableForm = ({
   heading,
   title,
   desc,
   note,
   btn,
-  formType, // New prop: 'deposit' or 'upgrade'
-  fixedAmount, // New prop: for upgrade fee if applicable
+  formType, // 'deposit' or 'upgrade'
+  // fixedAmount, // No longer needed directly as it comes from selected plan
 }) => {
   const dispatch = useDispatch();
+  const { depositStatus, depositError, depositMessage } = useSelector(
+    (state) => state.transaction
+  );
+
   const [selectedCoin, setSelectedCoin] = useState("");
-  const [amount, setAmount] = useState(fixedAmount || ""); // Pre-fill if fixedAmount is provided
+  const [selectedUpgradePlan, setSelectedUpgradePlan] = useState(null); // State for selected plan
+  // Amount is now derived from selectedUpgradePlan if formType is 'upgrade'
+  const [amount, setAmount] = useState(""); // General amount for 'deposit' type
+
   const [file, setFile] = useState(null);
   const [amountError, setAmountError] = useState("");
   const [fileError, setFileError] = useState("");
-  const [submissionStatus, setSubmissionStatus] = useState({
-    loading: false,
-    success: null,
-    message: "",
-  });
+  const [copyStatusMessage, setCopyStatusMessage] = useState("");
+
+  // Determine the effective amount for submission
+  const effectiveAmount =
+    formType === "upgrade" && selectedUpgradePlan
+      ? selectedUpgradePlan.amount
+      : parseFloat(amount) || 0; // Fallback for general deposit
 
   const currentWalletAddress = selectedCoin
     ? WALLET_ADDRESSES[selectedCoin]
     : "Select a coin to see wallet address";
 
+  useEffect(() => {
+    if (depositStatus === "succeeded") {
+      toast.success(depositMessage);
+      setSelectedCoin("");
+      // Reset amount based on form type (empty for deposit, null for upgrade plan)
+      setAmount(formType === "deposit" ? "" : "");
+      setSelectedUpgradePlan(null); // Clear selected plan
+      setFile(null);
+      if (document.getElementById("proof-file-input")) {
+        document.getElementById("proof-file-input").value = "";
+      }
+      dispatch(resetDepositStatus());
+    } else if (depositStatus === "failed") {
+      toast.error(
+        depositError || "Failed to submit request. Please try again."
+      );
+      dispatch(resetDepositStatus());
+    }
+  }, [depositStatus, depositMessage, depositError, dispatch, formType]);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(currentWalletAddress);
-      setSubmissionStatus({
-        loading: false,
-        success: true,
-        message: "Wallet address copied!",
-      });
-      setTimeout(
-        () => setSubmissionStatus({ ...submissionStatus, message: "" }),
-        3000
-      );
+      setCopyStatusMessage("Wallet address copied!");
+      setTimeout(() => setCopyStatusMessage(""), 3000);
     } catch (err) {
-      setSubmissionStatus({
-        loading: false,
-        success: false,
-        message: "Failed to copy address.",
-      });
-      setTimeout(
-        () => setSubmissionStatus({ ...submissionStatus, message: "" }),
-        3000
-      );
+      setCopyStatusMessage("Failed to copy address.");
+      setTimeout(() => setCopyStatusMessage(""), 3000);
     }
   };
 
@@ -72,7 +128,6 @@ const ReuseableForm = ({
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       if (selectedFile.size > 5 * 1024 * 1024) {
-        // 5MB limit
         setFileError("File size should not exceed 5MB.");
         setFile(null);
       } else if (!selectedFile.type.startsWith("image/")) {
@@ -92,86 +147,52 @@ const ReuseableForm = ({
     e.preventDefault();
     setAmountError("");
     setFileError("");
-    setSubmissionStatus({ loading: true, success: null, message: "" });
 
-    // Validate inputs
     if (!selectedCoin) {
-      setSubmissionStatus({
-        loading: false,
-        success: false,
-        message: "Please select a cryptocurrency.",
-      });
+      toast.error("Please select a cryptocurrency.");
       return;
     }
-    const parsedAmount = parseFloat(amount);
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      setAmountError("Please enter a valid positive amount.");
-      setSubmissionStatus({
-        loading: false,
-        success: false,
-        message: "Please enter a valid amount.",
-      });
-      return;
+
+    // Validation specific to upgrade vs. deposit form types
+    let submissionAmount;
+    if (formType === "upgrade") {
+      if (!selectedUpgradePlan) {
+        toast.error("Please select an upgrade plan.");
+        return;
+      }
+      submissionAmount = selectedUpgradePlan.amount;
+    } else {
+      // 'deposit' formType
+      submissionAmount = parseFloat(amount);
+      if (isNaN(submissionAmount) || submissionAmount <= 0) {
+        setAmountError("Please enter a valid positive amount.");
+        toast.error("Please enter a valid amount.");
+        return;
+      }
     }
+
     if (!file) {
       setFileError("Proof of payment is required.");
-      setSubmissionStatus({
-        loading: false,
-        success: false,
-        message: "Please upload proof of payment.",
-      });
+      toast.error("Please upload proof of payment.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("amount", parsedAmount);
+    formData.append("amount", submissionAmount); // Use the derived amount
     formData.append("coin", selectedCoin);
     formData.append("proof", file);
     formData.append(
       "type",
       formType === "upgrade" ? "upgrade_deposit" : "deposit"
-    ); // Differentiate transaction type
+    );
 
-    try {
-      // Dispatch the appropriate Redux action
-      // You need to create this action in your transaction slice
-      // For example, it could be `initiateUpgradeDeposit` for upgrade,
-      // or `initiateDeposit` for general deposits.
-      const resultAction = await dispatch(initiateUpgradeDeposit(formData)); // Assuming 'initiateUpgradeDeposit' handles file uploads
-
-      if (initiateUpgradeDeposit.fulfilled.match(resultAction)) {
-        setSubmissionStatus({
-          loading: false,
-          success: true,
-          message:
-            formType === "upgrade"
-              ? "Account upgrade request submitted successfully! Awaiting admin approval."
-              : "Deposit request submitted successfully! Awaiting admin approval.",
-        });
-        // Clear form fields on success
-        setSelectedCoin("");
-        setAmount(fixedAmount || ""); // Reset to fixed amount or empty
-        setFile(null);
-        if (document.getElementById("proof-file-input")) {
-          document.getElementById("proof-file-input").value = "";
-        }
-      } else {
-        const errorMessage =
-          resultAction.payload || "Failed to submit request. Please try again.";
-        setSubmissionStatus({
-          loading: false,
-          success: false,
-          message: errorMessage,
-        });
-      }
-    } catch (err) {
-      setSubmissionStatus({
-        loading: false,
-        success: false,
-        message: "An unexpected error occurred. Please try again.",
-      });
-      console.error("Submission error:", err);
+    // Add plan details if it's an upgrade
+    if (formType === "upgrade" && selectedUpgradePlan) {
+      formData.append("planId", selectedUpgradePlan.id);
+      formData.append("planName", selectedUpgradePlan.name);
     }
+
+    dispatch(initiateUpgradeDeposit(formData));
   };
 
   return (
@@ -181,15 +202,81 @@ const ReuseableForm = ({
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Upgrade Fee Display (if formType is upgrade) */}
-        {formType === "upgrade" && fixedAmount && (
-          <div className="bg-blue-900/30 border border-blue-700 p-4 rounded-lg flex items-center justify-between shadow-inner">
-            <span className="text-lg font-semibold text-blue-300">
-              Upgrade Fee:
-            </span>
-            <span className="text-2xl font-bold text-blue-200">
-              {formatMoney(fixedAmount)}
-            </span>
+        {/* Upgrade Plan Selection (only for 'upgrade' formType) */}
+        {formType === "upgrade" && (
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Choose Your Upgrade Plan
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {UPGRADE_PLANS.map((plan) => (
+                <motion.div
+                  key={plan.id}
+                  className={`relative p-5 rounded-lg border-2 cursor-pointer transition-all duration-300
+                    ${
+                      selectedUpgradePlan?.id === plan.id
+                        ? "border-blue-500 shadow-lg scale-105 bg-blue-900/20" // Selected style
+                        : plan.highlight
+                        ? "border-yellow-500 bg-yellow-900/10 shadow-lg hover:border-yellow-400" // Highlighted style
+                        : "border-gray-700 bg-gray-800 hover:border-gray-600" // Default style
+                    }
+                  `}
+                  onClick={() => setSelectedUpgradePlan(plan)}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {plan.highlight && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-500 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Star
+                        size={14}
+                        className="text-white"
+                        fill="currentColor"
+                      />{" "}
+                      Most Popular
+                    </span>
+                  )}
+                  <h3 className="text-xl font-bold text-white mb-2 text-center">
+                    {plan.name}
+                  </h3>
+                  <p className="text-3xl font-extrabold text-blue-400 mb-2 text-center">
+                    {formatMoney(plan.amount)}
+                  </p>
+                  <p className="text-sm text-gray-400 text-center mb-3">
+                    {plan.description}
+                  </p>
+                  {plan.incentiveText && (
+                    <p
+                      className={`text-xs font-semibold text-center mt-2 ${
+                        plan.highlight ? "text-yellow-300" : "text-blue-300"
+                      }`}
+                    >
+                      {plan.incentiveText}
+                    </p>
+                  )}
+                  {selectedUpgradePlan?.id === plan.id && (
+                    <CheckCircle
+                      className="absolute top-2 right-2 text-blue-400"
+                      size={20}
+                    />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+            {!selectedUpgradePlan && (
+              <p className="text-red-400 text-sm mt-2">
+                Please select a plan to upgrade.
+              </p>
+            )}
+            {selectedUpgradePlan && (
+              <div className="bg-blue-900/30 border border-blue-700 p-4 rounded-lg flex items-center justify-between shadow-inner mt-4">
+                <span className="text-lg font-semibold text-blue-300">
+                  Selected Plan Cost:
+                </span>
+                <span className="text-2xl font-bold text-blue-200">
+                  {formatMoney(selectedUpgradePlan.amount)}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -223,8 +310,8 @@ const ReuseableForm = ({
           )}
         </div>
 
-        {/* Amount Input (editable if not fixed amount, e.g., for general deposits) */}
-        {formType !== "upgrade" && ( // Only show amount input if not an upgrade form (which has a fixed amount)
+        {/* Amount Input (only for general deposits, not for fixed-amount upgrades) */}
+        {formType !== "upgrade" && (
           <div>
             <label
               htmlFor="amount-input"
@@ -276,6 +363,17 @@ const ReuseableForm = ({
                     <Copy size={18} className="text-gray-300" />
                   </button>
                 </div>
+                {copyStatusMessage && (
+                  <p
+                    className={`text-sm mt-2 ${
+                      copyStatusMessage.includes("copied")
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {copyStatusMessage}
+                  </p>
+                )}
               </div>
 
               <p className="text-xs text-gray-400 leading-relaxed">
@@ -288,8 +386,8 @@ const ReuseableForm = ({
                     "Select a coin to see wallet address" && (
                     <Barcode
                       value={currentWalletAddress}
-                      background="#ffffff" // White background for barcode
-                      lineColor="#000000" // Black lines
+                      background="#ffffff"
+                      lineColor="#000000"
                       height={80}
                       width={1.8}
                       fontSize={14}
@@ -315,7 +413,7 @@ const ReuseableForm = ({
               type="file"
               onChange={handleFileChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              accept="image/*" // Restrict to image files
+              accept="image/*"
             />
             <div className="flex flex-col items-center text-gray-400">
               <UploadCloud size={32} className="mb-2" />
@@ -336,9 +434,9 @@ const ReuseableForm = ({
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 px-4 rounded-lg font-semibold text-lg shadow-lg hover:from-blue-700 hover:to-purple-800 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={submissionStatus.loading}
+          disabled={depositStatus === "loading"}
         >
-          {submissionStatus.loading ? (
+          {depositStatus === "loading" ? (
             <>
               <Loader2 className="animate-spin w-5 h-5 mr-3" /> Submitting...
             </>
@@ -346,41 +444,7 @@ const ReuseableForm = ({
             btn
           )}
         </button>
-
-        {/* Submission Status Message */}
-        <AnimatePresence>
-          {submissionStatus.message && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className={`mt-4 p-3 rounded-lg text-center flex items-center justify-center gap-2 ${
-                submissionStatus.success
-                  ? "bg-green-600/20 text-green-400"
-                  : "bg-red-600/20 text-red-400"
-              }`}
-            >
-              {submissionStatus.success ? (
-                <CheckCircle size={20} />
-              ) : (
-                <XCircle size={20} />
-              )}
-              <span>{submissionStatus.message}</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </form>
-
-      {/* Other Widgets (if still desired here) */}
-      <div className="mt-10 mb-5 space-y-8">
-        <div>
-          {/* <ForexRates /> */} {/* Commented out as per original */}
-        </div>
-        <div>
-          {/* <AdvancedChart /> */} {/* Commented out as per original */}
-        </div>
-      </div>
     </div>
   );
 };

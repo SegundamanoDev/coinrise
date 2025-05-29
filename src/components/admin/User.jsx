@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom"; // Import Link for user detail navigation
 import {
   fetchUsers,
   deleteUser,
   topupUserProfit,
   clearStatusMessage,
-} from "../../features/users/userSlice";
+} from "../../features/users/userSlice"; // Assuming this path is correct
 import { toast } from "react-toastify";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, PlusCircle, Trash2, Edit } from "lucide-react"; // Added icons
 
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -26,7 +27,7 @@ const Users = () => {
   const { users, loading, error, statusMessage } = useSelector(
     (state) => state.users
   );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTopupModalOpen, setIsTopupModalOpen] = useState(false); // Renamed for clarity
   const [topupUserId, setTopupUserId] = useState(null);
   const [topupAmount, setTopupAmount] = useState("");
 
@@ -47,22 +48,23 @@ const Users = () => {
   const openTopupModal = (userId) => {
     setTopupUserId(userId);
     setTopupAmount("");
-    setIsModalOpen(true);
+    setIsTopupModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeTopupModal = () => {
+    // Renamed for clarity
+    setIsTopupModalOpen(false);
     setTopupUserId(null);
   };
 
   const submitTopup = () => {
     const amount = parseFloat(topupAmount);
     if (isNaN(amount) || amount <= 0) {
-      alert("Please enter a valid amount.");
+      toast.error("Please enter a valid amount.");
       return;
     }
     dispatch(topupUserProfit({ id: topupUserId, amount }));
-    closeModal();
+    closeTopupModal();
   };
 
   const confirmDeleteUser = () => {
@@ -73,98 +75,171 @@ const Users = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">All Users</h2>
+    <div className="p-4 md:p-6 max-w-7xl mx-auto text-gray-800 font-[Montserrat] bg-white rounded-lg shadow-xl">
+      <h2 className="text-3xl font-bold mb-8 text-center text-blue-600">
+        All Users
+      </h2>
 
-      {loading && <p>Loading users...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {!loading && users.length === 0 && <p>No users found.</p>}
-
-      {!loading && users.length > 0 && (
-        <table className="w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Country</th>
-              <th className="border p-2">Currency</th>
-              <th className="border p-2">Balance</th>
-              <th className="border p-2">Profit</th>
-              <th className="border p-2">Admin</th>
-              <th className="border p-2">Status</th>
-              <th className="border p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id} className="text-center">
-                <td className="border p-2">{user.fullName}</td>
-                <td className="border p-2">{user.country}</td>
-                <td className="border p-2">{user.currency}</td>
-                <td className="border p-2">
-                  {formatMoney(user?.balance, user?.currency)}
-                </td>
-                <td className="border p-2">
-                  {formatMoney(user.totalProfits, user?.currency)}
-                </td>
-                {user.isAdmin ? (
-                  <td className="border p-2">True</td>
-                ) : (
-                  <td className="border p-2">False</td>
-                )}
-                <td className="border p-2">
-                  {user.isBlocked ? (
-                    <span className="text-red-600 font-semibold">Blocked</span>
-                  ) : (
-                    <span className="text-green-600 font-semibold">Active</span>
-                  )}
-                </td>
-                <td className="border p-2 space-x-2 space-y-2">
-                  <button
-                    onClick={() => openTopupModal(user._id)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                  >
-                    Top
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setSelectedUserToDelete(user);
-                      setIsDeleteModalOpen(true);
-                    }}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </td>
+      {loading ? (
+        <div className="flex flex-col justify-center items-center py-20 text-gray-600">
+          <Loader2 className="animate-spin w-10 h-10 text-blue-500 mb-3" />
+          <p className="text-lg">Loading users...</p>
+        </div>
+      ) : error ? (
+        <div className="flex flex-col justify-center items-center py-20 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          <XCircle className="w-10 h-10 text-red-500 mb-3" />
+          <p className="text-lg text-center">Failed to load users: {error}</p>
+          <p className="text-sm text-red-600 mt-2">
+            Please try again later or check your network.
+          </p>
+        </div>
+      ) : users.length === 0 ? (
+        <div className="text-center py-20 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+          <Info className="mx-auto w-12 h-12 mb-4 text-gray-400" />
+          <p className="text-xl text-gray-600 font-semibold">
+            No users found yet.
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            New user registrations will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Country
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Currency
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Balance
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Profit
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Role
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {users.map((user) => (
+                <tr
+                  key={user._id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {user.fullName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.country || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.currency || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                    {formatMoney(user?.balance, user?.currency)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                    {formatMoney(user.totalProfits, user?.currency)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                    {user.role}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {user.isBlocked ? (
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                        Blocked
+                      </span>
+                    ) : (
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
+                    <button
+                      onClick={() => openTopupModal(user._id)}
+                      className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+                      title="Top up profit"
+                    >
+                      <PlusCircle size={16} className="mr-1" /> Top Up
+                    </button>
+                    <Link
+                      to={`/admin/users/${user._id}`}
+                      className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                      title="Edit User Details"
+                    >
+                      <Edit size={16} className="mr-1" /> Edit
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setSelectedUserToDelete(user);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
+                      title="Delete User"
+                    >
+                      <Trash2 size={16} className="mr-1" /> Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Top-up Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
-            <h3 className="text-lg font-bold mb-4">Top Up Profit</h3>
+      {isTopupModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm transform scale-in-center">
+            <h3 className="text-xl font-bold mb-4 text-gray-800">
+              Top Up User Profit
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Enter amount to add to{" "}
+              <span className="font-semibold text-blue-600">
+                {users.find((u) => u._id === topupUserId)?.fullName ||
+                  "selected user"}
+              </span>
+              's profit.
+            </p>
             <input
               type="number"
               placeholder="Enter amount"
-              className="w-full border rounded px-3 py-2 mb-4"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={topupAmount}
               onChange={(e) => setTopupAmount(e.target.value)}
             />
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-3">
               <button
-                onClick={closeModal}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                onClick={closeTopupModal}
+                className="px-5 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 transition duration-200 font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={submitTopup}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200 font-semibold"
               >
                 Submit
               </button>
@@ -175,31 +250,33 @@ const Users = () => {
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm transform scale-in-center">
             <div className="flex items-center mb-4">
-              <AlertTriangle className="w-6 h-6 text-red-500 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">
-                Delete User
+              <AlertTriangle className="w-7 h-7 text-red-500 mr-3" />
+              <h3 className="text-xl font-semibold text-gray-800">
+                Confirm Delete
               </h3>
             </div>
             <p className="mb-6 text-gray-600">
               Are you sure you want to delete{" "}
-              <strong>{selectedUserToDelete?.fullName}</strong>? This action
-              cannot be undone.
+              <strong className="text-red-600">
+                {selectedUserToDelete?.fullName}
+              </strong>
+              ? This action cannot be undone.
             </p>
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                className="px-5 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 transition duration-200 font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteUser}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                className="px-5 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition duration-200 font-semibold"
               >
-                Confirm
+                Delete User
               </button>
             </div>
           </div>
