@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom"; // Import Link for user detail navigation
+import { Link } from "react-router-dom";
 import {
   fetchUsers,
   deleteUser,
@@ -8,7 +8,15 @@ import {
   clearStatusMessage,
 } from "../../features/users/userSlice"; // Assuming this path is correct
 import { toast } from "react-toastify";
-import { AlertTriangle, PlusCircle, Trash2, Edit } from "lucide-react"; // Added icons
+import {
+  AlertTriangle,
+  PlusCircle,
+  Trash2,
+  Edit,
+  Info,
+  Loader2,
+  XCircle,
+} from "lucide-react";
 
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -162,7 +170,7 @@ const Users = () => {
                     {formatMoney(user.totalProfits, user?.currency)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
-                    {user.role}
+                    {user?.role}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {user.isBlocked ? (

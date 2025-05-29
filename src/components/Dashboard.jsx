@@ -131,6 +131,7 @@ const formatLastLogin = (isoString) => {
     return "N/A";
   }
 };
+
 const DashboardLayout = () => {
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -1254,7 +1255,7 @@ const DashboardLayout = () => {
 
       {/* Mobile Slideout Menu */}
       <div
-        className={`fixed inset-0 z-50 flex transition-transform duration-300 ${
+        className={`fixed bg-[#1f2937] inset-0 z-50 flex transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -1271,7 +1272,7 @@ const DashboardLayout = () => {
           >
             <X />
           </div>
-          <nav className="flex flex-col space-y-5 font-montserrat mt-4">
+          <nav className="flex flex-col space-y-4 mt-4">
             {/* Theme Toggle in Mobile Menu */}
             <div className="flex items-center justify-between pb-3 border-b border-borderColor mb-4">
               <span

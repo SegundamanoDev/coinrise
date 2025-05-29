@@ -19,6 +19,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import Users from "./components/admin/User";
+import UserDetail from "./components/admin/UserDetail";
 import AdminTransactions from "./components/admin/Transaction";
 import Setting from "./components/admin/Settings";
 import ScrollToTops from "./components/ScrollToTop";
@@ -107,7 +108,7 @@ const AppRoutes = () => {
           {/* Admin */}
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<Users />} />
-          <Route path="/admin/users/:id" element={<Users />} />
+          <Route path="/admin/users/:id" element={<UserDetail />} />
           <Route
             path="/admin/investments"
             element={<AdminInvestmentsDashboard />}

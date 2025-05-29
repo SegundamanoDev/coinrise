@@ -6,7 +6,7 @@ import {
   updateUser,
   clearStatusMessage,
 } from "../../features/users/userSlice"; // Assuming updateUser and clearStatusMessage are in userSlice
-import AdminLayout from "../AdminLayout"; // Assuming this path is correct
+import AdminLayout from "../../components/admin/AdminLayout"; // Assuming this path is correct
 import { toast } from "react-toastify"; // For toast notifications
 import {
   Loader2,
@@ -15,7 +15,7 @@ import {
   Globe,
   Phone,
   Home,
-  City,
+  // City,
   Tag,
   DollarSign,
   Clock,
@@ -26,8 +26,39 @@ import {
   LinkIcon,
   XCircle,
   CheckCircle,
+  Info,
+  Edit,
 } from "lucide-react"; // Added more icons
 import { format } from "date-fns"; // For date formatting
+
+// Utility for formatting last login date and time
+const formatLastLogin = (isoString) => {
+  if (!isoString) return "N/A"; // Handle cases where data might be missing
+  try {
+    const date = new Date(isoString);
+    // You can customize the date and time format here
+    return (
+      date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true, // Use AM/PM
+      }) +
+      ` at ${date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      })}`
+    );
+  } catch (error) {
+    console.error("Error formatting last login date:", error);
+    return "N/A";
+  }
+};
 
 const UserDetail = () => {
   const { id } = useParams();
@@ -41,7 +72,7 @@ const UserDetail = () => {
     updateLoading,
     updateError,
   } = useSelector((state) => state.users); // Assuming these states are in userSlice
-
+  console.log(selectedUser);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -391,7 +422,7 @@ const UserDetail = () => {
                 <strong>Address:</strong> {selectedUser?.address || "N/A"}
               </p>
               <p className="flex items-center gap-2">
-                <City size={20} className="text-blue-400" />
+                {/* <City size={20} className="text-blue-400" /> */}
                 <strong>City:</strong> {selectedUser?.city || "N/A"}
               </p>
               <p className="flex items-center gap-2">
@@ -450,12 +481,7 @@ const UserDetail = () => {
               <p className="flex items-center gap-2">
                 <Clock size={20} className="text-gray-400" />
                 <strong>Last Login:</strong>{" "}
-                {selectedUser?.lastLoginAt
-                  ? format(
-                      new Date(selectedUser.lastLoginAt),
-                      "MMM dd, yyyy HH:mm"
-                    )
-                  : "N/A"}
+                {formatLastLogin(selectedUser?.lastLoginAt)}
               </p>
               <p className="flex items-center gap-2">
                 <Info size={20} className="text-gray-400" />

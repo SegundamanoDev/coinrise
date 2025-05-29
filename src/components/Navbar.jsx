@@ -113,7 +113,7 @@ export default function Navbar() {
 
       {/* Sidebar Mobile Menu */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 max-w-[80vw] font-[Montserrat] bg-black text-[#b3b3b3] z-50 transform ${
+        className={`fixed top-0 left-0 h-full w-64 max-w-[80vw]  bg-[#1f2937] text-[#b3b3b3] z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 overflow-y-auto`}
       >
