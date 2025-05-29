@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUsers,
   deleteUser,
-  toggleUserStatus,
   topupUserProfit,
   clearStatusMessage,
 } from "../../features/users/userSlice";
@@ -44,10 +43,6 @@ const Users = () => {
       dispatch(clearStatusMessage());
     }
   }, [statusMessage, dispatch]);
-
-  const handleToggleStatus = (id) => {
-    dispatch(toggleUserStatus(id));
-  };
 
   const openTopupModal = (userId) => {
     setTopupUserId(userId);
@@ -131,14 +126,7 @@ const Users = () => {
                   >
                     Top
                   </button>
-                  <button
-                    onClick={() => handleToggleStatus(user._id)}
-                    className={`${
-                      user.isBlocked ? "bg-green-500" : "bg-yellow-500"
-                    } text-white px-3 py-1 rounded hover:opacity-90`}
-                  >
-                    {user.isBlocked ? "Unblock" : "Block"}
-                  </button>
+
                   <button
                     onClick={() => {
                       setSelectedUserToDelete(user);

@@ -5,7 +5,6 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
-import MiningPoolPage from "./components/MiningPool";
 import DashboardLayout from "./components/Dashboard";
 import Transactions from "./components/Transaction";
 import Deposit from "./components/Deposit";
@@ -33,7 +32,6 @@ import { ThemeProvider } from "./components/context/ThemeContext";
 import Whatsapp from "./components/Whatsapp";
 import UpgradeAccount from "./components/UpgradeAccount";
 import DepositHistory from "./components/DepositHistory";
-import KYCVerificationForm from "./components/KYCVerificationForm ";
 import WithdrawPin from "./components/WithdrawPin";
 import AffiliateProgram from "./components/AffiliateProgram";
 import Footer from "./components/Footer";
@@ -85,7 +83,6 @@ const AppRoutes = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/mining-pool" element={<MiningPoolPage />} />
           <Route path="/dashboard" element={<DashboardLayout />} />
           <Route path="/transaction-history" element={<Transactions />} />
           <Route path="/deposit" element={<Deposit />} />
@@ -100,7 +97,6 @@ const AppRoutes = () => {
           <Route path="/withdraw" element={<Withdraw />} />
           <Route path="/withdrawal-pin" element={<WithdrawPin />} />
           <Route path="/activity-overview" element={<ActivityOverview />} />
-          <Route path="/verify-account" element={<KYCVerificationForm />} />
           <Route
             path="/invest/confirm/:planId"
             element={<ConfirmInvestment />}

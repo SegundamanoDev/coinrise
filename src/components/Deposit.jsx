@@ -2,61 +2,55 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Copy, Lightbulb, X } from "lucide-react"; // Added Lightbulb for info icon, X for closing modal if needed
+import { Copy, Lightbulb, X } from "lucide-react";
 import { toast } from "react-toastify";
-import { createTransaction } from "../features/transaction/transaction"; // Ensure this handles file uploads if necessary
-import ForexRates from "./FRate"; // Your existing component
-import AdvancedChart from "./AdChart"; // Your existing component
+import { createTransaction } from "../features/transaction/transaction";
+import ForexRates from "./FRate";
+import AdvancedChart from "./AdChart";
 import { useNavigate } from "react-router-dom";
 
 const Deposits = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Assuming theme is managed in Redux, e.g., in a 'ui' or 'theme' slice
-  // If not, you might need to pass it as a prop from a parent component (like DashboardLayout)
-  const theme = useSelector((state) => state.ui?.theme || "dark"); // Adjust 'ui.theme' to your actual Redux path
+  const theme = useSelector((state) => state.ui?.theme || "dark");
 
-  // Define deposit options with their wallet addresses and QR code image URLs
-  // You should ideally fetch these from your backend for security and flexibility.
   const depositOptions = [
     {
       name: "Bitcoin",
       currency: "BTC",
       address: "bc1q5n7kkd6hmzsdrpvgl4223e",
-      qrCode: "https://i.imgur.com/gK4QRgJ.png",
+      qrCode: "https://i.imgur.com/gK4QRgJ.png", // Replace with your actual QR code
     },
     {
       name: "Ethereum",
       currency: "ETH",
       address: "0x742d35Cc6634C05329241bE2bEE656A102D65D4F",
-      qrCode: "https://i.imgur.com/kS9Qj6q.png",
+      qrCode: "https://i.imgur.com/kS9Qj6q.png", // Replace with your actual QR code
     },
     {
       name: "Litecoin",
       currency: "LTC",
       address: "MLmD5yNf1V1o8g3kE2Q3J3m8t2v2p2q2r2s2t2u2",
-      qrCode: "https://i.imgur.com/gK4QRgJ.png",
+      qrCode: "https://i.imgur.com/gK4QRgJ.png", // Replace with your actual QR code
     },
     {
       name: "USDT (TRC20)",
       currency: "USDT",
       address: "TR7NhqjeKQxGTCi8qfenf2Fm2V2e2R2z2x2",
-      qrCode: "https://i.imgur.com/kS9Qj6q.png",
+      qrCode: "https://i.imgur.com/kS9Qj6q.png", // Replace with your actual QR code
     },
   ];
 
-  // State to hold the selected deposit coin object
   const [selectedDepositCoin, setSelectedDepositCoin] = useState(
     depositOptions[0]
-  ); // Default to Bitcoin
-
+  );
   const [amount, setAmount] = useState("");
-  const [file, setFile] = useState(null); // For payment proof file
+  const [file, setFile] = useState(null);
 
   const { creating, createError } = useSelector((state) => state.transaction);
+  const { user } = useSelector((state) => state.auth); // Assuming user info is available here for currency
 
-  // Effect to set the initial selected coin if needed, or if depositOptions change
   useEffect(() => {
     if (depositOptions.length > 0 && !selectedDepositCoin) {
       setSelectedDepositCoin(depositOptions[0]);
@@ -76,24 +70,22 @@ const Deposits = () => {
       return toast.error("Please fill in all fields.");
     }
 
-    // IMPORTANT: Your `createTransaction` Redux action and backend API
-    // need to be updated to handle file uploads (e.g., using FormData).
-    // The current `data` object only includes amount and coin, not the file.
-    // This example focuses on the UI transformation.
     const formData = new FormData();
     formData.append("type", "deposit");
     formData.append("amount", amount);
     formData.append("coin", selectedDepositCoin.currency);
+    // Crucial change: Send the selected coin's name as the method for deposits
+    formData.append("method", selectedDepositCoin.name);
+    formData.append("paymentProof", file); // Append the file
 
-    const action = await dispatch(createTransaction(formData)); // Pass FormData
+    const action = await dispatch(createTransaction(formData));
     if (createTransaction.fulfilled.match(action)) {
       toast.success("Deposit submitted successfully! Awaiting confirmation.");
       navigate("/transaction-history");
       setAmount("");
-      setSelectedDepositCoin(depositOptions[0]); // Reset to default after submission
+      setSelectedDepositCoin(depositOptions[0]);
       setFile(null);
     } else if (createTransaction.rejected.match(action)) {
-      // Error handling for rejected promise from createTransaction
       const errorMessage = action.payload || "Failed to submit deposit.";
       toast.error(errorMessage);
     }
@@ -144,11 +136,11 @@ const Deposits = () => {
           <select
             id="crypto-select"
             className={`w-full p-3 rounded-lg border focus:ring-blue-500 focus:border-blue-500
-              ${
-                theme === "dark"
-                  ? "bg-[#1f2937] border-borderColor text-textPrimary"
-                  : "bg-gray-50 border-gray-300 text-gray-900"
-              }
+            ${
+              theme === "dark"
+                ? "bg-[#1f2937] border-borderColor text-textPrimary"
+                : "bg-gray-50 border-gray-300 text-gray-900"
+            }
             `}
             value={selectedDepositCoin.currency}
             onChange={(e) =>
@@ -182,11 +174,11 @@ const Deposits = () => {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className={`w-full p-3 rounded-lg border focus:ring-blue-500 focus:border-blue-500
-              ${
-                theme === "dark"
-                  ? "bg-[#1f2937] border-borderColor text-textPrimary placeholder:text-textSecondary"
-                  : "bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-500"
-              }
+            ${
+              theme === "dark"
+                ? "bg-[#1f2937] border-borderColor text-textPrimary placeholder:text-textSecondary"
+                : "bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-500"
+            }
             `}
           />
         </div>
@@ -271,11 +263,11 @@ const Deposits = () => {
                 accept="image/*,application/pdf"
                 onChange={(e) => setFile(e.target.files[0])}
                 className={`w-full p-3 rounded-lg border
-                  ${
-                    theme === "dark"
-                      ? "bg-[#1f2937] border-borderColor text-textPrimary file:bg-gray-700 file:text-white file:rounded-md file:border-none file:py-1.5 file:px-3 file:mr-3"
-                      : "bg-gray-50 border-gray-300 text-gray-900 file:bg-gray-200 file:text-gray-700 file:rounded-md file:border-none file:py-1.5 file:px-3 file:mr-3"
-                  }
+                ${
+                  theme === "dark"
+                    ? "bg-[#1f2937] border-borderColor text-textPrimary file:bg-gray-700 file:text-white file:rounded-md file:border-none file:py-1.5 file:px-3 file:mr-3"
+                    : "bg-gray-50 border-gray-300 text-gray-900 file:bg-gray-200 file:text-gray-700 file:rounded-md file:border-none file:py-1.5 file:px-3 file:mr-3"
+                }
                 `}
               />
               {file && (

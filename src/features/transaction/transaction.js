@@ -1,21 +1,25 @@
+// features/transaction/transaction.js
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { API_URL } from "../../backendUrl";
+import { API_URL } from "../../backendUrl"; // Ensure this path is correct
 
 const getToken = () => localStorage.getItem("authToken");
 
+// Action for creating a deposit (now also used for other transaction types potentially)
 export const createTransaction = createAsyncThunk(
   "transactions/createTransaction",
   async (data, thunkAPI) => {
+    // 'data' here is expected to be a FormData object
     try {
       const token = getToken();
       const res = await axios.post(`${API_URL}/transactions/request`, data, {
         headers: {
-          "Content-Type": "application/json",
+          // When sending FormData, axios automatically sets Content-Type to 'multipart/form-data'
+          // Do NOT manually set 'Content-Type': 'application/json' for FormData
           Authorization: `Bearer ${token}`,
         },
       });
-
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
@@ -25,6 +29,7 @@ export const createTransaction = createAsyncThunk(
   }
 );
 
+// Action for creating a withdrawal (keeping it separate for clarity, though it uses the same route)
 export const createTransactionW = createAsyncThunk(
   "transactions/createTransactionW",
   async (data, thunkAPI) => {
@@ -32,11 +37,10 @@ export const createTransactionW = createAsyncThunk(
       const token = getToken();
       const res = await axios.post(`${API_URL}/transactions/request`, data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", // Withdrawals likely don't send files, so JSON is fine
           Authorization: `Bearer ${token}`,
         },
       });
-
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
@@ -113,6 +117,7 @@ export const fetchUserTransactions = createAsyncThunk(
     }
   }
 );
+
 export const fetchUserDeposits = createAsyncThunk(
   "transactions/fetchUserDeposits",
   async (_, { rejectWithValue }) => {
@@ -148,6 +153,31 @@ export const fetchTransactionById = createAsyncThunk(
     }
   }
 );
+
+// NEW ASYNC THUNK FOR UPGRADE DEPOSIT
+export const initiateUpgradeDeposit = createAsyncThunk(
+  "transaction/initiateUpgradeDeposit",
+  async (formData, thunkAPI) => {
+    try {
+      const token = getToken();
+      const res = await axios.post(
+        `${API_URL}/transactions/upgrade-request`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Failed to fetch your transactions"
+      );
+    }
+  }
+);
+
 const transactionSlice = createSlice({
   name: "transactions",
   initialState: {
@@ -159,26 +189,38 @@ const transactionSlice = createSlice({
     creating: false, // Creating transaction
     createError: null, // Error while creating
   },
-
   reducers: {},
   extraReducers: (builder) => {
     builder
-
-      // User create
+      // User create (Deposit, potentially other types)
       .addCase(createTransaction.pending, (state) => {
         state.creating = true;
         state.createError = null;
       })
       .addCase(createTransaction.fulfilled, (state, action) => {
         state.creating = false;
-        state.userTransactions.unshift(action.payload);
+        state.userTransactions.unshift(action.payload); // Add new transaction to list
       })
       .addCase(createTransaction.rejected, (state, action) => {
         state.creating = false;
         state.createError = action.payload;
       })
 
-      // Admin fetch
+      // User withdrawal (createTransactionW)
+      .addCase(createTransactionW.pending, (state) => {
+        state.creating = true; // Use 'creating' for consistency
+        state.createError = null;
+      })
+      .addCase(createTransactionW.fulfilled, (state, action) => {
+        state.creating = false;
+        state.userTransactions.unshift(action.payload); // Add withdrawal to list
+      })
+      .addCase(createTransactionW.rejected, (state, action) => {
+        state.creating = false;
+        state.createError = action.payload;
+      })
+
+      // Admin fetch all transactions
       .addCase(fetchTransactions.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -192,7 +234,7 @@ const transactionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Admin update
+      // Admin update transaction status
       .addCase(updateTransactionStatus.fulfilled, (state, action) => {
         const updated = action.payload;
         state.items = state.items.map((t) =>
@@ -200,7 +242,7 @@ const transactionSlice = createSlice({
         );
       })
 
-      // User fetch
+      // User fetch their own transactions
       .addCase(fetchUserTransactions.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -214,35 +256,24 @@ const transactionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // fetchUserDeposits
+      // Fetch user deposits (specific type)
       .addCase(fetchUserDeposits.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchUserDeposits.fulfilled, (state, action) => {
         state.loading = false;
-        state.userTransactions = action.payload;
+        state.userTransactions = action.payload; // This will overwrite all userTransactions, be careful
       })
       .addCase(fetchUserDeposits.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // User withdraw (createTransactionW)
-      .addCase(createTransactionW.pending, (state) => {
-        state.createError = true;
-        state.createError = null;
-      })
-      .addCase(createTransactionW.fulfilled, (state, action) => {
-        state.createError = false;
-        state.userTransactions.unshift(action.payload); // Add withdrawal to list
-      })
-      .addCase(createTransactionW.rejected, (state, action) => {
-        state.createError = false;
-        state.createError = action.payload;
-      })
+      // Fetch single transaction by ID
       .addCase(fetchTransactionById.pending, (state) => {
         state.loading = true;
+        state.error = null; // Clear previous error
       })
       .addCase(fetchTransactionById.fulfilled, (state, action) => {
         state.selectedTransaction = action.payload;
@@ -250,7 +281,25 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchTransactionById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.error.message || action.payload?.message; // Use payload message if available
+      })
+
+      // NEW HANDLERS FOR initiateUpgradeDeposit
+      .addCase(initiateUpgradeDeposit.pending, (state) => {
+        state.loading = true; // You might want a separate 'isSubmitting' state
+        state.error = null;
+      })
+      .addCase(initiateUpgradeDeposit.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally, add the new upgrade transaction to userTransactions or items
+        // depending on whether it should immediately appear for the user or only admin
+        state.userTransactions.push(action.payload); // Add to user's list
+        // If admins should see it immediately without re-fetching, add to items too
+        state.items.push(action.payload);
+      })
+      .addCase(initiateUpgradeDeposit.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

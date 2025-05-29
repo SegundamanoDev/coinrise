@@ -88,30 +88,6 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
-// 5. Toggle user status (block/unblock)
-export const toggleUserStatus = createAsyncThunk(
-  "users/toggleStatus",
-  async (id, thunkAPI) => {
-    try {
-      const token = getToken();
-      const res = await axios.patch(
-        `${API_URL}/users/${id}/status`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      return { id, message: res.data.message };
-    } catch (err) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.message || "Failed to toggle status"
-      );
-    }
-  }
-);
-
 // 6. Top up profit
 export const topupUserProfit = createAsyncThunk(
   "users/topupProfit",
@@ -147,7 +123,7 @@ export const fetchProfile = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res.data);
+
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
@@ -157,6 +133,55 @@ export const fetchProfile = createAsyncThunk(
   }
 );
 
+// Change User Password
+export const changePassword = createAsyncThunk(
+  "users/changePassword",
+  async (passwords, thunkAPI) => {
+    try {
+      const token = getToken();
+      // passwords should contain { currentPassword, newPassword, confirmPassword }
+      const response = await axios.put(`${API_URL}/users/password`, passwords, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data; // Return success message or confirmation
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Update User Profile Info (e.g., name, country, phone, address)
+export const updateProfile = createAsyncThunk(
+  "users/updateProfile",
+  async (userData, thunkAPI) => {
+    try {
+      const token = getToken();
+      // Send only the fields that are allowed to be updated by the user
+      const response = await axios.put(`${API_URL}/users/profile`, userData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data; // Return the updated user object
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 // =====================
 // Initial State
 // =====================
@@ -164,6 +189,8 @@ export const fetchProfile = createAsyncThunk(
 const initialState = {
   users: [],
   selectedUser: null,
+  passwordStatus: { loading: false, success: null, error: null }, // For password changes
+  updateStatus: { loading: false, success: null, error: null },
   profile: null,
   loading: false,
   error: null,
@@ -183,6 +210,12 @@ const userSlice = createSlice({
     },
     clearSelectedUser: (state) => {
       state.selectedUser = null;
+    },
+    resetUpdateStatus: (state) => {
+      state.updateStatus = { loading: false, success: null, error: null };
+    },
+    resetPasswordStatus: (state) => {
+      state.passwordStatus = { loading: false, success: null, error: null };
     },
   },
   extraReducers: (builder) => {
@@ -249,22 +282,6 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Toggle User Status
-      .addCase(toggleUserStatus.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(toggleUserStatus.fulfilled, (state, action) => {
-        state.loading = false;
-        state.statusMessage = action.payload.message;
-        const user = state.users.find((u) => u._id === action.payload.id);
-        if (user) user.isBlocked = !user.isBlocked;
-      })
-      .addCase(toggleUserStatus.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
       // Top Up Profit
       .addCase(topupUserProfit.pending, (state) => {
         state.loading = true;
@@ -295,6 +312,38 @@ const userSlice = createSlice({
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // updateProfile
+      .addCase(updateProfile.pending, (state) => {
+        state.updateStatus.loading = true;
+        state.updateStatus.success = null;
+        state.updateStatus.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.updateStatus.loading = false;
+        state.updateStatus.success = true;
+        state.profile = action.payload; // Update local profile state
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.updateStatus.loading = false;
+        state.updateStatus.success = false;
+        state.updateStatus.error = action.payload;
+      })
+      // changePassword
+      .addCase(changePassword.pending, (state) => {
+        state.passwordStatus.loading = true;
+        state.passwordStatus.success = null;
+        state.passwordStatus.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.passwordStatus.loading = false;
+        state.passwordStatus.success = true;
+        // Password change doesn't directly update profile data usually
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.passwordStatus.loading = false;
+        state.passwordStatus.success = false;
+        state.passwordStatus.error = action.payload;
       });
   },
 });
@@ -304,5 +353,6 @@ const userSlice = createSlice({
 // =====================
 
 export const { clearStatusMessage, clearSelectedUser } = userSlice.actions;
-
+export const { resetUpdateStatus, resetPasswordStatus, resetAvatarStatus } =
+  userSlice.actions;
 export default userSlice.reducer;

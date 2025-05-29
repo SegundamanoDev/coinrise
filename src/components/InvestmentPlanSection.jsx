@@ -12,6 +12,7 @@ const TradingPlans = ({ heading }) => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [amount, setAmount] = useState("");
+  const [amountError, setAmountError] = useState(""); // State for amount validation error
 
   useEffect(() => {
     dispatch(getAllPlans());
@@ -19,19 +20,44 @@ const TradingPlans = ({ heading }) => {
   }, [dispatch]);
 
   const handleSubmit = () => {
-    if (!amount || isNaN(amount)) {
+    // Convert amount to a number for validation
+    const parsedAmount = Number(amount);
+
+    // Client-side validation
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setAmountError("Please enter a valid positive number.");
       return;
     }
 
+    if (selectedPlan) {
+      if (parsedAmount < selectedPlan.minAmount) {
+        setAmountError(
+          `Amount cannot be less than $${selectedPlan.minAmount.toLocaleString()}.`
+        );
+        return;
+      }
+      if (parsedAmount > selectedPlan.maxAmount) {
+        setAmountError(
+          `Amount cannot exceed $${selectedPlan.maxAmount.toLocaleString()}.`
+        );
+        return;
+      }
+    }
+
+    // Clear any previous errors
+    setAmountError("");
+
+    // Dispatch the investment action
     dispatch(
       investInPlan({
-        amount: Number(amount),
-        planId: selectedPlan,
+        amount: parsedAmount,
+        planId: selectedPlan._id, // Use _id here instead of the whole object
         roi: selectedPlan.roiPercent,
         duration: selectedPlan.durationHours,
       })
     );
 
+    // Reset state after successful dispatch
     setShowModal(false);
     setAmount("");
     setSelectedPlan(null);
@@ -118,6 +144,7 @@ const TradingPlans = ({ heading }) => {
                 onClick={() => {
                   setSelectedPlan(plan);
                   setShowModal(true);
+                  setAmountError(""); // Clear error when opening new modal
                 }}
               >
                 JOIN
@@ -147,10 +174,16 @@ const TradingPlans = ({ heading }) => {
             <input
               type="number"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder={`Enter amount ($${selectedPlan.minAmount} - $${selectedPlan.maxAmount})`}
-              className="w-full border border-gray-300 rounded-md p-2 mb-4"
+              onChange={(e) => {
+                setAmount(e.target.value);
+                setAmountError(""); // Clear error as user types
+              }}
+              placeholder={`Enter amount ($${selectedPlan.minAmount.toLocaleString()} - $${selectedPlan.maxAmount.toLocaleString()})`}
+              className="w-full border border-gray-300 rounded-md p-2 mb-2"
             />
+            {amountError && (
+              <p className="text-red-500 text-sm mb-4">{amountError}</p>
+            )}
             <button
               onClick={handleSubmit}
               className="w-full bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white py-2 rounded-md font-semibold"
