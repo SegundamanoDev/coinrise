@@ -83,7 +83,7 @@ const AdminRoute = ({ children }) => {
     return <Navigate to="/sign-in" replace state={{ from: location }} />;
   }
 
-  if (user.role !== "admin") {
+  if (user && user.role !== "admin") {
     // Redirect to a forbidden page or regular dashboard if not an admin
     return <Navigate to="/dashboard" replace />;
   }
