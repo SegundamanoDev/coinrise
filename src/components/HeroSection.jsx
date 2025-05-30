@@ -4,36 +4,37 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+// Reimagined slides with stronger, more benefit-oriented titles and descriptions
 const slides = [
   {
-    image: "/images/file_00000000f2d0620a91ca2fb1d36a2755.png",
-    title: "TRADE SMARTER, NOT HARDER",
+    image: "/images/file_00000000f2d0620a91ca2fb1d36a2755.png", // Original path
+    title: "Unlock Your Financial Future with AI",
     description:
-      "Experience the power of AI-backed Forex trading with expert insights and real-time analytics.",
+      "Leverage cutting-edge artificial intelligence for smarter investments and optimized returns across diverse markets.",
   },
   {
-    image: "/images/file_0000000019dc62468b0cf45585d91e12.png",
-    title: "MODERN BITCOIN MINING",
+    image: "/images/file_0000000019dc62468b0cf45585d91e12.png", // Original path
+    title: "Seamless Crypto Mining, Sustainable Growth",
     description:
-      "Tap into industrial-grade crypto mining powered by renewable energy and cutting-edge tech.",
+      "Join our eco-friendly, industrial-scale Bitcoin mining operations powered by renewable energy. Earn passively, responsibly.",
   },
   {
-    image: "/images/file_00000000f2d0620a91ca2fb1d36a2755.png",
-    title: "TRACK YOUR PROFITS ON THE GO",
+    image: "/images/file_00000000f2d0620a91ca2fb1d36a2755.png", // Original path (repeated from first, consider unique image)
+    title: "Track Your Wealth, Anytime, Anywhere",
     description:
-      "Monitor your earnings, investments, and real-time BTC/USD values directly from your mobile.",
+      "Our intuitive dashboard provides real-time insights into your portfolio and crypto valuations, right from your device.",
   },
   {
-    image: "/images/newfileii.png",
-    title: "GLOBAL ACCESS, LOCAL EXPERTISE",
+    image: "/images/newfileii.png", // Original path
+    title: "Global Markets at Your Fingertips",
     description:
-      "Join a worldwide network of traders with access to global markets and currencies.",
+      "Access a world of opportunities. Trade Forex, commodities, and crypto with expert guidance and secure execution.",
   },
   {
-    image: "/images/newfile.png",
-    title: "GROW YOUR WEALTH CONFIDENTLY",
+    image: "/images/newfile.png", // Original path
+    title: "Build Your Legacy with Confidence",
     description:
-      "Our professionals ensure your money is put to work in safe, strategic investments.",
+      "Our seasoned financial experts are dedicated to crafting secure and strategic investment paths tailored for your prosperity.",
   },
 ];
 
@@ -43,45 +44,49 @@ const HeroSection = () => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 1000,
+    speed: 1200, // Slightly slower transition for smoothness
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 6000,
+    autoplaySpeed: 7000, // Longer display time per slide
     fade: true,
     cssEase: "ease-in-out",
     pauseOnHover: false,
+    arrows: false, // Often removed for clean hero sections, dots suffice
   };
 
   return (
-    <div className="relative h-screen w-full bg-black overflow-hidden">
-      <Slider {...settings} className="h-full parallax-slider">
+    <div className="relative h-screen w-full bg-black overflow-hidden font-montserrat">
+      <Slider {...settings} className="h-full">
         {slides.map((slide, index) => (
-          <div
-            key={index}
-            className="relative h-screen w-full will-change-transform transform-gpu"
-          >
+          <div key={index} className="relative h-screen w-full transform-gpu">
+            {/* Background Image with Enhanced Parallax (simulated via scale and positioning) */}
             <div
-              className="absolute inset-0 h-full w-full bg-center bg-cover transition-transform duration-1000"
+              className="absolute inset-0 h-full w-full bg-cover bg-center transition-transform duration-1000 ease-out"
               style={{
                 backgroundImage: `url(${slide.image})`,
-                backgroundAttachment: "fixed",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                transform: "scale(1.05)", // Slight scale for subtle zoom effect
+                backgroundPosition: "center", // Ensures image is centered
               }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-[#00befe] via-transparent to-[#a700ff] opacity-60 mix-blend-screen"></div>
-            <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black to-transparent z-10"></div>
-            <div className="relative z-20 flex flex-col items-center justify-center h-full px-6 text-center text-white">
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight drop-shadow-xl">
+            ></div>
+            {/* Dynamic Overlay for visual appeal */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/70 via-transparent to-purple-900/70 mix-blend-multiply transition-opacity duration-500 opacity-80"></div>
+            <div className="absolute inset-0 bg-black/40"></div>{" "}
+            {/* Darker overlay for text readability */}
+            {/* Bottom Fade Gradient - subtle transition to content below */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-10"></div>
+            {/* Content Area */}
+            <div className="relative z-20 flex flex-col items-center justify-center h-full px-4 text-center text-white md:px-8 lg:px-12">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight drop-shadow-lg max-w-4xl animate-fade-in-up">
                 {slide.title}
               </h1>
-              <p className="text-[#e0e0e0] mt-4 max-w-2xl drop-shadow-md">
+              <p className="text-base sm:text-lg md:text-xl text-gray-200 mt-4 max-w-3xl drop-shadow-md animate-fade-in-up delay-200">
                 {slide.description}
               </p>
               <button
-                onClick={() => navigate("/sign-in")}
-                className="mt-8 bg-gradient-to-r from-[#00befe] to-[#a700ff] text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-all"
+                onClick={() => navigate("/sign-in")} // Always navigate to /sign-in
+                className="mt-8 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-700 text-white font-bold text-lg rounded-full shadow-2xl hover:scale-105 hover:shadow-glow transition-all duration-300 transform animate-fade-in-up delay-400
+                           focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-75"
               >
                 Get started for free
               </button>

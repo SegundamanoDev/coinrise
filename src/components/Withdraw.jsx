@@ -238,7 +238,6 @@ const WithdrawFunds = () => {
       }
     `}
     >
-      <CryptoTicker />
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-textPrimary">
         Withdraw Funds
       </h1>

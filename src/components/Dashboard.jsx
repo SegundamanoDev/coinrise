@@ -1297,7 +1297,7 @@ const DashboardLayout = () => {
 
             <Link
               to="/dashboard"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1307,7 +1307,7 @@ const DashboardLayout = () => {
             </Link>
             <Link
               to="/deposit"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1317,7 +1317,7 @@ const DashboardLayout = () => {
             </Link>
             <Link
               to="/withdraw"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1327,7 +1327,7 @@ const DashboardLayout = () => {
             </Link>
             <Link
               to="/deposit-history"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1337,7 +1337,7 @@ const DashboardLayout = () => {
             </Link>
             <Link
               to="/transaction-history"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1347,7 +1347,7 @@ const DashboardLayout = () => {
             </Link>
             <Link
               to="/upgrade-account"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1357,7 +1357,7 @@ const DashboardLayout = () => {
             </Link>
             <Link
               to="/investment-plans"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1367,7 +1367,7 @@ const DashboardLayout = () => {
             </Link>
             <Link
               to="/profile"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}
@@ -1378,7 +1378,7 @@ const DashboardLayout = () => {
 
             <Link
               to="/"
-              className={`flex items-center space-x-3 py-2 font-[Montserrat] hover:text-blueAccent
+              className={`flex items-center space-x-3 py-2  hover:text-blueAccent
                 ${theme === "dark" ? "text-textSecondary" : "text-gray-700"}
               `}
               onClick={() => setIsOpen(false)}

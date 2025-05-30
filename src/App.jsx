@@ -1,5 +1,11 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import Home from "./components/Home";
 import About from "./components/About";
 import Contact from "./components/Contact";
@@ -24,7 +30,7 @@ import AdminTransactions from "./components/admin/Transaction";
 import Setting from "./components/admin/Settings";
 import ScrollToTops from "./components/ScrollToTop";
 import { store } from "./redux/store";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux"; // Import useSelector
 import LoadingSpinner from "./components/LoadingSpinner";
 import TermsAndConditions from "./components/TermsAndConditions";
 import PrivacyPolicy from "./components/PrivacyPolicy";
@@ -48,6 +54,42 @@ import TradingPlans from "./components/InvestmentPlanSection";
 import ProfilePage from "./components/Profile";
 import DashboardPage from "./components/DhPage";
 
+// PrivateRoute component to protect routes
+const PrivateRoute = ({ children, roles }) => {
+  const { user, token } = useSelector((state) => state.auth); // Access auth state from Redux
+  const location = useLocation();
+
+  if (!token || !user) {
+    // Redirect to sign-in page if not authenticated
+    return <Navigate to="/sign-in" replace state={{ from: location }} />;
+  }
+
+  if (roles && !roles.includes(user.role)) {
+    // Redirect to a forbidden page or dashboard if user role doesn't match
+    // For now, redirecting to dashboard
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
+// AdminRoute component to protect admin routes
+const AdminRoute = ({ children }) => {
+  const { user, token } = useSelector((state) => state.auth);
+  const location = useLocation();
+
+  if (!token || !user) {
+    return <Navigate to="/sign-in" replace state={{ from: location }} />;
+  }
+
+  if (user.role !== "admin") {
+    // Redirect to a forbidden page or regular dashboard if not an admin
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
 const AppRoutes = () => {
   useEffect(() => {
     AOS.init({ once: true });
@@ -70,55 +112,213 @@ const AppRoutes = () => {
     return () => clearTimeout(timer);
   }, [location]);
 
-  const hideSupportBar = ["/sign-in", "/sign-up"].includes(location.pathname);
-  const hidewhatsapp = ["/sign-in", "/sign-up"].includes(location.pathname);
-  const footer = ["/sign-in", "/sign-up"].includes(location.pathname);
+  const hideSupportBar = [
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/reset-password/:token",
+  ].includes(location.pathname);
+  const hidewhatsapp = [
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/reset-password/:token",
+  ].includes(location.pathname);
+  const footer = [
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/reset-password/:token",
+  ].includes(location.pathname);
 
   return (
     <>
       {loading && <LoadingSpinner />}
       {showRoutes && (
         <Routes>
+          {/* Public Routes - Accessible without login */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/dashboard" element={<DashboardLayout />} />
-          <Route path="/transaction-history" element={<Transactions />} />
-          <Route path="/deposit" element={<Deposit />} />
-          <Route path="/deposit-history" element={<DepositHistory />} />
-          <Route path="/create-investmentplan" element={<InvestmentPlans />} />
-          <Route path="/investment-plans" element={<TradingPlans />} />
-          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/confirm-success" element={<SuccessModal />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/withdraw" element={<Withdraw />} />
-          <Route path="/withdrawal-pin" element={<WithdrawPin />} />
-          <Route path="/activity-overview" element={<ActivityOverview />} />
-          <Route
-            path="/invest/confirm/:planId"
-            element={<ConfirmInvestment />}
-          />
-          <Route path="/affiliate" element={<AffiliateProgram />} />
-          <Route path="/dh" element={<DashboardPage />} />
-
-          {/* Admin */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<Users />} />
-          <Route path="/admin/users/:id" element={<UserDetail />} />
-          <Route
-            path="/admin/investments"
-            element={<AdminInvestmentsDashboard />}
-          />
-          <Route path="/admin/transactions" element={<AdminTransactions />} />
-          <Route path="/admin/settings" element={<Setting />} />
           <Route path="/terms-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/aml-policy" element={<AMLPolicy />} />
-          <Route path="/upgrade-account" element={<UpgradeAccount />} />
+          <Route path="/confirm-success" element={<SuccessModal />} />{" "}
+          {/* Consider if this should be public or private */}
+          {/* Authenticated User Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <DashboardLayout />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/transaction-history"
+            element={
+              <PrivateRoute>
+                <Transactions />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/deposit"
+            element={
+              <PrivateRoute>
+                <Deposit />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/deposit-history"
+            element={
+              <PrivateRoute>
+                <DepositHistory />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/create-investmentplan"
+            element={
+              <PrivateRoute>
+                <InvestmentPlans />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/investment-plans"
+            element={
+              <PrivateRoute>
+                <TradingPlans />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/withdraw"
+            element={
+              <PrivateRoute>
+                <Withdraw />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/withdrawal-pin"
+            element={
+              <PrivateRoute>
+                <WithdrawPin />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/activity-overview"
+            element={
+              <PrivateRoute>
+                <ActivityOverview />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/invest/confirm/:planId"
+            element={
+              <PrivateRoute>
+                <ConfirmInvestment />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/affiliate"
+            element={
+              <PrivateRoute>
+                <AffiliateProgram />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dh"
+            element={
+              <PrivateRoute>
+                <DashboardPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/upgrade-account"
+            element={
+              <PrivateRoute>
+                <UpgradeAccount />
+              </PrivateRoute>
+            }
+          />
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <Users />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users/:id"
+            element={
+              <AdminRoute>
+                <UserDetail />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/investments"
+            element={
+              <AdminRoute>
+                <AdminInvestmentsDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/transactions"
+            element={
+              <AdminRoute>
+                <AdminTransactions />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <AdminRoute>
+                <Setting />
+              </AdminRoute>
+            }
+          />
         </Routes>
       )}
 
@@ -144,7 +344,6 @@ const AppRoutes = () => {
 const App = () => (
   <BrowserRouter>
     <ScrollToTops />
-
     <Provider store={store}>
       <ThemeProvider>
         <AppRoutes />
