@@ -164,26 +164,15 @@ const DashboardLayout = () => {
     {
       name: "Bitcoin",
       currency: "BTC",
-      address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-      qrCode: "https://i.imgur.com/gK4QRgJ.png",
+      address: "1QGgLGPNRvnRW7kX67SQw3TjNmj1ycwKcB",
+      qrCode: "https://i.imgur.com/gK4QRgJ.png", // Replace with your actual QR code
     },
-    {
-      name: "Ethereum",
-      currency: "ETH",
-      address: "0x742d35Cc6634C05329241bE2bEE656A102D65D4F",
-      qrCode: "https://i.imgur.com/kS9Qj6q.png",
-    },
-    {
-      name: "Litecoin",
-      currency: "LTC",
-      address: "MLmD5yNf1V1o8g3kE2Q3J3m8t2v2p2q2r2s2t2u2",
-      qrCode: "https://i.imgur.com/gK4QRgJ.png",
-    },
+
     {
       name: "USDT (TRC20)",
       currency: "USDT",
-      address: "TR7NhqjeKQxGTCi8qfenf2Fm2V2e2R2z2x2",
-      qrCode: "https://i.imgur.com/kS9Qj6q.png",
+      address: "0xf8e859551b74b2a230c6fbe5300a32a2bc585e23",
+      qrCode: "https://i.imgur.com/kS9Qj6q.png", // Replace with your actual QR code
     },
   ];
   const [selectedDepositCoin, setSelectedDepositCoin] = useState(
@@ -578,7 +567,7 @@ const DashboardLayout = () => {
               <ShieldCheck size={24} className="text-green-400" />
               <p className="font-semibold text-lg text-textPrimary">
                 Account-Type: <br />
-                {user?.currentPlan}
+                {user?.currentPlan || "Free"}
               </p>
             </div>
             <div

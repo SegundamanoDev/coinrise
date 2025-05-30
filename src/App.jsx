@@ -36,7 +36,7 @@ import TermsAndConditions from "./components/TermsAndConditions";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import AMLPolicy from "./components/AMLPolicy";
 import { ThemeProvider } from "./components/context/ThemeContext";
-import Whatsapp from "./components/Whatsapp";
+// import Whatsapp from "./components/Whatsapp";
 import UpgradeAccount from "./components/UpgradeAccount";
 import DepositHistory from "./components/DepositHistory";
 import WithdrawPin from "./components/WithdrawPin";
@@ -53,6 +53,7 @@ import ResetPassword from "./components/ResetPassword";
 import TradingPlans from "./components/InvestmentPlanSection";
 import ProfilePage from "./components/Profile";
 import DashboardPage from "./components/DhPage";
+import InvestmentPlanSection from "./components/InvestmentPlan";
 
 // PrivateRoute component to protect routes
 const PrivateRoute = ({ children, roles }) => {
@@ -194,7 +195,7 @@ const AppRoutes = () => {
             path="/investment-plans"
             element={
               <PrivateRoute>
-                <TradingPlans />
+                <InvestmentPlanSection />
               </PrivateRoute>
             }
           />
@@ -323,7 +324,7 @@ const AppRoutes = () => {
       )}
 
       {!hideSupportBar && <StickySupportBar />}
-      {!hidewhatsapp && <Whatsapp />}
+      {/* {!hidewhatsapp && <Whatsapp />} */}
       {!footer && <Footer />}
 
       {/* Toast notifications container */}

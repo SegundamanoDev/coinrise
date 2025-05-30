@@ -18,17 +18,14 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-bold mb-4">CONTACT US</h3>
           <p className="flex items-start gap-2">
-            <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1" />1
-            Trustvest Road, Austin, Texas 78725, United State of America.
+            <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1" />
+            014 Main Street, Anytown, CA 90210, USA.
           </p>
           <p className="flex items-center gap-2 mt-3">
             <FontAwesomeIcon icon={faEnvelope} />
             info@trustvestfx.com
           </p>
-          <p className="flex items-center gap-2 mt-2">
-            <FontAwesomeIcon icon={faEnvelope} />
-            info@trustvestfx.com
-          </p>
+          {/* Removed duplicate email address for clarity */}
         </div>
 
         {/* LINKS */}

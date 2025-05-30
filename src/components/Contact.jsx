@@ -77,22 +77,7 @@ const Contact = () => {
                 Response within 24 hours
               </p>
             </div>
-            <div
-              className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 flex flex-col items-center text-center"
-              data-aos="fade-up"
-              data-aos-delay="400"
-            >
-              <div className="mb-4 bg-gray-800 p-3 rounded-full inline-flex justify-center items-center shadow-inner">
-                <Phone size={32} className="text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Phone Support
-              </h3>
-              <p className="text-gray-400 text-base">+1 (800) 123-4567</p>
-              <p className="text-gray-500 text-sm mt-1">
-                Mon-Fri, 9 AM - 5 PM EST
-              </p>
-            </div>
+
             <div
               className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 flex flex-col items-center text-center"
               data-aos="fade-up"
@@ -105,7 +90,7 @@ const Contact = () => {
                 Our Office
               </h3>
               <p className="text-gray-400 text-base">
-                123 Crypto Lane, London, UK
+                014 Main Street, Anytown, CA 90210, USA.
               </p>
               <p className="text-gray-500 text-sm mt-1">
                 Visits by appointment only

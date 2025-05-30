@@ -19,25 +19,14 @@ const Deposits = () => {
     {
       name: "Bitcoin",
       currency: "BTC",
-      address: "bc1q5n7kkd6hmzsdrpvgl4223e",
+      address: "1QGgLGPNRvnRW7kX67SQw3TjNmj1ycwKcB",
       qrCode: "https://i.imgur.com/gK4QRgJ.png", // Replace with your actual QR code
     },
-    {
-      name: "Ethereum",
-      currency: "ETH",
-      address: "0x742d35Cc6634C05329241bE2bEE656A102D65D4F",
-      qrCode: "https://i.imgur.com/kS9Qj6q.png", // Replace with your actual QR code
-    },
-    {
-      name: "Litecoin",
-      currency: "LTC",
-      address: "MLmD5yNf1V1o8g3kE2Q3J3m8t2v2p2q2r2s2t2u2",
-      qrCode: "https://i.imgur.com/gK4QRgJ.png", // Replace with your actual QR code
-    },
+
     {
       name: "USDT (TRC20)",
       currency: "USDT",
-      address: "TR7NhqjeKQxGTCi8qfenf2Fm2V2e2R2z2x2",
+      address: "0xf8e859551b74b2a230c6fbe5300a32a2bc585e23",
       qrCode: "https://i.imgur.com/kS9Qj6q.png", // Replace with your actual QR code
     },
   ];

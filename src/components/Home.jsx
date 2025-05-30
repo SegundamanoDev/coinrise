@@ -15,6 +15,7 @@ import MarketOverview from "./MarketOverView";
 import TechnicalAnalysis from "./TechnicalAnalysis";
 import ForexCrossRates from "./ForexCrossRates";
 import CertificateSection from "./CertificateSection";
+import InvestmentPlanSection from "./InvestmentPlan";
 
 const Home = () => {
   return (
@@ -27,7 +28,7 @@ const Home = () => {
       <HowItWorksSection />
       <WhyChooseUsSection />
       <TechnicalAnalysis />
-      <InvestmentPlansSection heading="TRADING PLANS" />
+      <InvestmentPlanSection />
       <TestimonialSlider />
       <StatsCountersSection />
       <ForexCrossRates />
