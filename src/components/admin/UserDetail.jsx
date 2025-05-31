@@ -28,6 +28,7 @@ import {
   CheckCircle,
   Info,
   Edit,
+  Landmark,
 } from "lucide-react"; // Added more icons
 import { format } from "date-fns"; // For date formatting
 
@@ -72,7 +73,7 @@ const UserDetail = () => {
     updateLoading,
     updateError,
   } = useSelector((state) => state.users); // Assuming these states are in userSlice
-  console.log(selectedUser);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -422,7 +423,7 @@ const UserDetail = () => {
                 <strong>Address:</strong> {selectedUser?.address || "N/A"}
               </p>
               <p className="flex items-center gap-2">
-                {/* <City size={20} className="text-blue-400" /> */}
+                <Landmark size={20} className="text-blue-400" />
                 <strong>City:</strong> {selectedUser?.city || "N/A"}
               </p>
               <p className="flex items-center gap-2">

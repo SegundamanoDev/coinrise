@@ -145,6 +145,8 @@ export const changePassword = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
+
+      console.log(response);
       return response.data; // Return success message or confirmation
     } catch (error) {
       const message =
@@ -257,7 +259,6 @@ const userSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.statusMessage = "User updated successfully";
-        
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;

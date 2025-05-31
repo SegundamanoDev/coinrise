@@ -58,7 +58,7 @@ const TradingPlans = ({ plan }) => {
 
   return (
     <div className="bg-gray-800 text-white rounded-lg shadow-lg p-6 flex flex-col transform hover:scale-105 transition-transform duration-300">
-      <h3 className="text-2xl font-bold text-center mb-4 text-yellow-400">
+      <h3 className="text-2xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
         {name}
       </h3>
 
@@ -113,7 +113,7 @@ const TradingPlans = ({ plan }) => {
       <button
         onClick={handleInvestNow}
         disabled={isInvesting} // Disable button while investing
-        className={`mt-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-6 rounded-md transition duration-300
+        className={`mt-auto bg-gradient-to-r from-blue-400 to-purple-500 text-[#ffffff] font-bold py-3 px-6 rounded-md transition duration-300
           ${isInvesting ? "opacity-70 cursor-not-allowed" : ""}
         `}
       >

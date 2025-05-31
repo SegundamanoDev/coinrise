@@ -9,7 +9,7 @@ import { Quote, Send, User, Mail, MessageSquare } from "lucide-react"; // Lucide
 
 const testimonials = [
   {
-    name: "John Doe",
+    name: "Greg Greenwood",
     country: "USA",
     flag: "🇺🇸",
     image:
