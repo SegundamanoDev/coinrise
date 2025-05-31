@@ -55,105 +55,41 @@ import ProfilePage from "./components/Profile";
 import DashboardPage from "./components/DhPage";
 import InvestmentPlanSection from "./components/InvestmentPlan";
 
-// Helper function to get auth state from localStorage
-const getAuthFromLocalStorage = () => {
-  try {
-    const serializedAuth = localStorage.getItem("authUser");
-    if (serializedAuth === null) {
-      return { user: null, token: null };
-    }
-    const authData = JSON.parse(serializedAuth);
-    // Ensure both user and token are present in the stored object
-    return {
-      user: authData.user || null,
-      token: authData.token || null,
-    };
-  } catch (e) {
-    console.error("Error parsing authUser from localStorage:", e);
-    return { user: null, token: null };
-  }
-};
-
 // PrivateRoute component to protect routes
 const PrivateRoute = ({ children, roles }) => {
-  // Prioritize Redux state, but fall back to localStorage if Redux is empty
-  let { user, token } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth); // Access auth state from Redux
   const location = useLocation();
 
-  // If Redux state for user or token is empty, try localStorage
-  if (!user || !token) {
-    const localStorageAuth = getAuthFromLocalStorage();
-    user = localStorageAuth.user;
-    token = localStorageAuth.token;
-  }
-
-  // --- Add extensive logging here ---
-  console.log("--- PrivateRoute Check ---");
-  console.log("Location:", location.pathname);
-  console.log("Token (after lookup):", token ? "Present" : "Missing");
-  console.log("User Object (after lookup):", user);
-  if (user) {
-    console.log("User Role (after lookup):", user.role);
-    console.log("Required Roles:", roles);
-  }
-  // --- End logging ---
-
   if (!token || !user) {
-    console.log("PrivateRoute: Redirecting to sign-in (no token or user).");
+    // Redirect to sign-in page if not authenticated
     return <Navigate to="/sign-in" replace state={{ from: location }} />;
   }
 
-  // Check if user.role exists and matches the required roles
-  if (roles && (!user.role || !roles.includes(user.role))) {
-    console.log(
-      `PrivateRoute: Access denied. User role '${user.role}' not in required roles.`
-    );
-    return <Navigate to="/dashboard" replace />; // Redirect to dashboard if role doesn't match
+  if (roles && !roles.includes(user.role)) {
+    // Redirect to a forbidden page or dashboard if user role doesn't match
+    // For now, redirecting to dashboard
+    return <Navigate to="/dashboard" replace />;
   }
 
-  console.log("PrivateRoute: Access Granted.");
   return children;
 };
 
-// AdminRoute component to protect admin routes
-const AdminRoute = ({ children }) => {
-  // Prioritize Redux state, but fall back to localStorage if Redux is empty
-  let { user, token } = useSelector((state) => state.auth);
-  const location = useLocation();
+// // AdminRoute component to protect admin routes
+// const AdminRoute = ({ children }) => {
+//   const { user, token } = useSelector((state) => state.auth);
+//   const location = useLocation();
 
-  // If Redux state for user or token is empty, try localStorage
-  if (!user || !token) {
-    const localStorageAuth = getAuthFromLocalStorage();
-    user = localStorageAuth.user;
-    token = localStorageAuth.token;
-  }
+//   if (!token || !user) {
+//     return <Navigate to="/sign-in" replace state={{ from: location }} />;
+//   }
 
-  // --- Add extensive logging here ---
-  console.log("--- AdminRoute Check ---");
-  console.log("Location:", location.pathname);
-  console.log("Token (after lookup):", token ? "Present" : "Missing");
-  console.log("User Object (after lookup):", user);
-  if (user) {
-    console.log("User Role (after lookup):", user.role);
-  }
-  // --- End logging ---
+//   if (user && user.role !== "admin") {
+//     // Redirect to a forbidden page or regular dashboard if not an admin
+//     return <Navigate to="/dashboard" replace />;
+//   }
 
-  if (!token || !user) {
-    console.log("AdminRoute: Redirecting to sign-in (no token or user).");
-    return <Navigate to="/sign-in" replace state={{ from: location }} />;
-  }
-
-  // Ensure user.role exists and is strictly 'admin'
-  if (user && user.role !== "admin") {
-    console.log(
-      `AdminRoute: Access denied. User role '${user.role}' is not 'admin'.`
-    );
-    return <Navigate to="/dashboard" replace />; // Redirect to dashboard if not an admin
-  }
-
-  console.log("AdminRoute: Access Granted.");
-  return children;
-};
+//   return children;
+// };
 
 const AppRoutes = () => {
   useEffect(() => {
@@ -336,54 +272,15 @@ const AppRoutes = () => {
             }
           />
           {/* Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminRoute>
-                <Users />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/users/:id"
-            element={
-              <AdminRoute>
-                <UserDetail />
-              </AdminRoute>
-            }
-          />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<Users />} />
+          <Route path="/admin/users/:id" element={<UserDetail />} />
           <Route
             path="/admin/investments"
-            element={
-              <AdminRoute>
-                <AdminInvestmentsDashboard />
-              </AdminRoute>
-            }
+            element={<AdminInvestmentsDashboard />}
           />
-          <Route
-            path="/admin/transactions"
-            element={
-              <AdminRoute>
-                <AdminTransactions />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <AdminRoute>
-                <Setting />
-              </AdminRoute>
-            }
-          />
+          <Route path="/admin/transactions" element={<AdminTransactions />} />
+          <Route path="/admin/settings" element={<Setting />} />
         </Routes>
       )}
 
