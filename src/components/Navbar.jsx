@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { logout as logoutAction } from "../features/users/authSlice"; // Adjust path if necessary
+import { logout } from "../features/users/authSlice"; // Adjust path if necessary
 
 import { Menu, X, User, LogOut, ChevronDown, Globe } from "lucide-react";
 import {
@@ -42,32 +42,31 @@ const languages = [
   { code: "fi", name: "Suomi" },
   { code: "no", name: "Norsk" },
   { code: "hu", name: "Magyar" },
-  { code: "cs", "name": "Čeština" },
-  { code: "el", "name": "Ελληνικά" },
-  { code: "ro", "name": "Română" },
-  { code: "sk", "name": "Slovenčina" },
-  { code: "bg", "name": "Български" },
-  { code: "hr", "name": "Hrvatski" },
-  { code: "fa", "name": "فارسی" },
-  { code: "ur", "name": "اردو" },
-  { code: "bn", "name": "বাংলা" },
-  { code: "pa", "name": "ਪੰਜਾਬੀ" },
-  { code: "gu", "name": "ગુજરાતી" },
-  { code: "ta", "name": "தமிழ்" },
-  { code: "te", "name": "తెలుగు" },
-  { code: "kn", "name": "ಕನ್ನಡ" },
-  { code: "ml", "name": "മലയാളം" },
-  { code: "my", "name": "မြန်မာ" },
-  { code: "ka", "name": "ქართული" },
-  { code: "am", "name": " አማርኛ" },
-  { code: "sw", "name": "Kiswahili" },
-  { code: "zu", "name": "IsiZulu" },
-  { code: "ha", "name": "Hausa" },
-  { code: "ig", "name": "Igbo" },
-  { code: "yo", "name": "Yoruba" },
+  { code: "cs", name: "Čeština" },
+  { code: "el", name: "Ελληνικά" },
+  { code: "ro", name: "Română" },
+  { code: "sk", name: "Slovenčina" },
+  { code: "bg", name: "Български" },
+  { code: "hr", name: "Hrvatski" },
+  { code: "fa", name: "فارسی" },
+  { code: "ur", name: "اردو" },
+  { code: "bn", name: "বাংলা" },
+  { code: "pa", name: "ਪੰਜਾਬੀ" },
+  { code: "gu", name: "ગુજરાતી" },
+  { code: "ta", name: "தமிழ்" },
+  { code: "te", name: "తెలుగు" },
+  { code: "kn", name: "ಕನ್ನಡ" },
+  { code: "ml", name: "മലയാളം" },
+  { code: "my", name: "မြန်မာ" },
+  { code: "ka", name: "ქართული" },
+  { code: "am", name: " አማርኛ" },
+  { code: "sw", name: "Kiswahili" },
+  { code: "zu", name: "IsiZulu" },
+  { code: "ha", name: "Hausa" },
+  { code: "ig", name: "Igbo" },
+  { code: "yo", name: "Yoruba" },
   // Add more languages as needed, ensure correct Google Translate codes
 ];
-
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -89,12 +88,11 @@ export default function Navbar() {
   const toggleTranslateDropdown = useCallback((event) => {
     // Prevent event from propagating if clicked inside the dropdown itself
     event.stopPropagation();
-    setIsTranslateDropdownOpen(prev => !prev);
+    setIsTranslateDropdownOpen((prev) => !prev);
   }, []);
 
   const handleLogout = () => {
-    localStorage.clear();
-    dispatch(logoutAction());
+    dispatch(logout());
     closeMobileMenu();
     navigate("/sign-in");
   };
@@ -103,13 +101,17 @@ export default function Navbar() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if the click occurred outside the translate dropdown
-      if (translateRef.current && !translateRef.current.contains(event.target)) {
+      if (
+        translateRef.current &&
+        !translateRef.current.contains(event.target)
+      ) {
         setIsTranslateDropdownOpen(false);
       }
       // Also close mobile menu if clicking outside (and it's open)
       // This is a common pattern, though you might want a separate backdrop for this
-      if (isMobileMenuOpen && !event.target.closest('.fixed.h-full.w-72')) { // Check if click is not inside the mobile sidebar
-          // setIsMobileMenuOpen(false); // This is now handled by the backdrop overlay
+      if (isMobileMenuOpen && !event.target.closest(".fixed.h-full.w-72")) {
+        // Check if click is not inside the mobile sidebar
+        // setIsMobileMenuOpen(false); // This is now handled by the backdrop overlay
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -125,7 +127,8 @@ export default function Navbar() {
         const script = document.createElement("script");
         script.id = "google-translate-script";
         script.type = "text/javascript";
-        script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        script.src =
+          "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
         script.async = true;
         document.body.appendChild(script);
 
@@ -133,7 +136,8 @@ export default function Navbar() {
           new window.google.translate.TranslateElement(
             {
               pageLanguage: "en", // Set your default language here
-              layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+              layout:
+                window.google.translate.TranslateElement.InlineLayout.SIMPLE,
               autoDisplay: false, // Prevents default banner
             },
             "google_translate_element" // ID of the div where the widget will be rendered
@@ -148,36 +152,42 @@ export default function Navbar() {
     addGoogleTranslateScript();
   }, []);
 
+  const changeLanguage = useCallback(
+    (langCode) => {
+      const attemptTranslate = () => {
+        // It's crucial to query for the select element *after* the widget is fully loaded
+        const googleBar = document.querySelector(".goog-te-combo");
 
-  const changeLanguage = useCallback((langCode) => {
-    const attemptTranslate = () => {
-      // It's crucial to query for the select element *after* the widget is fully loaded
-      const googleBar = document.querySelector('.goog-te-combo');
+        if (googleBar && googleBar.options.length > 0) {
+          // Check if options are populated
+          googleBar.value = langCode; // Set the value of the select element
+          // Dispatch a 'change' event to trigger Google Translate's internal logic
+          googleBar.dispatchEvent(new Event("change"));
+          console.log(`Language changed to: ${langCode}`);
+          setIsTranslateDropdownOpen(false); // Close dropdown after successful selection
+          return true; // Indicate success
+        }
+        return false; // Indicate failure
+      };
 
-      if (googleBar && googleBar.options.length > 0) { // Check if options are populated
-        googleBar.value = langCode; // Set the value of the select element
-        // Dispatch a 'change' event to trigger Google Translate's internal logic
-        googleBar.dispatchEvent(new Event('change'));
-        console.log(`Language changed to: ${langCode}`);
-        setIsTranslateDropdownOpen(false); // Close dropdown after successful selection
-        return true; // Indicate success
+      if (isGoogleTranslateLoaded) {
+        if (!attemptTranslate()) {
+          // If not successful immediately (e.g., options not yet populated), retry
+          console.warn(
+            "Google Translate select element not fully ready, retrying..."
+          );
+          setTimeout(() => attemptTranslate(), 100); // Small delay to allow DOM updates
+        }
+      } else {
+        console.warn(
+          "Google Translate widget not yet loaded. Cannot set language."
+        );
+        // You might want to queue the language change or show a message
+        setTimeout(() => changeLanguage(langCode), 500); // Retry after a delay if not loaded
       }
-      return false; // Indicate failure
-    };
-
-    if (isGoogleTranslateLoaded) {
-      if (!attemptTranslate()) {
-        // If not successful immediately (e.g., options not yet populated), retry
-        console.warn("Google Translate select element not fully ready, retrying...");
-        setTimeout(() => attemptTranslate(), 100); // Small delay to allow DOM updates
-      }
-    } else {
-      console.warn("Google Translate widget not yet loaded. Cannot set language.");
-      // You might want to queue the language change or show a message
-      setTimeout(() => changeLanguage(langCode), 500); // Retry after a delay if not loaded
-    }
-  }, [isGoogleTranslateLoaded]); // Dependency on isGoogleTranslateLoaded
-
+    },
+    [isGoogleTranslateLoaded]
+  ); // Dependency on isGoogleTranslateLoaded
 
   useEffect(() => {
     const handleScroll = () => {
@@ -196,32 +206,52 @@ export default function Navbar() {
       {/* Navbar */}
       <nav
         className={`fixed top-0 w-full z-50 px-4 py-3 sm:px-6 transition-all duration-300 flex items-center justify-between font-montserrat text-white
-        ${scrolled ? "bg-gray-900/80 backdrop-blur-md shadow-lg" : "bg-transparent"}
+        ${
+          scrolled
+            ? "bg-gray-900/80 backdrop-blur-md shadow-lg"
+            : "bg-transparent"
+        }
         ${hidden ? "-translate-y-full" : "translate-y-0"}`}
       >
         <Link to="/" className="flex-shrink-0">
-          <img className="h-9 sm:h-11 object-contain" src={logo} alt="TrustVest Logo" />
+          <img
+            className="h-9 sm:h-11 object-contain"
+            src={logo}
+            alt="TrustVest Logo"
+          />
         </Link>
 
         {/* Desktop Navigation Links */}
         <ul className="hidden md:flex items-center space-x-6 lg:space-x-8 text-lg font-medium">
           <li>
-            <Link className="hover:text-blue-300 transition-colors duration-200" to="/">
+            <Link
+              className="hover:text-blue-300 transition-colors duration-200"
+              to="/"
+            >
               Home
             </Link>
           </li>
           <li>
-            <Link className="hover:text-blue-300 transition-colors duration-200" to="/about">
+            <Link
+              className="hover:text-blue-300 transition-colors duration-200"
+              to="/about"
+            >
               About
             </Link>
           </li>
           <li>
-            <Link className="hover:text-blue-300 transition-colors duration-200" to="/affiliate">
+            <Link
+              className="hover:text-blue-300 transition-colors duration-200"
+              to="/affiliate"
+            >
               Affiliate
             </Link>
           </li>
           <li>
-            <Link className="hover:text-blue-300 transition-colors duration-200" to="/contact">
+            <Link
+              className="hover:text-blue-300 transition-colors duration-200"
+              to="/contact"
+            >
               Contact
             </Link>
           </li>
@@ -237,7 +267,13 @@ export default function Navbar() {
               aria-haspopup="true"
               aria-expanded={isTranslateDropdownOpen ? "true" : "false"}
             >
-              <Globe size={18} /> Translate <ChevronDown size={18} className={`transition-transform duration-200 ${isTranslateDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
+              <Globe size={18} /> Translate{" "}
+              <ChevronDown
+                size={18}
+                className={`transition-transform duration-200 ${
+                  isTranslateDropdownOpen ? "rotate-180" : "rotate-0"
+                }`}
+              />
             </button>
             {isTranslateDropdownOpen && (
               <div
@@ -245,7 +281,10 @@ export default function Navbar() {
                 onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
               >
                 {/* Hidden Google Translate placeholder - Critical for widget initialization */}
-                <div id="google_translate_element" style={{ display: 'none' }} />
+                <div
+                  id="google_translate_element"
+                  style={{ display: "none" }}
+                />
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
@@ -275,7 +314,11 @@ export default function Navbar() {
               >
                 <LogOut size={28} />
               </button>
-              <Link to="/dashboard" className="p-2 text-blue-300 hover:text-white transition-colors duration-200" title="Dashboard">
+              <Link
+                to="/dashboard"
+                className="p-2 text-blue-300 hover:text-white transition-colors duration-200"
+                title="Dashboard"
+              >
                 <User size={28} />
               </Link>
             </>
@@ -324,22 +367,38 @@ export default function Navbar() {
 
         <ul className="flex-grow p-6 space-y-4 text-lg font-medium overflow-y-auto custom-scroll">
           <li>
-            <Link to="/" onClick={closeMobileMenu} className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <Link
+              to="/"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+            >
               <HomeIcon size={24} className="text-green-400" /> Home
             </Link>
           </li>
           <li>
-            <Link to="/about" onClick={closeMobileMenu} className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <Link
+              to="/about"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+            >
               <InfoIcon size={24} className="text-purple-400" /> About
             </Link>
           </li>
           <li>
-            <Link to="/affiliate" onClick={closeMobileMenu} className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <Link
+              to="/affiliate"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+            >
               <AffiliateIcon size={24} className="text-yellow-400" /> Affiliate
             </Link>
           </li>
           <li>
-            <Link to="/contact" onClick={closeMobileMenu} className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <Link
+              to="/contact"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+            >
               <MailIcon size={24} className="text-red-400" /> Contact
             </Link>
           </li>
@@ -353,7 +412,12 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <Globe size={24} className="text-cyan-400" /> Translate
               </div>
-              <ChevronDown size={20} className={`transition-transform duration-200 ${isTranslateDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
+              <ChevronDown
+                size={20}
+                className={`transition-transform duration-200 ${
+                  isTranslateDropdownOpen ? "rotate-180" : "rotate-0"
+                }`}
+              />
             </button>
             {isTranslateDropdownOpen && (
               <div
@@ -363,7 +427,10 @@ export default function Navbar() {
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
-                    onClick={() => { changeLanguage(lang.code); closeMobileMenu(); }}
+                    onClick={() => {
+                      changeLanguage(lang.code);
+                      closeMobileMenu();
+                    }}
                     className="block w-full text-left px-6 py-2 text-base text-gray-200 hover:bg-gray-700 hover:text-white transition-colors duration-150"
                   >
                     {lang.name}

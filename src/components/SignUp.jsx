@@ -36,10 +36,10 @@ const SignUp = () => {
   useEffect(() => {
     if (statusMessage) {
       toast.success(statusMessage);
-      dispatch(clearAuthMessage()); // Clear message after displaying
       // Redirect to sign-in after a brief delay for user to read toast
       const timer = setTimeout(() => {
         navigate("/sign-in");
+        dispatch(clearAuthMessage()); // Clear message after displaying
       }, 2000);
       return () => clearTimeout(timer); // Cleanup timeout
     }
