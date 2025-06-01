@@ -125,7 +125,7 @@ const WithdrawFunds = () => {
   const handleUpgradeNow = () => {
     setShowUpgradeModal(false); // Close the modal
     // Redirect to the deposit-upgrade page, which uses ReuseableForm for upgrades
-    navigate("/deposit-upgrade"); // Make sure this route is configured in your App.js
+    navigate("/upgrade-account"); // Make sure this route is configured in your App.js
   };
 
   const renderPaymentFields = () => {

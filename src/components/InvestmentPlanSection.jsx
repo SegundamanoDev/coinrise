@@ -77,15 +77,15 @@ const TradingPlans = ({ plan }) => {
 
       <ul className="text-gray-300 space-y-2 mb-6 flex-grow">
         <li className="flex items-center">
-          <Percent className="w-5 h-5 mr-3 text-yellow-400" />
+          <Percent className="w-5 h-5 mr-3 text-blue-400" />
           ROI: {roiPercent}%
         </li>
         <li className="flex items-center">
-          <Clock className="w-5 h-5 mr-3 text-yellow-400" />
+          <Clock className="w-5 h-5 mr-3 text-purple-500" />
           Duration: {durationHours} Hours
         </li>
         <li className="flex items-center">
-          <Handshake className="w-5 h-5 mr-3 text-yellow-400" />
+          <Handshake className="w-5 h-5 mr-3 text-blue-400" />
           Commission: {commissionPercent}%
         </li>
         <li className="flex items-center">

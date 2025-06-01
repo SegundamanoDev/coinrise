@@ -42,7 +42,7 @@ const UPGRADE_PLANS = [
   {
     id: "standard",
     name: "Standard Pro",
-    amount: 2500,
+    amount: 3000,
     description:
       "Access advanced tools, priority support, and enhanced returns.",
     incentiveText: "🚀 Our Most Popular Choice!", // The "trick" text
@@ -51,7 +51,7 @@ const UPGRADE_PLANS = [
   {
     id: "premium",
     name: "Premium Elite",
-    amount: 5500,
+    amount: 7500,
     description:
       "Exclusive features, dedicated account manager, and top-tier returns.",
     incentiveText: "💎 Maximize Your Earnings! The ultimate experience.", // The "trick" text
