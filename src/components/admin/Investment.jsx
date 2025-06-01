@@ -6,31 +6,46 @@ import {
   deleteInvestment,
 } from "../../features/investment/investmentsSlice";
 import moment from "moment";
-import AdminLayout from "./AdminLayout"; // Ensure AdminLayout is imported
-import { DollarSign, Users, CheckCircle, Wallet } from "lucide-react"; // Icons for summary cards
+import AdminLayout from "./AdminLayout";
+import { DollarSign, Users, CheckCircle, Wallet } from "lucide-react";
 
 const AdminInvestmentsDashboard = () => {
   const dispatch = useDispatch();
   const { investments, summary, loading, error } = useSelector(
-    // Include error from Redux
     (state) => state.investment
   );
 
   const [filters, setFilters] = useState({ status: "" });
   const [searchTerm, setSearchTerm] = useState("");
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [investmentToComplete, setInvestmentToComplete] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedInvestmentDetails, setSelectedInvestmentDetails] =
+    useState(null);
 
   useEffect(() => {
     dispatch(fetchAdminInvestments(filters));
   }, [dispatch, filters]);
 
-  const handleComplete = (id) => {
-    if (
-      window.confirm(
-        "Are you sure you want to mark this investment as complete? This action cannot be undone."
-      )
-    ) {
-      dispatch(markInvestmentComplete(id));
+  // Handle opening the complete confirmation modal
+  const handleCompleteClick = (investment) => {
+    setInvestmentToComplete(investment);
+    setShowCompleteModal(true);
+  };
+
+  // Handle confirming completion
+  const confirmComplete = () => {
+    if (investmentToComplete) {
+      dispatch(markInvestmentComplete(investmentToComplete._id));
+      setShowCompleteModal(false);
+      setInvestmentToComplete(null);
     }
+  };
+
+  // Handle cancelling completion
+  const cancelComplete = () => {
+    setShowCompleteModal(false);
+    setInvestmentToComplete(null);
   };
 
   const handleDelete = (id) => {
@@ -43,15 +58,11 @@ const AdminInvestmentsDashboard = () => {
     }
   };
 
-  const filteredInvestments = investments.filter((inv) => {
-    const term = searchTerm.toLowerCase();
-    // Use optional chaining for safety if user or email might be null
-    return (
-      inv.userId?.fullName?.toLowerCase().includes(term) ||
-      inv.userId?.email?.toLowerCase().includes(term) ||
-      inv._id.toLowerCase().includes(term)
-    );
-  });
+  // Handle opening the details modal
+  const handleViewDetails = (investment) => {
+    setSelectedInvestmentDetails(investment);
+    setShowDetailsModal(true);
+  };
 
   // Helper for formatting currency
   const formatCurrency = (amount) => {
@@ -62,6 +73,15 @@ const AdminInvestmentsDashboard = () => {
       maximumFractionDigits: 2,
     }).format(amount || 0);
   };
+
+  const filteredInvestments = investments.filter((inv) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      inv.userId?.fullName?.toLowerCase().includes(term) ||
+      inv.userId?.email?.toLowerCase().includes(term) ||
+      inv._id.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <AdminLayout>
@@ -97,12 +117,13 @@ const AdminInvestmentsDashboard = () => {
                   <Users size={28} className="text-blue-400" />
                   <div>
                     <h2 className="text-lg font-semibold text-gray-300">
-                      Active Investments
+                      Total Active Investments{" "}
+                      {/* Changed label to be more precise */}
                     </h2>
                     <p className="text-2xl font-bold text-yellow-400">
-                      {summary.activeUsers}
-                    </p>{" "}
-                    {/* Assuming this is active *investments* count */}
+                      {summary.activeCount}{" "}
+                      {/* Displaying activeCount from backend */}
+                    </p>
                   </div>
                 </div>
                 <div className="bg-[#1f2937] p-5 rounded-xl shadow-lg border border-[#374151] flex items-center gap-4">
@@ -213,14 +234,14 @@ const AdminInvestmentsDashboard = () => {
                         </td>
                         <td className="py-3 px-4 space-x-2 whitespace-nowrap">
                           <button
-                            onClick={() => alert("Show modal or details here")}
+                            onClick={() => handleViewDetails(inv)} // Use new handler
                             className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
                           >
                             View
                           </button>
                           {inv.status === "active" && (
                             <button
-                              onClick={() => handleComplete(inv._id)}
+                              onClick={() => handleCompleteClick(inv)} // Use new handler
                               className="bg-green-600 text-white px-3 py-1 rounded-md text-sm hover:bg-green-700 transition-colors"
                             >
                               Complete
@@ -251,6 +272,131 @@ const AdminInvestmentsDashboard = () => {
           </>
         )}
       </div>
+
+      {/* Complete Confirmation Modal */}
+      {showCompleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1f2937] p-8 rounded-lg shadow-xl border border-[#374151] max-w-md w-full text-white">
+            <h3 className="text-2xl font-bold mb-4 text-yellow-400">
+              Confirm Completion
+            </h3>
+            <p className="mb-6 text-gray-300">
+              Are you sure you want to mark this investment as complete? This
+              will add the initial **investment amount** and the **calculated
+              ROI** back to the user's balance. This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={cancelComplete}
+                className="px-6 py-2 rounded-md bg-gray-600 hover:bg-gray-700 transition-colors text-white font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmComplete}
+                className="px-6 py-2 rounded-md bg-green-600 hover:bg-green-700 transition-colors text-white font-semibold"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Investment Details Modal */}
+      {showDetailsModal && selectedInvestmentDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1f2937] p-8 rounded-lg shadow-xl border border-[#374151] max-w-lg w-full text-white relative">
+            <button
+              onClick={() => setShowDetailsModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 text-3xl font-semibold"
+            >
+              &times;
+            </button>
+            <h3 className="text-2xl font-bold mb-6 text-yellow-400 border-b border-[#374151] pb-3">
+              Investment Details
+            </h3>
+            <div className="space-y-4 text-gray-300">
+              <p>
+                <strong>Investment ID:</strong> {selectedInvestmentDetails._id}
+              </p>
+              <p>
+                <strong>User:</strong>{" "}
+                {selectedInvestmentDetails.userId?.fullName ||
+                  selectedInvestmentDetails.userId?.email ||
+                  "N/A"}
+              </p>
+              <p>
+                <strong>Amount:</strong>{" "}
+                {formatCurrency(selectedInvestmentDetails.amount)}
+              </p>
+              <p>
+                <strong>Plan:</strong> {selectedInvestmentDetails.plan}
+              </p>
+              <p>
+                <strong>Duration:</strong> {selectedInvestmentDetails.duration}{" "}
+                hours
+              </p>
+              <p>
+                <strong>ROI Percentage:</strong> {selectedInvestmentDetails.roi}
+                %
+              </p>
+              <p>
+                <strong>Calculated ROI Amount:</strong>{" "}
+                {formatCurrency(
+                  (selectedInvestmentDetails.amount *
+                    selectedInvestmentDetails.roi) /
+                    100
+                )}
+              </p>
+              <p>
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    selectedInvestmentDetails.status === "active"
+                      ? "bg-blue-600"
+                      : "bg-green-600"
+                  }`}
+                >
+                  {selectedInvestmentDetails.status}
+                </span>
+              </p>
+              <p>
+                <strong>Start Date:</strong>{" "}
+                {moment(selectedInvestmentDetails.startDate).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
+              </p>
+              <p>
+                <strong>End Date:</strong>{" "}
+                {moment(selectedInvestmentDetails.endDate).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
+              </p>
+              <p>
+                <strong>Created At:</strong>{" "}
+                {moment(selectedInvestmentDetails.createdAt).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
+              </p>
+              <p>
+                <strong>Last Updated:</strong>{" "}
+                {moment(selectedInvestmentDetails.updatedAt).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
+              </p>
+            </div>
+            <div className="flex justify-end mt-8">
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="px-6 py-2 rounded-md bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };
