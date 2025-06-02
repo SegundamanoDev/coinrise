@@ -145,31 +145,28 @@ const Users = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="text-[#ffffff] bg-gradient-to-br from-gray-900 to-black divide-y divide-gray-200">
               {users.map((user) => (
-                <tr
-                  key={user._id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={user._id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#ffffff]">
                     {user.fullName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#ffffff]">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#ffffff]">
                     {user.country || "N/A"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#ffffff]">
                     {user.currency || "N/A"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#ffffff] font-semibold">
                     {formatMoney(user?.balance, user?.currency)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#ffffff] font-semibold">
                     {formatMoney(user.totalProfits, user?.currency)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#ffffff] capitalize">
                     {user?.role}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">

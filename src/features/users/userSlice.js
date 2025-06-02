@@ -191,11 +191,11 @@ export const updateProfile = createAsyncThunk(
 const initialState = {
   users: [],
   selectedUser: null,
-  passwordStatus: { loading: false, success: null, error: null }, // For password changes
-  updateStatus: { loading: false, success: null, error: null },
+  passwordStatus: { loading: false, success: null, error: null },
+  updateStatus: { loading: false, success: null, error: null }, // <--- Add this separate updateStatus
   profile: null,
-  loading: false,
-  error: null,
+  loading: false, // General loading for fetches
+  error: null, // General error for fetches
   statusMessage: null,
 };
 
@@ -258,7 +258,7 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.statusMessage = "User updated successfully";
+        state.statusMessage = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;

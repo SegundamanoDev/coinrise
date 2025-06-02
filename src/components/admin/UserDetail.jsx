@@ -3,11 +3,11 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserById,
-  updateUser,
+  updateUser, // Assuming updateUser is imported
   clearStatusMessage,
 } from "../../features/users/userSlice"; // Assuming updateUser and clearStatusMessage are in userSlice
-import AdminLayout from "../../components/admin/AdminLayout"; // Assuming this path is correct
-import { toast } from "react-toastify"; // For toast notifications
+import AdminLayout from "../../components/admin/AdminLayout";
+import { toast } from "react-toastify";
 import {
   Loader2,
   User,
@@ -15,7 +15,6 @@ import {
   Globe,
   Phone,
   Home,
-  // City,
   Tag,
   DollarSign,
   Clock,
@@ -29,15 +28,13 @@ import {
   Info,
   Edit,
   Landmark,
-} from "lucide-react"; // Added more icons
-import { format } from "date-fns"; // For date formatting
+} from "lucide-react";
+import { format } from "date-fns";
 
-// Utility for formatting last login date and time
 const formatLastLogin = (isoString) => {
-  if (!isoString) return "N/A"; // Handle cases where data might be missing
+  if (!isoString) return "N/A";
   try {
     const date = new Date(isoString);
-    // You can customize the date and time format here
     return (
       date.toLocaleDateString("en-US", {
         year: "numeric",
@@ -46,7 +43,7 @@ const formatLastLogin = (isoString) => {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
-        hour12: true, // Use AM/PM
+        hour12: true,
       }) +
       ` at ${date.toLocaleTimeString("en-US", {
         hour: "2-digit",
@@ -70,9 +67,13 @@ const UserDetail = () => {
     loading,
     error,
     statusMessage,
-    updateLoading,
-    updateError,
-  } = useSelector((state) => state.users); // Assuming these states are in userSlice
+    // updateLoading, // These are not present in your `initialState` or `extraReducers` for `updateUser`
+    // updateError,   // so they will always be undefined. Let's fix this in userSlice
+  } = useSelector((state) => state.users);
+
+  // Extract update loading/error state directly from the main loading/error if you haven't separated them
+  const updateLoading = loading; // Using general loading for update status
+  const updateError = error; // Using general error for update status
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -85,9 +86,9 @@ const UserDetail = () => {
     zip: "",
     currentPlan: "",
     role: "",
-    isBlocked: false, // Added for blocking/unblocking
+    isBlocked: false,
   });
-  const [editMode, setEditMode] = useState(false); // State to toggle edit mode
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -106,9 +107,9 @@ const UserDetail = () => {
         address: selectedUser.address || "",
         city: selectedUser.city || "",
         zip: selectedUser.zip || "",
-        currentPlan: selectedUser.currentPlan || "free",
+        currentPlan: selectedUser.currentPlan || "free", // Ensure default matches backend enum
         role: selectedUser.role || "user",
-        isBlocked: selectedUser.isBlocked || false, // Initialize with current block status
+        isBlocked: selectedUser.isBlocked || false,
       });
     }
   }, [selectedUser]);
@@ -117,11 +118,11 @@ const UserDetail = () => {
     if (statusMessage) {
       toast.success(statusMessage);
       dispatch(clearStatusMessage());
-      setEditMode(false); // Exit edit mode on successful update
+      setEditMode(false);
     }
     if (updateError) {
       toast.error(`Update failed: ${updateError}`);
-      dispatch(clearStatusMessage()); // Clear error message
+      dispatch(clearStatusMessage());
     }
   }, [statusMessage, updateError, dispatch]);
 
@@ -133,14 +134,15 @@ const UserDetail = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (id) {
-      dispatch(updateUser({ id, userData: formData }));
+      // THIS IS THE CRUCIAL CHANGE
+      dispatch(updateUser({ id, updates: formData }));
     }
   };
 
-  if (loading)
+  if (loading && !selectedUser)
+    // Only show full loader if no user is loaded yet
     return (
       <AdminLayout>
         <div className="flex flex-col justify-center items-center py-20 text-white">
@@ -150,7 +152,8 @@ const UserDetail = () => {
       </AdminLayout>
     );
 
-  if (error)
+  if (error && !selectedUser)
+    // Only show full error if no user is loaded yet
     return (
       <AdminLayout>
         <div className="flex flex-col justify-center items-center py-20 bg-red-900/20 border border-red-700 rounded-lg text-red-400">
@@ -397,6 +400,14 @@ const UserDetail = () => {
         ) : (
           // Display Details
           <div className="bg-gray-800 p-6 rounded-xl text-white border border-gray-700 shadow-xl space-y-4">
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setEditMode(true)}
+                className="px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition duration-200 font-semibold flex items-center gap-2"
+              >
+                <Edit size={20} /> Edit User
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <p className="flex items-center gap-2">
                 <User size={20} className="text-blue-400" />
@@ -495,7 +506,7 @@ const UserDetail = () => {
                 {selectedUser?.createdAt
                   ? format(
                       new Date(selectedUser.createdAt),
-                      "MMM dd, yyyy HH:mm"
+                      "MMM dd, yyyy HH:mm" // Adjusted format for clarity
                     )
                   : "N/A"}
               </p>
@@ -510,15 +521,6 @@ const UserDetail = () => {
                   </span>
                 )}
               </p>
-            </div>
-
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={() => setEditMode(true)}
-                className="px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition duration-200 font-semibold flex items-center gap-2"
-              >
-                <Edit size={20} /> Edit User
-              </button>
             </div>
           </div>
         )}

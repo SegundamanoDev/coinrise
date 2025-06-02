@@ -157,7 +157,7 @@ const AdminTransactions = () => {
                         {tx.type}
                       </div>
                       <div className="text-xs text-gray-400">
-                        {tx.user ? `User: ${tx.user.username}` : "User: N/A"}
+                        {tx.user ? `User: ${tx.user.fullName}` : "User: N/A"}
                       </div>
                     </div>
                   </div>
@@ -194,33 +194,51 @@ const AdminTransactions = () => {
                         displayKey.slice(1);
 
                       let displayValue = value;
-                      if (displayKey.includes("Date") && !isNaN(new Date(value))) {
+                      if (
+                        displayKey.includes("Date") &&
+                        !isNaN(new Date(value))
+                      ) {
                         try {
-                          displayValue = format(new Date(value), "MMM dd, yyyy HH:mm");
+                          displayValue = format(
+                            new Date(value),
+                            "MMM dd, yyyy HH:mm"
+                          );
                         } catch (e) {
                           // Fallback to original value if date formatting fails
                         }
                       }
 
                       // Special handling for proof of payment if it's a URL
-                      if (displayKey.toLowerCase().includes("proof") && typeof value === 'string' && value.startsWith('http')) {
+                      if (
+                        displayKey.toLowerCase().includes("proof") &&
+                        typeof value === "string" &&
+                        value.startsWith("http")
+                      ) {
                         return (
-                            <div key={key} className="flex items-center justify-between">
-                                <span className="text-gray-400 font-medium">{displayKey}:</span>
-                                <a
-                                    href={value}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-400 hover:underline flex items-center gap-1"
-                                >
-                                    View Proof <ExternalLink size={16} />
-                                </a>
-                            </div>
+                          <div
+                            key={key}
+                            className="flex items-center justify-between"
+                          >
+                            <span className="text-gray-400 font-medium">
+                              {displayKey}:
+                            </span>
+                            <a
+                              href={value}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-400 hover:underline flex items-center gap-1"
+                            >
+                              View Proof <ExternalLink size={16} />
+                            </a>
+                          </div>
                         );
                       }
 
                       return (
-                        <div key={key} className="flex justify-between items-center">
+                        <div
+                          key={key}
+                          className="flex justify-between items-center"
+                        >
                           <span className="text-gray-400 font-medium">
                             {displayKey}:
                           </span>{" "}
@@ -231,7 +249,9 @@ const AdminTransactions = () => {
                       );
                     })
                   ) : (
-                    <span className="text-gray-500 italic">No additional details.</span>
+                    <span className="text-gray-500 italic">
+                      No additional details.
+                    </span>
                   )}
                 </div>
 
@@ -317,7 +337,8 @@ const AdminTransactions = () => {
                     : "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700"
                 }`}
               >
-                Confirm {actionType.charAt(0).toUpperCase() + actionType.slice(1)}
+                Confirm{" "}
+                {actionType.charAt(0).toUpperCase() + actionType.slice(1)}
               </button>
             </div>
           </div>

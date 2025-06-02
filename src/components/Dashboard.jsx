@@ -50,6 +50,7 @@ import { fetchDashboardData } from "../features/dashboard/dashboard";
 import MarketOverviewWidget from "./MarketOverviewWidget";
 import { fetchProfile } from "../features/users/userSlice";
 import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines"; // Correct import for react-sparklines
+import CryptoNewsFeed from "./CryptoNewsFeed";
 // Utility for formatting money
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -558,7 +559,7 @@ const DashboardLayout = () => {
           {/* Trust Banners & Last Login Info */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div
-              className={`p-4 rounded-xl shadow-md flex items-center justify-center gap-5 border
+              className={`p-4 rounded-xl shadow-md flex items-center justify-center gap-2 border
               ${
                 theme === "dark"
                   ? "bg-cardBackground border-borderColor"
@@ -626,7 +627,7 @@ const DashboardLayout = () => {
               </div>
 
               {/* Stat Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
                 {stats.map((card, index) => (
                   <div
                     key={index}
@@ -750,64 +751,6 @@ const DashboardLayout = () => {
                     </p>
                   </div>
                 )}
-              </div>
-
-              {/* Insights/News Panel */}
-              <div
-                className={`p-6 rounded-2xl shadow-lg border
-                ${
-                  theme === "dark"
-                    ? "bg-cardBackground border-borderColor"
-                    : "bg-white border-gray-200"
-                }
-              `}
-              >
-                <h3 className="text-xl font-bold mb-4 text-textPrimary flex items-center gap-2">
-                  <Newspaper size={24} className="text-blue-400" /> Latest
-                  Insights & News
-                </h3>
-                {mockNews.length > 0 ? (
-                  <ul className="space-y-4">
-                    {mockNews.map((news) => (
-                      <li
-                        key={news.id}
-                        className={`pb-3 last:border-b-0
-                        ${
-                          theme === "dark"
-                            ? "border-b border-[#1f2937]"
-                            : "border-b border-gray-200"
-                        }
-                      `}
-                      >
-                        <a
-                          href={news.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block hover:underline"
-                        >
-                          <p className="font-semibold text-textPrimary text-base leading-tight">
-                            {news.title}
-                          </p>
-                          <p className="text-sm text-textSecondary mt-1">
-                            <span className="font-medium">{news.source}</span> •{" "}
-                            {news.date}
-                          </p>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-textSecondary">
-                      No news updates at the moment.
-                    </p>
-                  </div>
-                )}
-                <div className="text-right mt-4">
-                  <a href="#" className="text-blue-500 hover:underline text-sm">
-                    View all news &rarr;
-                  </a>
-                </div>
               </div>
             </div>
           </div>
@@ -996,6 +939,7 @@ const DashboardLayout = () => {
               </a>
             </div>
           </div>
+          <CryptoNewsFeed />
           {/* Watchlist Component */}
           <div
             className={`rounded-2xl shadow-lg border overflow-hidden mb-8
