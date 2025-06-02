@@ -558,14 +558,14 @@ const DashboardLayout = () => {
           {/* Trust Banners & Last Login Info */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div
-              className={`p-4 rounded-xl shadow-md flex items-center justify-between gap-3 border
+              className={`p-4 rounded-xl shadow-md flex items-center justify-center gap-5 border
               ${
                 theme === "dark"
                   ? "bg-cardBackground border-borderColor"
                   : "bg-white border-gray-200"
               }`}
             >
-              <div>
+              <div className="flex items-center">
                 <ShieldCheck size={24} className="text-green-400" />
                 <p className="font-semibold text-lg text-textPrimary">
                   Account-Type:
