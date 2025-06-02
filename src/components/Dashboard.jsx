@@ -49,7 +49,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDashboardData } from "../features/dashboard/dashboard";
 import MarketOverviewWidget from "./MarketOverviewWidget";
 import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines"; // Correct import for react-sparklines
-import CryptoNews from './CryptoNews';
 // Utility for formatting money
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -805,7 +804,7 @@ const DashboardLayout = () => {
                     View all news &rarr;
                   </a>
                 </div>
-                <CryptoNews/>
+              
               </div>
             </div>
           </div>
