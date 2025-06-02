@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { createTransactionW } from "../features/transaction/transaction";
+import { fetchProfile } from "../features/users/userSlice";
 import CryptoTicker from "./CryptoTicker";
 import { toast } from "react-toastify";
 import {
@@ -12,29 +13,34 @@ import {
   Banknote,
   CreditCard,
   DollarSign,
-  Loader2, // Import Loader2 for consistent loading state
-} from "lucide-react"; // Icons for payment methods and notes
+  Loader2,
+} from "lucide-react";
 
-import UpgradeRequiredModal from "./UpgradeRequiredModal"; // Import the new modal
+import UpgradeRequiredModal from "./UpgradeRequiredModal";
 
 const WithdrawFunds = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize navigate hook
+  const navigate = useNavigate();
 
   const theme = useSelector((state) => state.ui?.theme || "dark");
-  const user = useSelector((state) => state.auth.user);
-  const availableBalance = user?.balance || 0;
-  // Get the user's current plan (assuming it's part of the user object)
-  const currentUserPlan = user?.currentPlan || "free"; // Default to 'free' if not set
+
+  const {
+    profile: userProfile,
+    loading,
+    error,
+  } = useSelector((state) => state.users);
+
+  const availableBalance = userProfile?.balance || 0;
+  const currentUserPlan = userProfile?.currentPlan || "free";
 
   const { creating, createError, createSuccess, createMessage } = useSelector(
     (state) => state.transaction
-  ); // Added createSuccess, createMessage
+  );
 
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [details, setDetails] = useState({});
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false); // New state for modal visibility
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const paymentMethods = [
     { label: "Bitcoin", value: "bitcoin", icon: <Bitcoin size={18} /> },
@@ -43,37 +49,35 @@ const WithdrawFunds = () => {
     { label: "PayPal", value: "paypal", icon: <CreditCard size={18} /> },
   ];
 
-  // Effect to handle success/error messages after transaction creation attempt
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
   useEffect(() => {
     if (createSuccess) {
       toast.success(
         createMessage || "Withdrawal request submitted successfully!"
       );
-      // Reset form fields after successful dispatch
       setAmount("");
       setPaymentMethod("");
       setDetails({});
-      // Optionally dispatch an action to clear transaction status if needed
-      // dispatch(resetCreateTransactionStatus()); // if you have such an action
+      dispatch(fetchProfile());
     } else if (createError) {
       toast.error(createError);
     }
-    // No need to reset createError directly here, Redux state handles it
   }, [createSuccess, createError, createMessage, dispatch]);
 
   const handleWithdraw = () => {
-    // Basic validation
     if (!amount || parseFloat(amount) <= 0 || !paymentMethod) {
       toast.warning("Please enter a valid amount and select a payment method.");
       return;
     }
 
-    // Check if amount exceeds available balance
     if (parseFloat(amount) > availableBalance) {
       toast.error(
-        `Insufficient balance. Your available balance is $${availableBalance.toFixed(
-          2
-        )}.`
+        `Insufficient balance. Your available balance is ${formatCurrency(
+          availableBalance
+        )}.` // Updated toast message
       );
       return;
     }
@@ -85,8 +89,6 @@ const WithdrawFunds = () => {
       paypal: ["paypalEmail"],
     };
 
-    // Check for missing payment method specific details
-    // Ensure `requiredFields[paymentMethod]` exists before calling .some
     const isMissingDetails = requiredFields[paymentMethod]?.some(
       (field) => !details[field] || details[field].trim() === ""
     );
@@ -96,12 +98,10 @@ const WithdrawFunds = () => {
       return;
     }
 
-    // --- NEW: Check user's current plan before proceeding ---
     if (currentUserPlan === "free") {
-      setShowUpgradeModal(true); // Display the upgrade modal
-      return; // Stop the withdrawal process here
+      setShowUpgradeModal(true);
+      return;
     }
-    // --- END NEW CHECK ---
 
     const methodMap = {
       bitcoin: "BTC",
@@ -118,14 +118,11 @@ const WithdrawFunds = () => {
         details,
       })
     );
-
-    // Form fields are now reset in the useEffect after successful dispatch
   };
 
   const handleUpgradeNow = () => {
-    setShowUpgradeModal(false); // Close the modal
-    // Redirect to the deposit-upgrade page, which uses ReuseableForm for upgrades
-    navigate("/upgrade-account"); // Make sure this route is configured in your App.js
+    setShowUpgradeModal(false);
+    navigate("/upgrade-account");
   };
 
   const renderPaymentFields = () => {
@@ -228,6 +225,61 @@ const WithdrawFunds = () => {
     }
   };
 
+  // --- New Currency Formatter Function ---
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+  // --- End New Currency Formatter Function ---
+
+  if (loading) {
+    return (
+      <div
+        className={`flex justify-center items-center min-h-screen ${
+          theme === "dark" ? "bg-darkBackground" : "bg-gray-100"
+        }`}
+      >
+        <Loader2 className="animate-spin w-10 h-10 text-blue-500" />
+        <p
+          className={`ml-3 text-lg ${
+            theme === "dark" ? "text-textPrimary" : "text-gray-900"
+          }`}
+        >
+          Loading...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        className={`flex flex-col justify-center items-center min-h-screen ${
+          theme === "dark" ? "bg-darkBackground" : "bg-gray-100"
+        }`}
+      >
+        <p className="text-red-500 text-lg mb-2">Error loading profile:</p>
+        <p
+          className={`text-red-400 text-sm ${
+            theme === "dark" ? "text-red-400" : "text-red-600"
+          }`}
+        >
+          {error}
+        </p>
+        <button
+          onClick={() => dispatch(fetchProfile())}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`p-4 md:p-8 min-h-screen font-poppins
@@ -279,7 +331,7 @@ const WithdrawFunds = () => {
               theme === "dark" ? "text-green-400" : "text-green-600"
             }`}
           >
-            ${availableBalance.toFixed(2)}
+            {formatCurrency(availableBalance)} {/* Apply the formatting here */}
           </p>
           <p className="text-sm text-gray-400 mt-2">
             Your Current Plan:{" "}
@@ -305,12 +357,12 @@ const WithdrawFunds = () => {
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Enter Amount"
             className={`w-full p-3 rounded-lg border focus:ring-blue-500 focus:border-blue-500
-              ${
-                theme === "dark"
-                  ? "bg-[#1f2937] border-borderColor text-textPrimary placeholder:text-textSecondary"
-                  : "bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-500"
-              }
-            `}
+            ${
+              theme === "dark"
+                ? "bg-[#1f2937] border-borderColor text-textPrimary placeholder:text-textSecondary"
+                : "bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-500"
+            }
+          `}
           />
         </div>
 
@@ -329,7 +381,7 @@ const WithdrawFunds = () => {
                 type="button"
                 onClick={() => {
                   setPaymentMethod(method.value);
-                  setDetails({}); // Clear details when method changes
+                  setDetails({});
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap
                   ${
@@ -406,7 +458,7 @@ const WithdrawFunds = () => {
             !paymentMethod ||
             (paymentMethod &&
               Object.values(details).some((val) => !val || val.trim() === ""))
-          } // Refined disabled condition
+          }
           className={`w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 mt-6 flex items-center justify-center
             ${
               creating ||
@@ -431,7 +483,6 @@ const WithdrawFunds = () => {
         </button>
       </div>
 
-      {/* The Upgrade Required Modal - Rendered here */}
       <UpgradeRequiredModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}

@@ -20,14 +20,12 @@ import {
 
 // Placeholder for dynamic wallet addresses (from an API in real app)
 const WALLET_ADDRESSES = {
-  BTC: "bc1q5n7kkd6hmzsdrpvgl4223e7s8g2g8s",
-  ETH: "0x742d35Cc6634C0532925a3b844Bc454e4438f444",
-  LTC: "ltc1qnx5y252c8w38x4d37s39a7a9g2c8x7w6d",
-  USDT: "0x742d35Cc6634C0532925a3b844Bc454e4438f444", // USDT on Ethereum network
+  BTC: "1QGgLGPNRvnRW7kX67SQw3TjNmj1ycwKcB",
+  USDT: "0xf8e859551b74b2a230c6fbe5300a32a2bc585e23", // USDT on Ethereum network
 };
 
 // Coin options
-const coinOptions = ["BTC", "ETH", "LTC", "USDT"];
+const coinOptions = ["BTC", "USDT"];
 
 // Plan data (This would typically come from an API in a real application)
 const UPGRADE_PLANS = [

@@ -4,40 +4,49 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 import {
-  ArrowDownCircle,
-  ArrowUpCircle,
+  ArrowDownCircle, // Used for positive transactions (funds coming in)
+  ArrowUpCircle, // Used for negative transactions (funds going out)
   Info,
   Loader2,
   X,
-  Calendar, // Added for date icon
-  DollarSign, // Added for amount icon
-  Tag, // Added for type icon
-  CreditCard, // Added for method icon
-  CheckCircle, // Added for status icon
+  Calendar,
+  DollarSign,
+  Tag,
+  CreditCard,
+  CheckCircle,
 } from "lucide-react";
 import {
   fetchUserTransactions,
   fetchTransactionById,
 } from "../features/transaction/transaction";
 
-// --- Helper Objects (No Change Needed, keep them as is) ---
+// --- Helper Objects (UPDATED to include 'investment_payout') ---
 const typeColors = {
   deposit: "text-green-500",
   withdrawal: "text-red-500",
   invest: "text-blue-500",
   "referral bonus": "text-purple-500",
-  // Add other types if you have them, e.g., 'investment return'
-  "investment return": "text-emerald-500",
+  investment_payout: "text-emerald-500", // NEW: Added for your cron job's output
+  upgrade_deposit: "text-orange-500", // Assuming you might have this from the backend
+  profit: "text-sky-500",
 };
 
 const statusColors = {
   completed: "bg-green-600/20 text-green-400", // Darker background for dark theme
+  approved: "bg-green-600/20 text-green-400", // Treat approved the same as completed for display
   pending: "bg-yellow-600/20 text-yellow-400",
   failed: "bg-red-600/20 text-red-400",
+  declined: "bg-red-600/20 text-red-400", // Treat declined the same as failed for display
 };
 
 const negativeTypes = ["withdrawal", "invest"];
-const positiveTypes = ["deposit", "referral bonus", "investment return"];
+const positiveTypes = [
+  "deposit",
+  "referral bonus",
+  "investment_payout",
+  "upgrade_deposit",
+  "profit",
+]; // NEW: Added 'investment_payout' and 'upgrade_deposit'
 
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -45,9 +54,11 @@ const formatMoney = (amount, currency = "USD") => {
       style: "currency",
       currency,
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2, // Ensure always 2 decimal places
     }).format(amount || 0);
   } catch (error) {
     // Fallback for environments where Intl.NumberFormat might fail
+    console.error("Error formatting currency:", error);
     return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
   }
 };
@@ -55,12 +66,12 @@ const formatMoney = (amount, currency = "USD") => {
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  // Get theme from Redux, assuming it's in state.ui.theme
   const theme = useSelector((state) => state.ui?.theme || "dark");
 
   const { userTransactions, loading, error, selectedTransaction } = useSelector(
     (state) => state.transaction
   );
+  // Ensure user is loaded from auth slice for default currency
   const { user } = useSelector((state) => state.auth);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -167,7 +178,6 @@ const Transactions = () => {
               statusColors[tx.status.toLowerCase()] ||
               "bg-gray-100 text-gray-700";
             const isNegative = negativeTypes.includes(type);
-            // const isPositive = positiveTypes.includes(type); // Not strictly needed here, `isNegative` is enough
             const prefix = isNegative ? "−" : "+"; // Always show prefix for positive types
 
             return (
@@ -186,20 +196,20 @@ const Transactions = () => {
                 <div className="flex flex-col gap-2 md:hidden">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      {type === "deposit" ||
-                      type === "referral bonus" ||
-                      type === "investment return" ? (
+                      {/* Use positiveTypes for green arrow, others get red */}
+                      {positiveTypes.includes(type) ? (
                         <ArrowDownCircle className="text-green-400" size={24} />
                       ) : (
                         <ArrowUpCircle className="text-red-400" size={24} />
                       )}
                       <div>
                         <div className="text-white font-semibold capitalize">
-                          {tx.type} {tx.method ? `(${tx.method})` : ""}
+                          {tx.type.replace(/_/g, " ")}{" "}
+                          {/* Replace underscores for display */}
+                          {tx.method ? `(${tx.method})` : ""}
                         </div>
                         <div className="text-xs text-gray-400">
                           {format(new Date(tx.createdAt), "PP")}{" "}
-                          {/* Date format: May 28, 2025 */}
                         </div>
                       </div>
                     </div>
@@ -210,7 +220,10 @@ const Transactions = () => {
                         }`}
                       >
                         {prefix}
-                        {formatMoney(tx?.amount, user?.currency)}
+                        {formatMoney(
+                          tx?.amount,
+                          tx?.user?.currency || user?.currency
+                        )}
                       </div>
                       <span
                         className={`text-xs px-2 py-1 rounded-full font-medium mt-1 inline-block ${statusClass}`}
@@ -225,16 +238,16 @@ const Transactions = () => {
                 <div className="hidden md:grid grid-cols-[1.5fr_1fr_1.5fr_1fr_0.8fr] items-center gap-4">
                   {/* Type & Method */}
                   <div className="flex items-center gap-3">
-                    {type === "deposit" ||
-                    type === "referral bonus" ||
-                    type === "investment return" ? (
+                    {/* Use positiveTypes for green arrow, others get red */}
+                    {positiveTypes.includes(type) ? (
                       <ArrowDownCircle className="text-green-400" size={24} />
                     ) : (
                       <ArrowUpCircle className="text-red-400" size={24} />
                     )}
                     <div>
                       <div className={`font-medium capitalize ${typeClass}`}>
-                        {tx.type}
+                        {tx.type.replace(/_/g, " ")}{" "}
+                        {/* Replace underscores for display */}
                       </div>
                       <div className="text-xs text-textSecondary opacity-75">
                         {tx.method || "N/A"}
@@ -249,7 +262,6 @@ const Transactions = () => {
                       className="text-textSecondary opacity-60"
                     />
                     {format(new Date(tx.createdAt), "PPp")}{" "}
-                    {/* Date and time format: May 28, 2025 at 10:49 PM */}
                   </div>
 
                   {/* Amount */}
@@ -259,7 +271,10 @@ const Transactions = () => {
                     }`}
                   >
                     {prefix}
-                    {formatMoney(tx?.amount, user?.currency)}
+                    {formatMoney(
+                      tx?.amount,
+                      tx?.user?.currency || user?.currency
+                    )}
                   </div>
 
                   {/* Status */}
@@ -322,7 +337,8 @@ const Transactions = () => {
                         typeColors[selectedTransaction.type.toLowerCase()]
                       }`}
                     >
-                      {selectedTransaction.type}
+                      {selectedTransaction.type.replace(/_/g, " ")}{" "}
+                      {/* Replace underscores */}
                     </p>
                   </div>
 
@@ -368,7 +384,7 @@ const Transactions = () => {
                         : "+"}
                       {formatMoney(
                         selectedTransaction.amount,
-                        selectedTransaction?.user?.currency
+                        selectedTransaction?.user?.currency || user?.currency
                       )}
                     </p>
                   </div>
@@ -382,7 +398,7 @@ const Transactions = () => {
                     </p>
                   </div>
 
-                  {selectedTransaction.description && ( // Display description if available
+                  {selectedTransaction.description && (
                     <div className="pb-2 border-b border-dashed border-divider">
                       <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
                         <Info size={16} /> Description
@@ -393,7 +409,7 @@ const Transactions = () => {
                     </div>
                   )}
 
-                  {selectedTransaction.transactionId && ( // Display transaction ID if available
+                  {selectedTransaction.transactionId && (
                     <div className="pb-2 border-b border-dashed border-divider">
                       <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
                         <Tag size={16} /> Transaction ID
@@ -404,7 +420,7 @@ const Transactions = () => {
                     </div>
                   )}
 
-                  {selectedTransaction.paymentProof && ( // Display payment proof link if available
+                  {selectedTransaction.paymentProof && (
                     <div className="pb-2">
                       <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
                         <Info size={16} /> Payment Proof
@@ -419,6 +435,45 @@ const Transactions = () => {
                       </a>
                     </div>
                   )}
+
+                  {/* Display details for investment_payout */}
+                  {selectedTransaction.type === "investment_payout" &&
+                    selectedTransaction.details && (
+                      <>
+                        <div className="pb-2 border-b border-dashed border-divider">
+                          <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
+                            <Tag size={16} /> Investment Plan
+                          </p>
+                          <p className="text-base text-textPrimary pl-6">
+                            {selectedTransaction.details.planName || "N/A"}
+                          </p>
+                        </div>
+                        <div className="pb-2 border-b border-dashed border-divider">
+                          <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
+                            <DollarSign size={16} /> Principal Amount
+                          </p>
+                          <p className="text-base text-textPrimary pl-6">
+                            {formatMoney(
+                              selectedTransaction.details.principalAmount,
+                              selectedTransaction?.user?.currency ||
+                                user?.currency
+                            )}
+                          </p>
+                        </div>
+                        <div className="pb-2">
+                          <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
+                            <DollarSign size={16} /> ROI Amount
+                          </p>
+                          <p className="text-base text-textPrimary pl-6">
+                            {formatMoney(
+                              selectedTransaction.details.roiAmount,
+                              selectedTransaction?.user?.currency ||
+                                user?.currency
+                            )}
+                          </p>
+                        </div>
+                      </>
+                    )}
                 </div>
               </div>
             </div>
