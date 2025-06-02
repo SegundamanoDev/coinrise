@@ -48,6 +48,7 @@ import Loader from "./LoadingSpinner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDashboardData } from "../features/dashboard/dashboard";
 import MarketOverviewWidget from "./MarketOverviewWidget";
+import { fetchProfile } from "../features/users/userSlice";
 import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines"; // Correct import for react-sparklines
 // Utility for formatting money
 const formatMoney = (amount, currency = "USD") => {
@@ -147,8 +148,8 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.dashboard);
-
-  const { profile: userProfile } = useSelector((state) => state.users);
+  const { user } = useSelector((state) => state.auth);
+  const { profile } = useSelector((state) => state.users);
 
   // States for live crypto prices, sorting, and trending coins
   const [cryptoPrices, setCryptoPrices] = useState([]);
@@ -204,6 +205,9 @@ const DashboardLayout = () => {
     document.documentElement.classList.toggle("dark", theme === "light");
     document.documentElement.classList.toggle("light", theme === "dark"); // For explicit 'light' class if needed
   };
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchDashboardData());
@@ -500,9 +504,6 @@ const DashboardLayout = () => {
             ${theme === "dark" ? "bg-darkBackground" : "bg-white"}
           `}
           >
-            <h1 className="text-lg font-semibold text-textPrimary">
-              {getGreeting()}, {userProfile?.fullName || "User"}!
-            </h1>
             <button
               onClick={() => setIsOpen(true)}
               className={`p-2 rounded-md transition mx-2 ${
@@ -528,7 +529,7 @@ const DashboardLayout = () => {
           `}
           >
             <h2 className="text-2xl font-bold mb-2 text-textPrimary">
-              {getGreeting()}, {userProfile?.fullName || "Trader"} 👋
+              {getGreeting()}, {user?.fullName || "Trader"} 👋
             </h2>
             <p className="text-textSecondary mb-4">
               Markets are live. Let’s make some smart moves!
@@ -557,18 +558,20 @@ const DashboardLayout = () => {
           {/* Trust Banners & Last Login Info */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div
-              className={`p-4 rounded-xl shadow-md flex items-center justify-center gap-3 border
+              className={`p-4 rounded-xl shadow-md flex items-center justify-between gap-3 border
               ${
                 theme === "dark"
                   ? "bg-cardBackground border-borderColor"
                   : "bg-white border-gray-200"
               }`}
             >
-              <ShieldCheck size={24} className="text-green-400" />
-              <p className="font-semibold text-lg text-textPrimary">
-                Account-Type: <br />
-                {userProfile?.currentPlan || "Free"}
-              </p>
+              <div>
+                <ShieldCheck size={24} className="text-green-400" />
+                <p className="font-semibold text-lg text-textPrimary">
+                  Account-Type:
+                </p>
+              </div>
+              <p className="font-bold">{profile?.currentPlan}</p>
             </div>
             <div
               className={`p-4 rounded-xl shadow-md flex items-center justify-center gap-3 border
@@ -596,10 +599,10 @@ const DashboardLayout = () => {
                 <p className="font-semibold text-textPrimary">Last Login:</p>
                 {/* --- UPDATED LINES BELOW --- */}
                 <p className="text-sm text-textSecondary">
-                  {formatLastLogin(userProfile?.lastLoginAt)}
+                  {formatLastLogin(user?.lastLoginAt)}
                 </p>
                 <p className="text-xs text-gray-400">
-                  {userProfile?.lastLoginIpAddress || "N/A"}
+                  {user?.lastLoginIpAddress || "N/A"}
                 </p>
                 {/* --- END UPDATED LINES --- */}
               </div>
