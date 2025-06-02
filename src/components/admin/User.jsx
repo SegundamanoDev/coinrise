@@ -83,7 +83,7 @@ const Users = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto text-gray-800 font-[Montserrat] bg-white rounded-lg shadow-xl">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto text-[#ffffff] bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-xl">
       <h2 className="text-3xl font-bold mb-8 text-center text-blue-600">
         All Users
       </h2>

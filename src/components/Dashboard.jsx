@@ -147,7 +147,8 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.dashboard);
-  const { user } = useSelector((state) => state.auth);
+
+  const { profile: userProfile } = useSelector((state) => state.users);
 
   // States for live crypto prices, sorting, and trending coins
   const [cryptoPrices, setCryptoPrices] = useState([]);
@@ -500,7 +501,7 @@ const DashboardLayout = () => {
           `}
           >
             <h1 className="text-lg font-semibold text-textPrimary">
-              {getGreeting()}, {user?.fullName || "User"}!
+              {getGreeting()}, {userProfile?.fullName || "User"}!
             </h1>
             <button
               onClick={() => setIsOpen(true)}
@@ -527,7 +528,7 @@ const DashboardLayout = () => {
           `}
           >
             <h2 className="text-2xl font-bold mb-2 text-textPrimary">
-              {getGreeting()}, {user?.fullName || "Trader"} 👋
+              {getGreeting()}, {userProfile?.fullName || "Trader"} 👋
             </h2>
             <p className="text-textSecondary mb-4">
               Markets are live. Let’s make some smart moves!
@@ -566,7 +567,7 @@ const DashboardLayout = () => {
               <ShieldCheck size={24} className="text-green-400" />
               <p className="font-semibold text-lg text-textPrimary">
                 Account-Type: <br />
-                {user?.currentPlan || "Free"}
+                {userProfile?.currentPlan || "Free"}
               </p>
             </div>
             <div
@@ -595,10 +596,10 @@ const DashboardLayout = () => {
                 <p className="font-semibold text-textPrimary">Last Login:</p>
                 {/* --- UPDATED LINES BELOW --- */}
                 <p className="text-sm text-textSecondary">
-                  {formatLastLogin(user?.lastLoginAt)}
+                  {formatLastLogin(userProfile?.lastLoginAt)}
                 </p>
                 <p className="text-xs text-gray-400">
-                  {user?.lastLoginIpAddress || "N/A"}
+                  {userProfile?.lastLoginIpAddress || "N/A"}
                 </p>
                 {/* --- END UPDATED LINES --- */}
               </div>
@@ -804,7 +805,6 @@ const DashboardLayout = () => {
                     View all news &rarr;
                   </a>
                 </div>
-              
               </div>
             </div>
           </div>
