@@ -51,6 +51,8 @@ import MarketOverviewWidget from "./MarketOverviewWidget";
 import { fetchProfile } from "../features/users/userSlice";
 import { Sparklines, SparklinesLine, SparklinesSpots } from "react-sparklines"; // Correct import for react-sparklines
 import CryptoNewsFeed from "./CryptoNewsFeed";
+import CryptoScreener from "./CryptoScreener";
+import MarketTimeline from "./MarketTimeline";
 // Utility for formatting money
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -145,7 +147,7 @@ const DashboardLayout = () => {
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState("dark"); // 'dark' or 'light'
   const [selectedCurrency, setSelectedCurrency] = useState("USD"); // Default currency for display
-
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.dashboard);
@@ -154,10 +156,6 @@ const DashboardLayout = () => {
 
   // States for live crypto prices, sorting, and trending coins
   const [cryptoPrices, setCryptoPrices] = useState([]);
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: "ascending",
-  });
   const [trendingCoins, setTrendingCoins] = useState([]);
   const [watchlist, setWatchlist] = useState([]); // User's watchlist
 
@@ -197,6 +195,20 @@ const DashboardLayout = () => {
     },
     [selectedCurrency]
   );
+
+  const handleCopyClick = async () => {
+    try {
+      await navigator.clipboard.writeText(referralCode);
+      setCopied(true); // Show "Copied!" message
+
+      // Hide "Copied!" message after 2 seconds
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
 
   // Toggle theme
   const toggleTheme = () => {
@@ -266,42 +278,6 @@ const DashboardLayout = () => {
   const getWatchlistCoins = useMemo(() => {
     return cryptoPrices.filter((coin) => watchlist.includes(coin.id));
   }, [watchlist, cryptoPrices]);
-
-  // Sorting logic for crypto prices
-  const sortedCryptoPrices = useMemo(() => {
-    let sortableItems = [...cryptoPrices];
-    if (sortConfig.key !== null) {
-      sortableItems.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "ascending" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortableItems;
-  }, [cryptoPrices, sortConfig]);
-
-  const requestSort = (key) => {
-    let direction = "ascending";
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const getSortIcon = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === "ascending" ? (
-        <ChevronUp size={16} />
-      ) : (
-        <ChevronDown size={16} />
-      );
-    }
-    return null;
-  };
 
   const stats = [
     {
@@ -672,20 +648,27 @@ const DashboardLayout = () => {
                       {referralCode}
                     </p>
                     <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(referralCode);
-                        alert("Referral code copied!");
-                      }}
-                      className={`ml-2 p-2 rounded-md transition ${
-                        theme === "dark"
-                          ? "hover:bg-[#374151]"
-                          : "hover:bg-gray-200 text-gray-700"
-                      }`}
+                      onClick={handleCopyClick}
+                      className={`ml-2 p-2 rounded-md transition duration-300 ease-in-out flex items-center justify-center
+          ${
+            theme === "dark"
+              ? "hover:bg-gray-700 bg-gray-800 text-gray-200" // Added background and text for dark theme button
+              : "hover:bg-gray-200 bg-gray-100 text-gray-700"
+          }`}
                       title="Copy to clipboard"
                     >
                       <Copy size={16} />
                     </button>
                   </div>
+                  {copied && (
+                    <span
+                      className={`ml-2 text-sm font-medium ${
+                        theme === "dark" ? "text-green-400" : "text-green-600"
+                      }`}
+                    >
+                      Copied! 👌
+                    </span>
+                  )}
                   <p className="text-sm text-textSecondary mt-2">
                     Share this code to earn rewards
                   </p>
@@ -764,182 +747,9 @@ const DashboardLayout = () => {
             }
           `}
           >
-            <h2
-              className={`text-xl font-bold p-6 border-b
-              ${
-                theme === "dark"
-                  ? "text-textPrimary border-borderColor"
-                  : "text-gray-900 border-gray-200"
-              }
-            `}
-            >
-              Live Crypto Prices
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left table-auto">
-                <thead
-                  className={`uppercase text-sm
-                  ${
-                    theme === "dark"
-                      ? "bg-[#1f2937] text-gray-300"
-                      : "bg-gray-100 text-gray-600"
-                  }
-                `}
-                >
-                  <tr>
-                    <th className="py-3 px-4">#</th>
-                    <th
-                      className="py-3 px-4 cursor-pointer hover:text-white transition-colors"
-                      onClick={() => requestSort("name")}
-                    >
-                      Name {getSortIcon("name")}
-                    </th>
-                    <th
-                      className="py-3 px-4 cursor-pointer hover:text-white transition-colors"
-                      onClick={() => requestSort("current_price")}
-                    >
-                      Price {getSortIcon("current_price")}
-                    </th>
-                    <th
-                      className="py-3 px-4 cursor-pointer hover:text-white transition-colors"
-                      onClick={() => requestSort("price_change_percentage_24h")}
-                    >
-                      24h % Change {getSortIcon("price_change_percentage_24h")}
-                    </th>
-                    <th
-                      className="py-3 px-4 cursor-pointer hover:text-white transition-colors"
-                      onClick={() => requestSort("market_cap")}
-                    >
-                      Market Cap {getSortIcon("market_cap")}
-                    </th>
-                    <th className="py-3 px-4">Sparkline</th>
-                    <th className="py-3 px-4">Watchlist</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedCryptoPrices.length > 0 ? (
-                    sortedCryptoPrices.map((coin, index) => (
-                      <tr
-                        key={coin.id}
-                        className={`transition-colors
-                        ${
-                          theme === "dark"
-                            ? "border-b border-[#374151] last:border-b-0 hover:bg-[#1f2937]"
-                            : "border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
-                        }
-                      `}
-                      >
-                        <td className="py-3 px-4 text-textSecondary">
-                          {index + 1}
-                        </td>
-                        <td className="py-3 px-4 flex items-center">
-                          <img
-                            src={coin.image}
-                            alt={coin.name}
-                            className="w-6 h-6 mr-2 rounded-full"
-                          />
-                          <span className="font-medium text-textPrimary">
-                            {coin.name}
-                          </span>
-                          <span className="text-xs text-textSecondary ml-2 uppercase">
-                            {coin.symbol}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-textPrimary">
-                          {formatMoney(coin.current_price, selectedCurrency)}
-                        </td>
-                        <td className="py-3 px-4">
-                          {formatPercentage(coin.price_change_percentage_24h)}
-                        </td>
-                        <td className="py-3 px-4 text-textPrimary">
-                          {formatMoney(coin.market_cap, selectedCurrency)}
-                        </td>
-                        <td className="py-3 px-4">
-                          {coin.sparkline_in_7d?.price &&
-                          coin.sparkline_in_7d.price.length > 0 ? (
-                            <Sparklines
-                              data={coin.sparkline_in_7d.price}
-                              width={100}
-                              height={30}
-                            >
-                              <SparklinesLine
-                                color={
-                                  coin.price_change_percentage_24h >= 0
-                                    ? greenSuccess
-                                    : redError
-                                }
-                                style={{ fill: "none" }}
-                              />
-                              <SparklinesSpots
-                                size={2}
-                                style={{
-                                  fill:
-                                    coin.price_change_percentage_24h >= 0
-                                      ? greenSuccess
-                                      : redError,
-                                }}
-                              />
-                            </Sparklines>
-                          ) : (
-                            <div className="w-[100px] h-[30px] bg-gray-700 rounded animate-pulse"></div>
-                          )}
-                        </td>
-                        <td className="py-3 px-4">
-                          <button
-                            onClick={() => toggleWatchlist(coin.id)}
-                            className={`${
-                              watchlist.includes(coin.id)
-                                ? "text-yellow-400"
-                                : "text-textSecondary hover:text-yellow-300"
-                            } transition-colors`}
-                            title={
-                              watchlist.includes(coin.id)
-                                ? "Remove from watchlist"
-                                : "Add to watchlist"
-                            }
-                          >
-                            <Star
-                              size={18}
-                              fill={
-                                watchlist.includes(coin.id)
-                                  ? "currentColor"
-                                  : "none"
-                              }
-                            />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan="7"
-                        className="py-8 text-center text-textSecondary"
-                      >
-                        Loading crypto prices...
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div
-              className={`p-4 text-center text-sm ${
-                theme === "dark" ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              Data provided by{" "}
-              <a
-                href="https://www.coingecko.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:underline"
-              >
-                CoinGecko
-              </a>
-            </div>
+            <CryptoScreener />
           </div>
-          <CryptoNewsFeed />
+          <MarketTimeline />
           {/* Watchlist Component */}
           <div
             className={`rounded-2xl shadow-lg border overflow-hidden mb-8

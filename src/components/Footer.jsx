@@ -19,7 +19,7 @@ const Footer = () => {
           <h3 className="text-lg font-bold mb-4">CONTACT US</h3>
           <p className="flex items-start gap-2">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1" />
-            014 Main Street, Anytown, CA 90210, USA.
+            123 Main Street, Anytown, CA 90210, USA.
           </p>
           <p className="flex items-center gap-2 mt-3">
             <FontAwesomeIcon icon={faEnvelope} />
@@ -33,28 +33,23 @@ const Footer = () => {
           <h3 className="text-lg font-bold mb-4">LINKS</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="hover:underline">
-                Buy crypto
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
+              <a href="faq" className="hover:underline">
                 FAQ
               </a>
             </li>
             <li>
-              <a href="#" className="hover:underline">
+              <a href="terms-conditions" className="hover:underline">
                 Terms & Conditions
               </a>
             </li>
             <li>
-              <a href="#" className="hover:underline">
+              <a href="privacy-policy" className="hover:underline">
                 Privacy Policy
               </a>
             </li>
             <li>
-              <a href="#" className="hover:underline">
-                Conflict Handling Policy
+              <a href="aml-policy" className="hover:underline">
+                AML Policy
               </a>
             </li>
           </ul>
@@ -64,18 +59,18 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-bold mb-4">SOCIAL MEDIA</h3>
           <div className="flex space-x-4 mb-4">
-            <a href="#" className="hover:text-yellow-500">
+            <a href="#">
               <FontAwesomeIcon icon={faFacebookF} />
             </a>
-            <a href="#" className="hover:text-yellow-500">
+            <a href="#">
               <FontAwesomeIcon icon={faTwitter} />
             </a>
-            <a href="#" className="hover:text-yellow-500">
+            <a href="#">
               <FontAwesomeIcon icon={faInstagram} />
             </a>
           </div>
           <p className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faLock} className="text-yellow-500" />
+            <FontAwesomeIcon icon={faLock} />
             SSL Encryption
           </p>
         </div>

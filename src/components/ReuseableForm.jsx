@@ -303,7 +303,7 @@ const ReuseableForm = ({
           </select>
           {selectedCoin && (
             <p className="text-sm text-gray-400 mt-2">
-              {note.replace("{selectedCoin}", selectedCoin)}
+              {note?.replace("{selectedCoin}", selectedCoin)}
             </p>
           )}
         </div>

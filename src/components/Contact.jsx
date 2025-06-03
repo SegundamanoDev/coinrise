@@ -90,7 +90,7 @@ const Contact = () => {
                 Our Office
               </h3>
               <p className="text-gray-400 text-base">
-                014 Main Street, Anytown, CA 90210, USA.
+                123 Main Street, Anytown, CA 90210, USA.
               </p>
               <p className="text-gray-500 text-sm mt-1">
                 Visits by appointment only

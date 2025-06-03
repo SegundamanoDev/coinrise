@@ -207,14 +207,14 @@ const AppRoutes = () => {
               </PrivateRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/settings"
             element={
               <PrivateRoute>
                 <Settings />
               </PrivateRoute>
             }
-          />
+          /> */}
           <Route
             path="/withdraw"
             element={
@@ -223,14 +223,14 @@ const AppRoutes = () => {
               </PrivateRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/withdrawal-pin"
             element={
               <PrivateRoute>
                 <WithdrawPin />
               </PrivateRoute>
             }
-          />
+          /> */}
           <Route
             path="/activity-overview"
             element={
@@ -252,14 +252,6 @@ const AppRoutes = () => {
             element={
               <PrivateRoute>
                 <AffiliateProgram />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dh"
-            element={
-              <PrivateRoute>
-                <DashboardPage />
               </PrivateRoute>
             }
           />

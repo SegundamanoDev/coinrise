@@ -5,7 +5,6 @@ import { CheckCircle, Zap, DollarSign, Shield, Users } from "lucide-react"; // I
 
 const UpgradeAccount = () => {
   // Define a fixed upgrade fee for this example
-  const UPGRADE_FEE = 500; // Example: $250 for account upgrade
 
   const upgradeBenefits = [
     {
@@ -75,33 +74,13 @@ const UpgradeAccount = () => {
         <ReuseableForm
           heading="Complete Account Upgrade"
           title={`Make sure that you are sending funds to the correct wallet address and blockchain network. Sending coins or tokens other than {selectedCoin} to this address may result in loss of your deposit.`}
-          note={`A one-time upgrade fee of ${formatMoney(
-            UPGRADE_FEE
-          )} is required.`}
           desc="Your account will be upgraded immediately after 2 network confirmations of your payment."
           btn="Submit Upgrade Payment"
           formType="upgrade" // New prop to differentiate form type
-          fixedAmount={UPGRADE_FEE} // Pass the fixed upgrade amount
         />
       </div>
-
-      {/* Optionally, you might have other components like TradingPlans here if relevant to the upgrade context */}
-      {/* <TradingPlans /> */}
     </div>
   );
-};
-
-// Helper for formatting money (can be global utility)
-const formatMoney = (amount, currency = "USD") => {
-  try {
-    return new Intl.NumberFormat("en", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-    }).format(amount || 0);
-  } catch (error) {
-    return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
-  }
 };
 
 export default UpgradeAccount;

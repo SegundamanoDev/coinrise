@@ -161,7 +161,7 @@ const ProfilePage = () => {
           </div>
 
           <Link
-            to="/dashboard/upgrade-account" // Link to your upgrade page
+            to="/upgrade-account" // Link to your upgrade page
             className="mt-6 inline-block bg-gradient-to-r from-green-500 to-teal-600 text-white py-2 px-5 rounded-lg font-semibold hover:from-green-600 hover:to-teal-700 transition duration-300 shadow-md"
           >
             Upgrade Account
