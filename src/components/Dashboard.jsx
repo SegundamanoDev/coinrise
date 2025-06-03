@@ -589,19 +589,6 @@ const DashboardLayout = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* Column 1 (e.g., Chart, Stats) */}
             <div className="lg:col-span-2 space-y-6">
-              {/* TradingView Chart */}
-              <div
-                className={`rounded-2xl shadow-lg border overflow-hidden
-                ${
-                  theme === "dark"
-                    ? "bg-cardBackground border-borderColor"
-                    : "bg-white border-gray-200"
-                }
-              `}
-              >
-                <TradingViewChart />
-              </div>
-
               {/* Stat Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
                 {stats.map((card, index) => (
@@ -673,6 +660,18 @@ const DashboardLayout = () => {
                     Share this code to earn rewards
                   </p>
                 </div>
+              </div>
+              {/* TradingView Chart */}
+              <div
+                className={`rounded-2xl shadow-lg border overflow-hidden
+                ${
+                  theme === "dark"
+                    ? "bg-cardBackground border-borderColor"
+                    : "bg-white border-gray-200"
+                }
+              `}
+              >
+                <TradingViewChart />
               </div>
             </div>
 
