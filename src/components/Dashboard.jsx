@@ -898,21 +898,7 @@ const DashboardLayout = () => {
                   </div>
                 )}
               </div>
-              {/* Crypto News Feed */}
-              <div
-                className={`p-6 rounded-2xl shadow-lg border
-                  ${
-                    theme === "dark"
-                      ? "bg-cardBackground border-borderColor"
-                      : "bg-white border-gray-200"
-                  }
-                `}
-              >
-                <h3 className="text-xl font-bold mb-4 text-textPrimary flex items-center gap-2">
-                  <Newspaper size={20} /> Crypto News Feed
-                </h3>
-                <CryptoNewsFeed theme={theme} />
-              </div>
+             
             </div>
           </div>
           {/* Live Coin Prices Table */}
