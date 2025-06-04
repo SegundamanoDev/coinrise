@@ -3,9 +3,10 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserById,
-  updateUser, // Assuming updateUser is imported
+  updateUser,
   clearStatusMessage,
-} from "../../features/users/userSlice"; // Assuming updateUser and clearStatusMessage are in userSlice
+  resetAdminUpdateUserStatus, // <-- Import the new action
+} from "../../features/users/userSlice";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { toast } from "react-toastify";
 import {
@@ -64,16 +65,18 @@ const UserDetail = () => {
 
   const {
     selectedUser,
-    loading,
-    error,
-    statusMessage,
-    // updateLoading, // These are not present in your `initialState` or `extraReducers` for `updateUser`
-    // updateError,   // so they will always be undefined. Let's fix this in userSlice
+    loading, // General loading for fetchUserById
+    error, // General error for fetchUserById
+    statusMessage, // General success message
+    adminUpdateUserStatus, // <-- Use the new dedicated status for updateUser
   } = useSelector((state) => state.users);
 
-  // Extract update loading/error state directly from the main loading/error if you haven't separated them
-  const updateLoading = loading; // Using general loading for update status
-  const updateError = error; // Using general error for update status
+  // Destructure the specific update status
+  const {
+    loading: updateLoading,
+    error: updateError,
+    success: updateSuccess,
+  } = adminUpdateUserStatus;
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -107,7 +110,7 @@ const UserDetail = () => {
         address: selectedUser.address || "",
         city: selectedUser.city || "",
         zip: selectedUser.zip || "",
-        currentPlan: selectedUser.currentPlan || "free", // Ensure default matches backend enum
+        currentPlan: selectedUser.currentPlan || "free",
         role: selectedUser.role || "user",
         isBlocked: selectedUser.isBlocked || false,
       });
@@ -115,16 +118,25 @@ const UserDetail = () => {
   }, [selectedUser]);
 
   useEffect(() => {
+    // Handle success message from any action, including update
     if (statusMessage) {
       toast.success(statusMessage);
-      dispatch(clearStatusMessage());
-      setEditMode(false);
+      dispatch(clearStatusMessage()); // Clear the general status message
     }
+
+    // Handle success specifically for adminUpdateUserStatus
+    if (updateSuccess) {
+      // toast.success("User profile updated successfully!"); // Already handled by general statusMessage if set
+      setEditMode(false); // Exit edit mode on successful update
+      dispatch(resetAdminUpdateUserStatus()); // Reset the update status
+    }
+
+    // Handle error specifically for adminUpdateUserStatus
     if (updateError) {
       toast.error(`Update failed: ${updateError}`);
-      dispatch(clearStatusMessage());
+      dispatch(resetAdminUpdateUserStatus()); // Reset the update status
     }
-  }, [statusMessage, updateError, dispatch]);
+  }, [statusMessage, updateSuccess, updateError, dispatch]); // Depend on new update states
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -134,15 +146,15 @@ const UserDetail = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    // Added 'e' and e.preventDefault()
+    e.preventDefault(); // Prevent default form submission behavior
     if (id) {
-      // THIS IS THE CRUCIAL CHANGE
       dispatch(updateUser({ id, updates: formData }));
     }
   };
 
   if (loading && !selectedUser)
-    // Only show full loader if no user is loaded yet
     return (
       <AdminLayout>
         <div className="flex flex-col justify-center items-center py-20 text-white">
@@ -153,7 +165,6 @@ const UserDetail = () => {
     );
 
   if (error && !selectedUser)
-    // Only show full error if no user is loaded yet
     return (
       <AdminLayout>
         <div className="flex flex-col justify-center items-center py-20 bg-red-900/20 border border-red-700 rounded-lg text-red-400">
@@ -378,7 +389,27 @@ const UserDetail = () => {
             <div className="flex justify-end gap-4 mt-6">
               <button
                 type="button"
-                onClick={() => setEditMode(false)}
+                onClick={() => {
+                  setEditMode(false);
+                  // Optionally reset form data if canceling edits, though
+                  // it will re-populate from selectedUser on next edit.
+                  if (selectedUser) {
+                    setFormData({
+                      fullName: selectedUser.fullName || "",
+                      email: selectedUser.email || "",
+                      country: selectedUser.country || "",
+                      currency: selectedUser.currency || "",
+                      phone: selectedUser.phone || "",
+                      address: selectedUser.address || "",
+                      city: selectedUser.city || "",
+                      zip: selectedUser.zip || "",
+                      currentPlan: selectedUser.currentPlan || "free",
+                      role: selectedUser.role || "user",
+                      isBlocked: selectedUser.isBlocked || false,
+                    });
+                  }
+                  dispatch(resetAdminUpdateUserStatus()); // Clear any lingering update status
+                }}
                 className="px-6 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 font-semibold flex items-center gap-2"
               >
                 <XCircle size={20} /> Cancel
@@ -386,7 +417,7 @@ const UserDetail = () => {
               <button
                 type="submit"
                 className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-200 font-semibold flex items-center gap-2"
-                disabled={updateLoading}
+                disabled={updateLoading} // Use dedicated updateLoading state
               >
                 {updateLoading ? (
                   <Loader2 className="animate-spin h-5 w-5" />
@@ -506,7 +537,7 @@ const UserDetail = () => {
                 {selectedUser?.createdAt
                   ? format(
                       new Date(selectedUser.createdAt),
-                      "MMM dd, yyyy HH:mm" // Adjusted format for clarity
+                      "MMM dd, yyyy HH:mm"
                     )
                   : "N/A"}
               </p>

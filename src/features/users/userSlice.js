@@ -48,7 +48,7 @@ export const fetchUserById = createAsyncThunk(
   }
 );
 
-// 3. Update user
+// 3. Update user (Admin update of any user by ID)
 export const updateUser = createAsyncThunk(
   "users/update",
   async ({ id, updates }, thunkAPI) => {
@@ -112,7 +112,7 @@ export const topupUserProfit = createAsyncThunk(
   }
 );
 
-// 7. Fetch JWT user's profile
+// 7. Fetch JWT user's profile (for the logged-in user)
 export const fetchProfile = createAsyncThunk(
   "users/fetchProfile",
   async (_, thunkAPI) => {
@@ -133,20 +133,17 @@ export const fetchProfile = createAsyncThunk(
   }
 );
 
-// Change User Password
+// Change User Password (for the logged-in user)
 export const changePassword = createAsyncThunk(
   "users/changePassword",
   async (passwords, thunkAPI) => {
     try {
       const token = getToken();
-      // passwords should contain { currentPassword, newPassword, confirmPassword }
       const response = await axios.put(`${API_URL}/users/password`, passwords, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log(response);
       return response.data; // Return success message or confirmation
     } catch (error) {
       const message =
@@ -160,13 +157,12 @@ export const changePassword = createAsyncThunk(
   }
 );
 
-// Update User Profile Info (e.g., name, country, phone, address)
+// Update User Profile Info (e.g., name, country, phone, address for logged-in user)
 export const updateProfile = createAsyncThunk(
   "users/updateProfile",
   async (userData, thunkAPI) => {
     try {
       const token = getToken();
-      // Send only the fields that are allowed to be updated by the user
       const response = await axios.put(`${API_URL}/users/profile`, userData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -192,11 +188,13 @@ const initialState = {
   users: [],
   selectedUser: null,
   passwordStatus: { loading: false, success: null, error: null },
-  updateStatus: { loading: false, success: null, error: null }, // <--- Add this separate updateStatus
+  adminUpdateUserStatus: { loading: false, success: null, error: null },
+  // This `updateStatus` is specifically for the `updateProfile` thunk (user's own profile)
+  updateStatus: { loading: false, success: null, error: null },
   profile: null,
-  loading: false, // General loading for fetches
+  loading: false, // General loading for fetches (fetchUsers, fetchUserById, deleteUser, topupUserProfit, fetchProfile)
   error: null, // General error for fetches
-  statusMessage: null,
+  statusMessage: null, // General success message for various actions
 };
 
 // =====================
@@ -213,12 +211,21 @@ const userSlice = createSlice({
     clearSelectedUser: (state) => {
       state.selectedUser = null;
     },
-    resetUpdateStatus: (state) => {
-      state.updateStatus = { loading: false, success: null, error: null };
+    resetAdminUpdateUserStatus: (state) => {
+      state.adminUpdateUserStatus = {
+        loading: false,
+        success: null,
+        error: null,
+      };
     },
     resetPasswordStatus: (state) => {
       state.passwordStatus = { loading: false, success: null, error: null };
     },
+    // Re-added this reducer for the user's own profile update status
+    resetUpdateStatus: (state) => {
+      state.updateStatus = { loading: false, success: null, error: null };
+    },
+    // `resetAvatarStatus` is not defined in reducers, so it remains commented out.
   },
   extraReducers: (builder) => {
     builder
@@ -251,18 +258,22 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Update User
+      // Update User (Admin update of any user by ID)
       .addCase(updateUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.adminUpdateUserStatus.loading = true;
+        state.adminUpdateUserStatus.error = null;
+        state.adminUpdateUserStatus.success = null;
       })
       .addCase(updateUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.statusMessage = action.payload;
+        state.adminUpdateUserStatus.loading = false;
+        state.adminUpdateUserStatus.success = true;
+        state.selectedUser = action.payload;
+        state.statusMessage = "User updated successfully!";
       })
       .addCase(updateUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.adminUpdateUserStatus.loading = false;
+        state.adminUpdateUserStatus.error = action.payload;
+        state.adminUpdateUserStatus.success = false;
       })
 
       // Delete User
@@ -287,6 +298,12 @@ const userSlice = createSlice({
       })
       .addCase(topupUserProfit.fulfilled, (state, action) => {
         state.loading = false;
+        if (
+          state.selectedUser &&
+          state.selectedUser._id === action.payload._id
+        ) {
+          state.selectedUser = action.payload;
+        }
         const index = state.users.findIndex(
           (u) => u._id === action.payload._id
         );
@@ -311,7 +328,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // updateProfile
+      // updateProfile (for the logged-in user)
       .addCase(updateProfile.pending, (state) => {
         state.updateStatus.loading = true;
         state.updateStatus.success = null;
@@ -320,7 +337,8 @@ const userSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.updateStatus.loading = false;
         state.updateStatus.success = true;
-        state.profile = action.payload; // Update local profile state
+        state.profile = action.payload;
+        state.statusMessage = "Profile updated successfully!";
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.updateStatus.loading = false;
@@ -336,7 +354,7 @@ const userSlice = createSlice({
       .addCase(changePassword.fulfilled, (state) => {
         state.passwordStatus.loading = false;
         state.passwordStatus.success = true;
-        // Password change doesn't directly update profile data usually
+        state.statusMessage = "Password changed successfully!";
       })
       .addCase(changePassword.rejected, (state, action) => {
         state.passwordStatus.loading = false;
@@ -350,7 +368,13 @@ const userSlice = createSlice({
 // Exports
 // =====================
 
-export const { clearStatusMessage, clearSelectedUser } = userSlice.actions;
-export const { resetUpdateStatus, resetPasswordStatus, resetAvatarStatus } =
-  userSlice.actions;
+// Re-added resetUpdateStatus to exports
+export const {
+  clearStatusMessage,
+  clearSelectedUser,
+  resetAdminUpdateUserStatus,
+  resetPasswordStatus,
+  resetUpdateStatus,
+} = userSlice.actions;
+
 export default userSlice.reducer;

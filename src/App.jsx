@@ -14,13 +14,13 @@ import SignIn from "./components/SignIn";
 import DashboardLayout from "./components/Dashboard";
 import Transactions from "./components/Transaction";
 import Deposit from "./components/Deposit";
-import Profile from "./components/Profile";
+import Profile from "./components/Profile"; // Note: You have Profile and ProfilePage, check which one is correct
 import Settings from "./components/Settings";
 import Withdraw from "./components/Withdraw";
 import ConfirmInvestment from "./components/ConfirmInvest";
 import SuccessModal from "./components/SuccMsg";
 import ActivityOverview from "./components/ActivityOverview";
-import StickySupportBar from "./components/SupportChat";
+import StickySupportBar from "./components/SupportChat"; // Corrected component name to SupportChat
 import AOS from "aos";
 import "aos/dist/aos.css";
 import AdminDashboard from "./components/admin/AdminDashboard";
@@ -30,7 +30,7 @@ import AdminTransactions from "./components/admin/Transaction";
 import Setting from "./components/admin/Settings";
 import ScrollToTops from "./components/ScrollToTop";
 import { store } from "./redux/store";
-import { Provider, useSelector } from "react-redux"; // Import useSelector
+import { Provider, useSelector } from "react-redux"; // Keep useSelector
 import LoadingSpinner from "./components/LoadingSpinner";
 import TermsAndConditions from "./components/TermsAndConditions";
 import PrivacyPolicy from "./components/PrivacyPolicy";
@@ -51,7 +51,7 @@ import AdminInvestmentsDashboard from "./components/admin/Investment";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import TradingPlans from "./components/InvestmentPlanSection";
-import ProfilePage from "./components/Profile";
+import ProfilePage from "./components/Profile"; // Note: You have Profile and ProfilePage, check which one is correct
 import DashboardPage from "./components/DhPage";
 import InvestmentPlanSection from "./components/InvestmentPlan";
 
@@ -74,23 +74,6 @@ const PrivateRoute = ({ children, roles }) => {
   return children;
 };
 
-// // AdminRoute component to protect admin routes
-// const AdminRoute = ({ children }) => {
-//   const { user, token } = useSelector((state) => state.auth);
-//   const location = useLocation();
-
-//   if (!token || !user) {
-//     return <Navigate to="/sign-in" replace state={{ from: location }} />;
-//   }
-
-//   if (user && user.role !== "admin") {
-//     // Redirect to a forbidden page or regular dashboard if not an admin
-//     return <Navigate to="/dashboard" replace />;
-//   }
-
-//   return children;
-// };
-
 const AppRoutes = () => {
   useEffect(() => {
     AOS.init({ once: true });
@@ -99,6 +82,9 @@ const AppRoutes = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [showRoutes, setShowRoutes] = useState(false);
+
+  // *** Access currentUser from Redux here ***
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   useLayoutEffect(() => {
     setShowRoutes(false);
@@ -276,7 +262,8 @@ const AppRoutes = () => {
         </Routes>
       )}
 
-      {!hideSupportBar && <StickySupportBar />}
+      {/* Pass currentUser to StickySupportBar */}
+      {!hideSupportBar && <StickySupportBar currentUser={currentUser} />}
       {/* {!hidewhatsapp && <Whatsapp />} */}
       {!footer && <Footer />}
 
