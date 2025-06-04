@@ -122,6 +122,6 @@ export default function StickySupportBar({ currentUser }) {
   }, [currentUser]); // Re-run effect if currentUser changes
 
   return (
-    <div className="fixed bottom-8 right-6 z-50 hover:scale-110 transition"></div>
+    <div className="fixed bottom-6 right-6 z-50 hover:scale-110 transition"></div>
   );
 }

@@ -27,7 +27,8 @@ import {
   Sun, // For light mode toggle
   Moon, // For dark mode toggle
   Star, // For watchlist
-  Newspaper, // For news/insights
+  Newspaper,
+  Clock, // For news/insights
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
