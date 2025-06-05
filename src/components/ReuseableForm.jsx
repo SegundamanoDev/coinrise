@@ -9,7 +9,7 @@ import {
   Loader2,
   Star,
   TrendingUp,
-} from "lucide-react"; // Added Star, TrendingUp icons
+} from "lucide-react";
 import Barcode from "react-barcode";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -17,6 +17,19 @@ import {
   initiateUpgradeDeposit,
   resetDepositStatus,
 } from "../features/transaction/transaction";
+
+// Helper for formatting money (can be global utility)
+const formatMoney = (amount, currency = "USD") => {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount || 0);
+  } catch (error) {
+    return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
+  }
+};
 
 // Placeholder for dynamic wallet addresses (from an API in real app)
 const WALLET_ADDRESSES = {
@@ -64,7 +77,6 @@ const ReuseableForm = ({
   note,
   btn,
   formType, // 'deposit' or 'upgrade'
-  // fixedAmount, // No longer needed directly as it comes from selected plan
 }) => {
   const dispatch = useDispatch();
   const { depositStatus, depositError, depositMessage } = useSelector(
@@ -73,7 +85,6 @@ const ReuseableForm = ({
 
   const [selectedCoin, setSelectedCoin] = useState("");
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState(null); // State for selected plan
-  // Amount is now derived from selectedUpgradePlan if formType is 'upgrade'
   const [amount, setAmount] = useState(""); // General amount for 'deposit' type
 
   const [file, setFile] = useState(null);
@@ -81,42 +92,54 @@ const ReuseableForm = ({
   const [fileError, setFileError] = useState("");
   const [copyStatusMessage, setCopyStatusMessage] = useState("");
 
-  // Determine the effective amount for submission
-  const effectiveAmount =
-    formType === "upgrade" && selectedUpgradePlan
-      ? selectedUpgradePlan.amount
-      : parseFloat(amount) || 0; // Fallback for general deposit
-
   const currentWalletAddress = selectedCoin
     ? WALLET_ADDRESSES[selectedCoin]
     : "Select a coin to see wallet address";
 
   useEffect(() => {
     if (depositStatus === "succeeded") {
-      toast.success(depositMessage);
+      // Show success toast message
+      toast.success(depositMessage || "Request submitted successfully!");
+
+      // Clear all form fields and error messages
       setSelectedCoin("");
-      // Reset amount based on form type (empty for deposit, null for upgrade plan)
-      setAmount(formType === "deposit" ? "" : "");
-      setSelectedUpgradePlan(null); // Clear selected plan
+      setAmount(""); // Clears amount for both types (it's not relevant for upgrade after selection)
+      setSelectedUpgradePlan(null);
       setFile(null);
+      // Clear file input value directly
       if (document.getElementById("proof-file-input")) {
         document.getElementById("proof-file-input").value = "";
       }
+      setAmountError(""); // Clear any previous amount error
+      setFileError(""); // Clear any previous file error
+      setCopyStatusMessage(""); // Clear copy status message
+
+      // Reset Redux deposit status
       dispatch(resetDepositStatus());
     } else if (depositStatus === "failed") {
+      // Show error toast message
       toast.error(
         depositError || "Failed to submit request. Please try again."
       );
+      // Reset Redux deposit status
       dispatch(resetDepositStatus());
     }
-  }, [depositStatus, depositMessage, depositError, dispatch, formType]);
+  }, [depositStatus, depositMessage, depositError, dispatch]); // Added formType as a dependency
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(currentWalletAddress);
+      // Using document.execCommand('copy') for broader iframe compatibility
+      const textarea = document.createElement("textarea");
+      textarea.value = currentWalletAddress;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+
       setCopyStatusMessage("Wallet address copied!");
       setTimeout(() => setCopyStatusMessage(""), 3000);
     } catch (err) {
+      console.error("Failed to copy text: ", err);
       setCopyStatusMessage("Failed to copy address.");
       setTimeout(() => setCopyStatusMessage(""), 3000);
     }
@@ -143,15 +166,14 @@ const ReuseableForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAmountError("");
-    setFileError("");
+    setAmountError(""); // Clear errors on new submission attempt
+    setFileError(""); // Clear errors on new submission attempt
 
     if (!selectedCoin) {
       toast.error("Please select a cryptocurrency.");
       return;
     }
 
-    // Validation specific to upgrade vs. deposit form types
     let submissionAmount;
     if (formType === "upgrade") {
       if (!selectedUpgradePlan) {
@@ -176,7 +198,7 @@ const ReuseableForm = ({
     }
 
     const formData = new FormData();
-    formData.append("amount", submissionAmount); // Use the derived amount
+    formData.append("amount", submissionAmount);
     formData.append("coin", selectedCoin);
     formData.append("proof", file);
     formData.append(
@@ -184,7 +206,6 @@ const ReuseableForm = ({
       formType === "upgrade" ? "upgrade_deposit" : "deposit"
     );
 
-    // Add plan details if it's an upgrade
     if (formType === "upgrade" && selectedUpgradePlan) {
       formData.append("planId", selectedUpgradePlan.id);
       formData.append("planName", selectedUpgradePlan.name);
@@ -445,19 +466,6 @@ const ReuseableForm = ({
       </form>
     </div>
   );
-};
-
-// Helper for formatting money (can be global utility)
-const formatMoney = (amount, currency = "USD") => {
-  try {
-    return new Intl.NumberFormat("en", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-    }).format(amount || 0);
-  } catch (error) {
-    return `${currency} ${parseFloat(amount || 0).toFixed(2)}`;
-  }
 };
 
 export default ReuseableForm;

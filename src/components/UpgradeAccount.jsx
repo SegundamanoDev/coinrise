@@ -1,10 +1,21 @@
 // components/UpgradeAccount.jsx
-import React from "react";
-import ReuseableForm from "./ReuseableForm"; // Ensure this path is correct
-import { CheckCircle, Zap, DollarSign, Shield, Users } from "lucide-react"; // Import more icons
+import React, { useState } from "react"; // Added useState for the collapsible section
+import ReuseableForm from "./ReuseableForm";
+import {
+  CheckCircle,
+  Zap,
+  DollarSign,
+  Shield,
+  Users,
+  Lock, // Added Lock icon for the policy banner
+  ChevronDown, // Added ChevronDown for collapsible
+  ChevronUp, // Added ChevronUp for collapsible
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion"; // Added for collapsible animation
 
 const UpgradeAccount = () => {
-  // Define a fixed upgrade fee for this example
+  // State to manage the collapse/expand behavior of the policy section
+  const [showPolicyDetails, setShowPolicyDetails] = useState(true); // Start expanded by default
 
   const upgradeBenefits = [
     {
@@ -44,6 +55,113 @@ const UpgradeAccount = () => {
           Unlock premium features, higher limits, and dedicated support to
           supercharge your investment journey.
         </p>
+
+        {/* --- IMPORTANT ACCOUNT POLICY SECTION --- */}
+        <div
+          className={`rounded-xl shadow-lg border p-6 mb-8
+            bg-blue-900/20 border-blue-700 text-white`}
+        >
+          <div
+            className="flex justify-between items-center cursor-pointer pb-2"
+            onClick={() => setShowPolicyDetails(!showPolicyDetails)}
+          >
+            <h2 className="text-xl font-bold text-blue-300 flex items-center gap-2">
+              <Lock size={24} className="text-blue-400" />
+              Important: Account Security & Upgrade Policy
+            </h2>
+            {showPolicyDetails ? (
+              <ChevronUp size={24} className="text-blue-300" />
+            ) : (
+              <ChevronDown size={24} className="text-blue-300" />
+            )}
+          </div>
+
+          <AnimatePresence>
+            {showPolicyDetails && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden" // Ensures content doesn't overflow during animation
+              >
+                <div className="mt-4 text-gray-200 space-y-4">
+                  <p>
+                    At [Your Platform Name], the security and integrity of your
+                    investments are paramount. We employ cutting-edge security
+                    measures to ensure that{" "}
+                    <strong>
+                      only you, the authorized account holder, can initiate and
+                      complete operations on your account.
+                    </strong>{" "}
+                    This multi-layered protection is designed to safeguard your
+                    assets and personal information at all times.
+                  </p>
+
+                  <h3 className="text-lg font-semibold text-blue-200">
+                    Why Upgrades Require External Deposits: Maintaining
+                    Integrity and Compliance
+                  </h3>
+                  <p>
+                    Due to the exceptional Return on Investment (ROI) offered
+                    across our diverse trading plans and to adhere strictly to
+                    evolving <strong>global financial regulations</strong>{" "}
+                    (including stringent Anti-Money Laundering - AML - and Know
+                    Your Customer - KYC - compliance standards), we have
+                    implemented specific protocols for account upgrades:
+                  </p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>
+                      <strong>Enhanced Security & Transparency:</strong> To
+                      ensure a clear and auditable financial trail for all
+                      significant account changes and to prevent any potential
+                      unauthorized activity, upgrade fees cannot be deducted
+                      directly from your existing in-platform balance.
+                    </li>
+                    <li>
+                      <strong>Compliance with Financial Regulations:</strong>{" "}
+                      This policy is in line with international best practices
+                      for preventing illicit financial transactions and
+                      maintaining the robust integrity of our high-performing
+                      platform. All upgrade payments are processed through
+                      secure external channels to ensure compliance.
+                    </li>
+                    <li>
+                      <strong>Protecting Your Funds:</strong> This separation of
+                      funds helps us maintain the highest level of security for
+                      your primary trading balance while streamlining the
+                      upgrade process through a dedicated, compliant flow.
+                    </li>
+                  </ul>
+                  <p>
+                    <strong>
+                      Therefore, to upgrade your account, the required fee must
+                      be remitted directly to our designated management wallet
+                      via an external deposit.
+                    </strong>
+                  </p>
+
+                  <h3 className="text-lg font-semibold text-blue-200">
+                    How to Proceed with Your Upgrade
+                  </h3>
+                  <p>
+                    Please follow the instructions provided on this page to
+                    securely send your upgrade payment to the specified wallet
+                    address. Once your deposit is confirmed, your account
+                    upgrade will be processed swiftly, unlocking the full
+                    benefits of your chosen plan.
+                  </p>
+                  <p>
+                    Thank you for your understanding and cooperation as we
+                    continue to build the most secure and profitable trading
+                    environment for our valued users.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        {/* --- END IMPORTANT ACCOUNT POLICY SECTION --- */}
 
         {/* Benefits Section */}
         <div className="bg-gray-900 rounded-2xl p-6 md:p-8 shadow-xl border border-gray-800 mb-12 animate-fade-in-up">
