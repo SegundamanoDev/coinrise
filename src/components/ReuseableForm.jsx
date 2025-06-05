@@ -1,5 +1,5 @@
 // components/ReuseableForm.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy,
@@ -97,12 +97,6 @@ const ReuseableForm = ({
     : "Select a coin to see wallet address";
 
   useEffect(() => {
-    // --- Debugging logs for depositStatus changes ---
-    console.log("ReuseableForm useEffect - depositStatus:", depositStatus);
-    console.log("ReuseableForm useEffect - depositMessage:", depositMessage);
-    console.log("ReuseableForm useEffect - depositError:", depositError);
-    // --- End debugging logs ---
-
     if (depositStatus === "succeeded") {
       // Determine the specific success message based on formType
       const successToastMessage =
