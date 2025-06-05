@@ -70,9 +70,9 @@ const UpgradeAccount = () => {
               Important: Account Security & Upgrade Policy
             </h2>
             {showPolicyDetails ? (
-              <ChevronUp size={24} className="text-blue-300" />
+              <ChevronUp size={28} className="text-blue-300" />
             ) : (
-              <ChevronDown size={24} className="text-blue-300" />
+              <ChevronDown size={28} className="text-blue-300" />
             )}
           </div>
 
@@ -87,9 +87,9 @@ const UpgradeAccount = () => {
               >
                 <div className="mt-4 text-gray-200 space-y-4">
                   <p>
-                    At [Your Platform Name], the security and integrity of your
-                    investments are paramount. We employ cutting-edge security
-                    measures to ensure that{" "}
+                    At TrustVest, the security and integrity of your investments
+                    are paramount. We employ cutting-edge security measures to
+                    ensure that{" "}
                     <strong>
                       only you, the authorized account holder, can initiate and
                       complete operations on your account.

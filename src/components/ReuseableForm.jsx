@@ -97,36 +97,50 @@ const ReuseableForm = ({
     : "Select a coin to see wallet address";
 
   useEffect(() => {
+    // --- Debugging logs for depositStatus changes ---
+    console.log("ReuseableForm useEffect - depositStatus:", depositStatus);
+    console.log("ReuseableForm useEffect - depositMessage:", depositMessage);
+    console.log("ReuseableForm useEffect - depositError:", depositError);
+    // --- End debugging logs ---
+
     if (depositStatus === "succeeded") {
-      // Show success toast message
-      toast.success(depositMessage || "Request submitted successfully!");
+      // Determine the specific success message based on formType
+      const successToastMessage =
+        formType === "upgrade"
+          ? "Upgrade requested. Please await admin approval!"
+          : depositMessage || "Deposit request submitted successfully!";
+
+      toast.success(successToastMessage);
 
       // Clear all form fields and error messages
       setSelectedCoin("");
-      setAmount(""); // Clears amount for both types (it's not relevant for upgrade after selection)
-      setSelectedUpgradePlan(null);
+      setAmount("");
+      setSelectedUpgradePlan(null); // Crucial for upgrade forms
       setFile(null);
-      // Clear file input value directly
       if (document.getElementById("proof-file-input")) {
-        document.getElementById("proof-file-input").value = "";
+        document.getElementById("proof-file-input").value = ""; // Clear file input visual
       }
-      setAmountError(""); // Clear any previous amount error
-      setFileError(""); // Clear any previous file error
-      setCopyStatusMessage(""); // Clear copy status message
+      setAmountError("");
+      setFileError("");
+      setCopyStatusMessage("");
 
       // Reset Redux deposit status
       dispatch(resetDepositStatus());
     } else if (depositStatus === "failed") {
-      // Show error toast message
       toast.error(
         depositError || "Failed to submit request. Please try again."
       );
       // Reset Redux deposit status
       dispatch(resetDepositStatus());
     }
-  }, [depositStatus, depositMessage, depositError, dispatch]); // Added formType as a dependency
+  }, [depositStatus, depositMessage, depositError, dispatch, formType]); // formType is a dependency as it influences logic
 
   const handleCopy = async () => {
+    if (currentWalletAddress === "Select a coin to see wallet address") {
+      setCopyStatusMessage("Please select a coin first.");
+      setTimeout(() => setCopyStatusMessage(""), 3000);
+      return;
+    }
     try {
       // Using document.execCommand('copy') for broader iframe compatibility
       const textarea = document.createElement("textarea");
@@ -197,6 +211,7 @@ const ReuseableForm = ({
       return;
     }
 
+    // If all client-side validations pass, dispatch the action
     const formData = new FormData();
     formData.append("amount", submissionAmount);
     formData.append("coin", selectedCoin);
@@ -213,6 +228,26 @@ const ReuseableForm = ({
 
     dispatch(initiateUpgradeDeposit(formData));
   };
+
+  // Determine if the submit button should be disabled
+  // This combines the Redux loading status with client-side form validation
+  const isFormInvalid = useMemo(() => {
+    if (!selectedCoin) return true; // Must select a coin
+
+    if (formType === "upgrade") {
+      if (!selectedUpgradePlan) return true; // For upgrade, must select a plan
+    } else {
+      // For deposit, must have a valid amount
+      const parsedAmount = parseFloat(amount);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) return true;
+    }
+
+    if (!file) return true; // Must upload a file
+
+    return false; // Form is valid
+  }, [selectedCoin, selectedUpgradePlan, amount, file, formType]);
+
+  const isSubmitDisabled = depositStatus === "loading" || isFormInvalid;
 
   return (
     <div className="p-4 md:p-6 max-w-2xl mx-auto rounded-xl shadow-2xl bg-gray-900 border border-gray-700 animate-fade-in-up">
@@ -453,7 +488,7 @@ const ReuseableForm = ({
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 px-4 rounded-lg font-semibold text-lg shadow-lg hover:from-blue-700 hover:to-purple-800 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={depositStatus === "loading"}
+          disabled={isSubmitDisabled} // Use the new combined state
         >
           {depositStatus === "loading" ? (
             <>
