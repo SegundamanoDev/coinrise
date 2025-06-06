@@ -5,13 +5,13 @@ import {
   fetchUserById,
   updateUser,
   clearStatusMessage,
-  resetAdminUpdateUserStatus, // <-- Import the new action
+  resetAdminUpdateUserStatus,
 } from "../../features/users/userSlice";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { toast } from "react-toastify";
 import {
   Loader2,
-  User,
+  User, // Keep User icon for initials fallback
   Mail,
   Globe,
   Phone,
@@ -59,6 +59,15 @@ const formatLastLogin = (isoString) => {
   }
 };
 
+// Helper to generate initials for avatar placeholder (copied from ProfilePage.jsx)
+const getInitials = (fullName) => {
+  if (!fullName) return "N/A";
+  const parts = fullName.split(" ").filter(Boolean); // Filter out empty strings
+  if (parts.length === 0) return "NA";
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
 const UserDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -68,7 +77,7 @@ const UserDetail = () => {
     loading, // General loading for fetchUserById
     error, // General error for fetchUserById
     statusMessage, // General success message
-    adminUpdateUserStatus, // <-- Use the new dedicated status for updateUser
+    adminUpdateUserStatus, // Use the new dedicated status for updateUser
   } = useSelector((state) => state.users);
 
   // Destructure the specific update status
@@ -126,7 +135,6 @@ const UserDetail = () => {
 
     // Handle success specifically for adminUpdateUserStatus
     if (updateSuccess) {
-      // toast.success("User profile updated successfully!"); // Already handled by general statusMessage if set
       setEditMode(false); // Exit edit mode on successful update
       dispatch(resetAdminUpdateUserStatus()); // Reset the update status
     }
@@ -147,7 +155,6 @@ const UserDetail = () => {
   };
 
   const handleSubmit = (e) => {
-    // Added 'e' and e.preventDefault()
     e.preventDefault(); // Prevent default form submission behavior
     if (id) {
       dispatch(updateUser({ id, updates: formData }));
@@ -391,8 +398,6 @@ const UserDetail = () => {
                 type="button"
                 onClick={() => {
                   setEditMode(false);
-                  // Optionally reset form data if canceling edits, though
-                  // it will re-populate from selectedUser on next edit.
                   if (selectedUser) {
                     setFormData({
                       fullName: selectedUser.fullName || "",
@@ -408,7 +413,7 @@ const UserDetail = () => {
                       isBlocked: selectedUser.isBlocked || false,
                     });
                   }
-                  dispatch(resetAdminUpdateUserStatus()); // Clear any lingering update status
+                  dispatch(resetAdminUpdateUserStatus());
                 }}
                 className="px-6 py-3 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition duration-200 font-semibold flex items-center gap-2"
               >
@@ -417,7 +422,7 @@ const UserDetail = () => {
               <button
                 type="submit"
                 className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-200 font-semibold flex items-center gap-2"
-                disabled={updateLoading} // Use dedicated updateLoading state
+                disabled={updateLoading}
               >
                 {updateLoading ? (
                   <Loader2 className="animate-spin h-5 w-5" />
@@ -439,6 +444,32 @@ const UserDetail = () => {
                 <Edit size={20} /> Edit User
               </button>
             </div>
+            {/* Avatar Display Section */}
+            <div className="flex justify-center mb-6">
+              <div className="w-24 h-24 rounded-full border-4 border-blue-500 overflow-hidden flex items-center justify-center">
+                {selectedUser?.avatar ? (
+                  <img
+                    src={selectedUser.avatar}
+                    alt="User Avatar"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `https://placehold.co/96x96/555/FFF?text=${getInitials(
+                        selectedUser?.fullName
+                      )}`; // Fallback to initials placeholder
+                      e.target.style.objectFit = "contain";
+                      e.target.style.backgroundColor = "#2563eb"; // blue-600
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-blue-700 text-white text-3xl font-bold">
+                    {getInitials(selectedUser?.fullName)}
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* End Avatar Display Section */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <p className="flex items-center gap-2">
                 <User size={20} className="text-blue-400" />

@@ -52,6 +52,11 @@ const Footer = () => {
                 AML Policy
               </a>
             </li>
+            <li>
+              <a href="payment-policy" className="hover:underline">
+                Payment Policy
+              </a>
+            </li>
           </ul>
         </div>
 

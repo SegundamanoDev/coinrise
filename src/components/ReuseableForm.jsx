@@ -8,13 +8,15 @@ import {
   XCircle,
   Loader2,
   Star,
-  TrendingUp,
+  Lightbulb, // For important notes
+  FileText as FileTextIcon, // For PDF icon if you expand file types
 } from "lucide-react";
 import Barcode from "react-barcode";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
   initiateUpgradeDeposit,
+  createTransaction, // Import createTransaction for general deposit forms
   resetDepositStatus,
 } from "../features/transaction/transaction";
 
@@ -32,9 +34,10 @@ const formatMoney = (amount, currency = "USD") => {
 };
 
 // Placeholder for dynamic wallet addresses (from an API in real app)
+// These are the addresses of your platform where users should send funds
 const WALLET_ADDRESSES = {
   BTC: "1QGgLGPNRvnRW7kX67SQw3TjNmj1ycwKcB",
-  USDT: "0xf8e859551b74b2a230c6fbe5300a32a2bc585e23", // USDT on Ethereum network
+  USDT: "0xf8e859551b74b2a230c6fbe5300a32a2bc585e23", // USDT on TRC20 network (example)
 };
 
 // Coin options
@@ -72,9 +75,9 @@ const UPGRADE_PLANS = [
 
 const ReuseableForm = ({
   heading,
-  title,
+  title, // This title is expected to contain "{selectedCoin}" for dynamic display
   desc,
-  note,
+  note, // This note is expected to contain "{selectedCoin}" for dynamic display
   btn,
   formType, // 'deposit' or 'upgrade'
 }) => {
@@ -83,26 +86,31 @@ const ReuseableForm = ({
     (state) => state.transaction
   );
 
-  const [selectedCoin, setSelectedCoin] = useState("");
-  const [selectedUpgradePlan, setSelectedUpgradePlan] = useState(null); // State for selected plan
-  const [amount, setAmount] = useState(""); // General amount for 'deposit' type
+  const [selectedCoin, setSelectedCoin] = useState(""); // Stores "BTC" or "USDT"
+  const [selectedUpgradePlan, setSelectedUpgradePlan] = useState(null); // State for selected plan (only for 'upgrade' formType)
+  const [amount, setAmount] = useState(""); // General amount for 'deposit' type (not used for 'upgrade' type)
 
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null); // For image preview
   const [amountError, setAmountError] = useState("");
   const [fileError, setFileError] = useState("");
   const [copyStatusMessage, setCopyStatusMessage] = useState("");
 
-  const currentWalletAddress = selectedCoin
-    ? WALLET_ADDRESSES[selectedCoin]
-    : "Select a coin to see wallet address";
+  // Memoize the wallet address to prevent unnecessary recalculations
+  const currentWalletAddress = useMemo(() => {
+    return selectedCoin
+      ? WALLET_ADDRESSES[selectedCoin]
+      : "Select a coin to see wallet address";
+  }, [selectedCoin]);
 
   useEffect(() => {
     if (depositStatus === "succeeded") {
       // Determine the specific success message based on formType
       const successToastMessage =
         formType === "upgrade"
-          ? "Upgrade requested. Please await admin approval!"
-          : depositMessage || "Deposit request submitted successfully!";
+          ? "Account upgrade request submitted! Awaiting admin approval."
+          : depositMessage ||
+            "Deposit request submitted successfully! Awaiting confirmation.";
 
       toast.success(successToastMessage);
 
@@ -111,6 +119,7 @@ const ReuseableForm = ({
       setAmount("");
       setSelectedUpgradePlan(null); // Crucial for upgrade forms
       setFile(null);
+      setFilePreview(null); // Clear file preview
       if (document.getElementById("proof-file-input")) {
         document.getElementById("proof-file-input").value = ""; // Clear file input visual
       }
@@ -156,18 +165,47 @@ const ReuseableForm = ({
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        setFileError("File size should not exceed 5MB.");
+      const MAX_FILE_SIZE_MB = 5; // 5MB
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "application/pdf",
+      ]; // Added PDF
+
+      if (!allowedTypes.includes(selectedFile.type)) {
+        setFileError(
+          "Invalid file type. Only images (JPG, PNG, GIF, WebP) and PDFs are allowed."
+        );
         setFile(null);
-      } else if (!selectedFile.type.startsWith("image/")) {
-        setFileError("Only image files are allowed.");
+        setFilePreview(null);
+        return;
+      }
+
+      if (selectedFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        setFileError(`File size should not exceed ${MAX_FILE_SIZE_MB}MB.`);
         setFile(null);
+        setFilePreview(null);
+        return;
+      }
+
+      setFileError("");
+      setFile(selectedFile);
+
+      // Generate preview for images
+      if (selectedFile.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFilePreview(reader.result);
+        };
+        reader.readAsDataURL(selectedFile);
       } else {
-        setFileError("");
-        setFile(selectedFile);
+        setFilePreview(null); // No preview for PDFs or other types
       }
     } else {
       setFile(null);
+      setFilePreview(null); // Clear preview
       setFileError("");
     }
   };
@@ -183,12 +221,15 @@ const ReuseableForm = ({
     }
 
     let submissionAmount;
+    let dispatchAction; // To hold the correct thunk to dispatch
+
     if (formType === "upgrade") {
       if (!selectedUpgradePlan) {
         toast.error("Please select an upgrade plan.");
         return;
       }
       submissionAmount = selectedUpgradePlan.amount;
+      dispatchAction = initiateUpgradeDeposit; // For upgrade form
     } else {
       // 'deposit' formType
       submissionAmount = parseFloat(amount);
@@ -197,6 +238,7 @@ const ReuseableForm = ({
         toast.error("Please enter a valid amount.");
         return;
       }
+      dispatchAction = createTransaction; // For general deposit form
     }
 
     if (!file) {
@@ -209,7 +251,13 @@ const ReuseableForm = ({
     const formData = new FormData();
     formData.append("amount", submissionAmount);
     formData.append("coin", selectedCoin);
-    formData.append("proof", file);
+    formData.append("proof", file); // For upgrade, this is 'proof'. For deposit, this is 'paymentProof' (backend handles names)
+
+    // --- NEW: Send Method and Wallet Address in details ---
+    formData.append("method", selectedCoin); // The chosen coin (e.g., BTC, USDT) as the method
+    formData.append("depositWalletAddress", currentWalletAddress); // The platform's address
+    // --- END NEW ---
+
     formData.append(
       "type",
       formType === "upgrade" ? "upgrade_deposit" : "deposit"
@@ -220,7 +268,8 @@ const ReuseableForm = ({
       formData.append("planName", selectedUpgradePlan.name);
     }
 
-    dispatch(initiateUpgradeDeposit(formData));
+    // Dispatch the appropriate action based on formType
+    dispatch(dispatchAction(formData));
   };
 
   // Determine if the submit button should be disabled
@@ -353,6 +402,7 @@ const ReuseableForm = ({
           </select>
           {selectedCoin && (
             <p className="text-sm text-gray-400 mt-2">
+              <Lightbulb size={16} className="inline mr-1 align-text-bottom" />
               {note?.replace("{selectedCoin}", selectedCoin)}
             </p>
           )}
@@ -461,15 +511,45 @@ const ReuseableForm = ({
               type="file"
               onChange={handleFileChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              accept="image/*"
+              accept="image/*,application/pdf" // Allow PDF files
             />
             <div className="flex flex-col items-center text-gray-400">
               <UploadCloud size={32} className="mb-2" />
               <span className="text-sm">
-                {file ? file.name : "Click to upload image (Max 5MB)"}
+                {file ? file.name : "Click to upload image or PDF (Max 5MB)"}
               </span>
             </div>
           </div>
+          {file && (
+            <div className="mt-3 p-3 rounded-lg flex items-center bg-gray-700 text-gray-200">
+              {file.type.startsWith("image/") ? (
+                <img
+                  src={filePreview}
+                  alt="Proof Preview"
+                  className="w-16 h-16 object-cover rounded-md mr-3 border border-gray-600"
+                />
+              ) : (
+                <FileTextIcon size={48} className="text-blue-500 mr-3" />
+              )}
+              <div>
+                <p className="font-medium">{file.name}</p>
+                <p className="text-xs">
+                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setFile(null);
+                  setFilePreview(null);
+                }}
+                className="ml-auto text-red-500 hover:text-red-700"
+                title="Remove file"
+              >
+                <XCircle size={20} /> {/* Changed to XCircle for consistency */}
+              </button>
+            </div>
+          )}
           {fileError && (
             <p className="text-red-400 text-sm mt-2">{fileError}</p>
           )}

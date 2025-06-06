@@ -2,83 +2,119 @@ import React from "react";
 
 const TermsAndConditions = () => {
   return (
-    <div className="max-w-4xl mx-auto p-6 text-gray-800 dark:text-gray-100">
-      <h1 className="text-3xl font-bold mb-4">Terms & Conditions</h1>
-      <p className="mb-4 text-sm italic">
+    <div className="bg-gray-950 text-gray-200 p-6 rounded-xl shadow-lg max-w-4xl mx-auto font-sans">
+      <h1 className="text-3xl font-bold mb-6 text-blue-400 text-center">
+        Trustvest Terms & Conditions
+      </h1>
+      <p className="mb-6 text-sm italic text-gray-400 text-center">
         Effective Date: Upon account registration and funding.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
+      {/* --- */}
+      <h2 className="text-xl font-semibold mb-3 text-blue-300">
         1. Language and Legal Precedence
       </h2>
-      <p className="mb-4">
-        The CoinRise website (www.coinrise.com) is presented in English. The
-        English version is the original and legally binding version. CoinRise is
-        not liable for any errors or misinterpretations arising from
-        translations.
+      <p className="mb-6 leading-relaxed">
+        The **Trustvest** website is primarily presented in English. The English
+        version of these Terms & Conditions is the original, legally binding,
+        and authoritative version. Trustvest is not liable for any errors,
+        discrepancies, or misinterpretations that may arise from translations
+        into other languages.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
-        2. Access and Agreement
+      {/* --- */}
+      <h2 className="text-xl font-semibold mb-3 text-blue-300">
+        2. Access to Services and Agreement
       </h2>
-      <p className="mb-4">
-        By accessing the CoinRise platform or services, any individual or
-        corporate entity (hereinafter referred to as the "Investor" or "Client")
-        agrees to these Terms and Conditions. The Agreement takes effect when
-        the Client opens an investment account and funds it with the required
-        minimum deposit.
+      <p className="mb-4 leading-relaxed">
+        By accessing or utilizing the **Trustvest** platform and its services,
+        any individual or corporate entity (hereinafter referred to as the
+        "Client" or "Investor") explicitly agrees to abide by these
+        comprehensive Terms and Conditions. This Agreement comes into full
+        effect at the moment the Client successfully opens an investment account
+        and funds it with the stipulated minimum deposit.
       </p>
-      <p className="mb-4">
-        All references to individuals in this Agreement apply equally to
-        corporations, partnerships, and unincorporated associations. Headings
-        are provided for reference and do not affect the interpretation of the
+      <p className="mb-6 leading-relaxed">
+        All references to "individuals" within this Agreement apply equally to
+        corporations, partnerships, and unincorporated associations, recognizing
+        the diverse nature of our clientele. Headings and subheadings are
+        provided for convenience and reference purposes only and shall not
+        influence or affect the interpretation or construction of this
         Agreement.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">
-        3. Client Responsibilities and Restrictions
+      {/* --- */}
+      <h2 className="text-xl font-semibold mb-3 text-blue-300">
+        3. Client Responsibilities and Prohibited Conduct
       </h2>
-      <ul className="list-disc list-inside space-y-2">
+      <ul className="list-disc list-inside ml-4 mb-6 space-y-2">
         <li>
-          <strong>Conduct Violations:</strong> Any Client action that disrupts
-          CoinRise’s systems, services, or performance may result in immediate
-          termination of services, cancellation of active orders, and full
-          refund of any remaining balance. CoinRise will notify the Client of
-          such action and may reject future registrations.
+          <strong>Prohibited Conduct:</strong> Any action by a Client that
+          disrupts, interferes with, or compromises the integrity, stability, or
+          performance of Trustvest’s systems, services, or operations may lead
+          to severe consequences. This includes, but is not limited to, abusive
+          behavior, unauthorized access attempts, or malicious activities. Such
+          violations may result in the immediate termination of services,
+          cancellation of any active investment orders, and a full refund of any
+          remaining eligible balance. Trustvest reserves the right to notify the
+          Client of such actions and may permanently reject future
+          registrations.
         </li>
         <li>
-          <strong>Age Restriction:</strong> Individuals under the age of 18 are
-          prohibited from using CoinRise’s financial services.
+          <strong>Age Restriction:</strong> Individuals who are under the age of
+          eighteen (18) years are strictly prohibited from using Trustvest’s
+          financial services or opening an account. By agreeing to these terms,
+          you confirm you are of legal age.
         </li>
         <li>
-          <strong>Information Accuracy:</strong> Clients must ensure their
-          provided information is true and up to date and are responsible for
-          updates. The provided email must be solely used by the Client.
+          <strong>Information Accuracy:</strong> Clients are solely responsible
+          for ensuring that all personal and financial information provided to
+          Trustvest is consistently true, accurate, and up-to-date. It is the
+          Client's ongoing responsibility to promptly update any changes to
+          their details. Furthermore, the registered email address must be used
+          exclusively by the Client for all official communications.
         </li>
         <li>
-          <strong>Verification Requirements:</strong> CoinRise may request ID
-          and proof of residence. Failure to comply may result in service
-          termination and account closure with a refund of remaining funds.
+          <strong>Identity Verification Requirements:</strong> Trustvest may, at
+          its sole discretion, request identity verification documents (e.g.,
+          government-issued ID, proof of residence) from Clients to comply with
+          AML/KYC regulations. Failure to comply with such verification requests
+          within the stipulated timeframe may result in the suspension or
+          termination of services and account closure, with any remaining
+          eligible funds being returned.
         </li>
       </ul>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">4. Duplicate Accounts</h2>
-      <p className="mb-4">
-        In case of multiple registrations by the same Client, CoinRise reserves
-        the right to cancel duplicates, freeze accounts, cancel trades, and
-        conduct an investigation.
+      {/* --- */}
+      <h2 className="text-xl font-semibold mb-3 text-blue-300">
+        4. Prohibition of Duplicate Accounts
+      </h2>
+      <p className="mb-6 leading-relaxed">
+        In instances where multiple accounts are registered by the same Client,
+        **Trustvest** reserves the absolute right to identify and cancel any
+        duplicate registrations. This may include freezing all associated
+        accounts, canceling any outstanding or active trades, and initiating a
+        comprehensive investigation into the Client's activities.
       </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">5. General Provisions</h2>
-      <ul className="list-disc list-inside space-y-2">
+      {/* --- */}
+      <h2 className="text-xl font-semibold mb-3 text-blue-300">
+        5. General Provisions
+      </h2>
+      <ul className="list-disc list-inside ml-4 mb-6 space-y-2">
         <li>
-          <strong>Notices & Communication:</strong> All communication from the
-          registered email is treated as valid. Clients must maintain secure
-          access.
+          <strong>Notices & Communication:</strong> All electronic
+          communications originating from the Client's registered email address
+          will be treated as legitimate and valid instructions from the Client.
+          Clients are responsible for maintaining secure and exclusive access to
+          their registered email.
         </li>
         <li>
-          <strong>Right to Refuse Service:</strong> CoinRise may refuse service
-          to any Client violating terms or posing platform risks.
+          <strong>Right to Refuse or Terminate Service:</strong> Trustvest
+          reserves the right, at its sole discretion, to refuse service to any
+          Client or to terminate the Agreement with a Client who violates these
+          Terms, poses a security risk to the platform, or engages in activities
+          deemed detrimental to Trustvest's operations or reputation.
         </li>
       </ul>
     </div>

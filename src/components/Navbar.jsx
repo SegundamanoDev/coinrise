@@ -81,6 +81,8 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  // Fetch user profile for avatar from the 'users' slice
+  const { profile } = useSelector((state) => state.users);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -314,12 +316,24 @@ export default function Navbar() {
               >
                 <LogOut size={28} />
               </button>
+              {/* Desktop User Avatar Link */}
               <Link
                 to="/dashboard"
-                className="p-2 text-blue-300 hover:text-white transition-colors duration-200"
-                title="Dashboard"
+                className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-700 transition-colors duration-200"
+                title={user?.fullName || "Dashboard"}
               >
-                <User size={28} />
+                {profile?.avatar?.secure_url ? (
+                  <img
+                    src={profile?.avatar?.secure_url}
+                    alt="User Avatar"
+                    className="w-9 h-9 rounded-full object-cover border-2 border-blue-400"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold border-2 border-blue-400">
+                    {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+                  </div>
+                )}
+                {/* <span className="text-white text-base font-semibold hidden lg:inline-block">{user?.fullName?.split(' ')[0]}</span> */}
               </Link>
             </>
           )}
@@ -353,15 +367,32 @@ export default function Navbar() {
         </div>
 
         {user && (
-          <div className="p-6 border-b border-gray-700 bg-gray-800 text-center">
-            <Link
-              to="/dashboard"
-              onClick={closeMobileMenu}
-              className="flex flex-col items-center text-blue-300 hover:text-white transition-colors duration-200"
-            >
-              <User size={36} className="mb-2" />
-              <p className="text-lg font-semibold">Dashboard</p>
-            </Link>
+          <div className="p-6 border-b border-gray-700 bg-gray-800 flex items-center gap-4">
+            {" "}
+            {/* Changed to flex layout */}
+            {profile?.avatar?.secure_url ? (
+              <img
+                src={profile.avatar.secure_url}
+                alt="User Avatar"
+                className="w-16 h-16 rounded-full object-cover border-2 border-blue-400 shadow-md"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold border-2 border-blue-400 shadow-md">
+                {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+              </div>
+            )}
+            <div>
+              <p className="text-xl font-semibold text-white">
+                {user?.fullName || "Guest User"}
+              </p>
+              <Link
+                to="/dashboard"
+                onClick={closeMobileMenu}
+                className="text-blue-300 hover:text-white text-sm transition-colors duration-200 flex items-center mt-1"
+              >
+                <User size={16} className="mr-1" /> View Dashboard
+              </Link>
+            </div>
           </div>
         )}
 

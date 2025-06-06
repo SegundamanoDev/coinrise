@@ -54,6 +54,10 @@ import TradingPlans from "./components/InvestmentPlanSection";
 import ProfilePage from "./components/Profile"; // Note: You have Profile and ProfilePage, check which one is correct
 import DashboardPage from "./components/DhPage";
 import InvestmentPlanSection from "./components/InvestmentPlan";
+import FAQSection from "./components/FAQSection";
+import PaymentPolicy from "./components/PaymentPolicy";
+import KYCSubmissionForm from "./components/KYCSubmissionForm";
+import AdminKycDetailPage from "./components/AdminKycDetailPage";
 
 // PrivateRoute component to protect routes
 const PrivateRoute = ({ children, roles }) => {
@@ -134,6 +138,8 @@ const AppRoutes = () => {
           <Route path="/terms-conditions" element={<TermsAndConditions />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/aml-policy" element={<AMLPolicy />} />
+          <Route path="/payment-policy" element={<PaymentPolicy />} />
+          <Route path="/faq" element={<FAQSection />} />
           <Route path="/confirm-success" element={<SuccessModal />} />{" "}
           {/* Consider if this should be public or private */}
           {/* Authenticated User Routes */}
@@ -142,6 +148,14 @@ const AppRoutes = () => {
             element={
               <PrivateRoute>
                 <DashboardLayout />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/kyc-verification"
+            element={
+              <PrivateRoute>
+                <KYCSubmissionForm />
               </PrivateRoute>
             }
           />
@@ -253,6 +267,10 @@ const AppRoutes = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<Users />} />
           <Route path="/admin/users/:id" element={<UserDetail />} />
+          <Route
+            path="/admin/users/kyc-details/:id"
+            element={<AdminKycDetailPage />}
+          />
           <Route
             path="/admin/investments"
             element={<AdminInvestmentsDashboard />}

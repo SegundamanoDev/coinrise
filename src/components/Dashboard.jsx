@@ -15,6 +15,7 @@ import {
   Home, // For Back to Home
   ChevronUp,
   ChevronDown,
+  Clock,
   Lock, // For security banner
   Lightbulb,
   DollarSign, // For Deposit button, and general currency icon
@@ -27,8 +28,7 @@ import {
   Sun, // For light mode toggle
   Moon, // For dark mode toggle
   Star, // For watchlist
-  Newspaper,
-  Clock, // For news/insights
+  Newspaper, // For news/insights
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -364,10 +364,22 @@ const DashboardLayout = () => {
 
       {/* Mobile Header (Fixed at top for small screens) */}
       <div
-        className={`md:hidden fixed w-full top-0 z-40 py-5 px-4 shadow-md flex justify-between items-center
+        className={`md:hidden fixed w-full top-0 z-40 px-4 shadow-md flex justify-between items-center h-16
           ${theme === "dark" ? "bg-darkBackground" : "bg-white"}
         `}
       >
+        {/* User Avatar on Mobile Header */}
+        {profile?.avatar?.secure_url ? (
+          <img
+            src={profile.avatar.secure_url}
+            alt="User Avatar"
+            className="w-8 h-8 rounded-full object-cover mr-2"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-sm mr-2">
+            {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+          </div>
+        )}
         <button
           onClick={() => setIsOpen(true)}
           className={`p-2 rounded-md transition mx-2 ${
@@ -379,7 +391,6 @@ const DashboardLayout = () => {
         >
           <Menu />
         </button>
-        {/* You might want a logo or title here too */}
       </div>
 
       {/* Mobile Slideout Menu Overlay */}
@@ -399,7 +410,26 @@ const DashboardLayout = () => {
         `}
       >
         <div className="w-full h-full p-6 shadow-lg">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between items-center mb-4">
+            {" "}
+            {/* Adjusted flex for avatar & close btn */}
+            {/* User Avatar & Name in Mobile Sidebar */}
+            {profile?.avatar?.secure_url ? (
+              <img
+                src={profile.avatar.secure_url}
+                alt="User Avatar"
+                className="w-12 h-12 rounded-full object-cover mr-3"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg mr-3">
+                {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+              </div>
+            )}
+            <span className="text-xl font-bold text-textPrimary flex-grow">
+              {" "}
+              {/* Added flex-grow */}
+              {user?.fullName || "Guest"}
+            </span>
             <button
               onClick={() => setIsOpen(false)}
               className={`p-2 rounded-md ${
@@ -664,9 +694,23 @@ const DashboardLayout = () => {
             }
           `}
           >
-            <h2 className="text-2xl font-bold mb-2 text-textPrimary">
-              {getGreeting()}, {user?.fullName || "Trader"} 👋
-            </h2>
+            {/* User Avatar on Desktop Welcome Banner */}
+            <div className="flex items-center mb-2">
+              {profile?.avatar?.secure_url ? (
+                <img
+                  src={profile.avatar.secure_url}
+                  alt="User Avatar"
+                  className="w-10 h-10 rounded-full object-cover mr-3"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white text-sm mr-3">
+                  {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+                </div>
+              )}
+              <h2 className="text-2xl font-bold text-textPrimary">
+                {getGreeting()}, {user?.fullName || "Trader"} 👋
+              </h2>
+            </div>
             <p className="text-textSecondary mb-4">
               Markets are live. Let’s make some smart moves!
             </p>
@@ -898,7 +942,6 @@ const DashboardLayout = () => {
                   </div>
                 )}
               </div>
-             
             </div>
           </div>
           {/* Live Coin Prices Table */}

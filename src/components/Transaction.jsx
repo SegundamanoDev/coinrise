@@ -14,6 +14,8 @@ import {
   Tag,
   CreditCard,
   CheckCircle,
+  Download, // New icon for download
+  ExternalLink, // For payment proof link
 } from "lucide-react";
 import {
   fetchUserTransactions,
@@ -26,8 +28,8 @@ const typeColors = {
   withdrawal: "text-red-500",
   invest: "text-blue-500",
   "referral bonus": "text-purple-500",
-  investment_payout: "text-emerald-500", // NEW: Added for your cron job's output
-  upgrade_deposit: "text-orange-500", // Assuming you might have this from the backend
+  investment_payout: "text-emerald-500",
+  upgrade_deposit: "text-orange-500",
   profit: "text-sky-500",
 };
 
@@ -46,7 +48,7 @@ const positiveTypes = [
   "investment_payout",
   "upgrade_deposit",
   "profit",
-]; // NEW: Added 'investment_payout' and 'upgrade_deposit'
+];
 
 const formatMoney = (amount, currency = "USD") => {
   try {
@@ -77,7 +79,7 @@ const Transactions = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTxId, setSelectedTxId] = useState(null);
 
-  // Fetch all tx .user?transactions on component mount
+  // Fetch all user transactions on component mount
   useEffect(() => {
     dispatch(fetchUserTransactions());
   }, [dispatch]);
@@ -98,6 +100,193 @@ const Transactions = () => {
     setSelectedTxId(null);
     setModalOpen(false);
   };
+
+  // --- NEW: Handle Download Receipt ---
+  const handleDownloadReceipt = () => {
+    if (!selectedTransaction) {
+      return;
+    }
+
+    const {
+      type,
+      amount,
+      status,
+      createdAt,
+      method, // Now holds coin symbol for crypto transactions
+      coin, // This field will still hold the coin symbol for deposits/upgrades
+      transactionId,
+      description,
+      paymentProof,
+      details,
+    } = selectedTransaction;
+
+    const displayAmount = formatMoney(
+      amount,
+      selectedTransaction?.user?.currency || user?.currency
+    );
+    const displayDate = format(new Date(createdAt), "PPpp");
+    const displayType = type
+      .replace(/_/g, " ")
+      .replace("deposit", "Deposit")
+      .replace("withdrawal", "Withdrawal")
+      .replace("invest", "Investment")
+      .replace("bonus", "Bonus")
+      .replace("payout", "Payout");
+    const displayMethod = method || coin || "N/A"; // Use `method` (coin symbol) or `coin` as fallback
+
+    let receiptContent = `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 20px auto; padding: 30px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: #fff; color: #333;">
+        <h2 style="text-align: center; color: #2a64c0; margin-bottom: 25px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px;">Transaction Receipt</h2>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Transaction Type:</td>
+            <td style="padding: 10px 0; text-align: right; text-transform: capitalize; color: ${
+              typeColors[type.toLowerCase()] || "#333"
+            };"><strong>${displayType}</strong></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Amount:</td>
+            <td style="padding: 10px 0; text-align: right; font-weight: bold; color: ${
+              negativeTypes.includes(type.toLowerCase()) ? "#e53e3e" : "#38a169"
+            };">${
+      negativeTypes.includes(type.toLowerCase()) ? "−" : "+"
+    }${displayAmount}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Status:</td>
+            <td style="padding: 10px 0; text-align: right; text-transform: capitalize; color: ${
+              statusColors[status.toLowerCase()]?.split(" ")[1] || "#333"
+            };"><strong>${status}</strong></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Date & Time:</td>
+            <td style="padding: 10px 0; text-align: right;">${displayDate}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Method/Coin:</td>
+            <td style="padding: 10px 0; text-align: right;">${displayMethod}</td>
+          </tr>
+          ${
+            transactionId
+              ? `
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Transaction ID:</td>
+            <td style="padding: 10px 0; text-align: right; word-break: break-all;">${transactionId}</td>
+          </tr>
+          `
+              : ""
+          }
+          ${
+            description
+              ? `
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Description:</td>
+            <td style="padding: 10px 0; text-align: right;">${description}</td>
+          </tr>
+          `
+              : ""
+          }
+          ${
+            paymentProof && paymentProof.secure_url
+              ? `
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Payment Proof:</td>
+            <td style="padding: 10px 0; text-align: right;"><a href="${paymentProof.secure_url}" target="_blank" style="color: #2a64c0; text-decoration: none;">View Proof (External)</a></td>
+          </tr>
+          `
+              : ""
+          }
+          ${
+            details && Object.keys(details).length > 0
+              ? `
+            <tr>
+              <td colspan="2" style="padding-top: 15px; font-weight: 600; color: #555; text-align: center;">Additional Details:</td>
+            </tr>
+            ${Object.entries(details)
+              .map(([key, value]) => {
+                // Ensure wallet address and paymentProof aren't duplicated if they are in `details`
+                if (
+                  key.toLowerCase() === "depositwalletaddress" ||
+                  key.toLowerCase() === "withdrawalwalletaddress" ||
+                  ((key.toLowerCase().includes("proof") ||
+                    key.toLowerCase().includes("paymentproof")) &&
+                    typeof value === "string" &&
+                    (value.startsWith("http") ||
+                      value.startsWith("/uploads/proofs/")))
+                ) {
+                  return "";
+                }
+                if (
+                  value === null ||
+                  value === undefined ||
+                  value === "N/A" ||
+                  value === ""
+                )
+                  return "";
+                let detailKey = key.replace(/([A-Z])/g, " $1").toLowerCase();
+                detailKey =
+                  detailKey.charAt(0).toUpperCase() + detailKey.slice(1);
+                let detailValue = value;
+                if (detailKey.includes("Date") && !isNaN(new Date(value))) {
+                  try {
+                    detailValue = format(new Date(value), "PPpp");
+                  } catch (e) {
+                    /* fallback to original */
+                  }
+                }
+                return `
+              <tr style="border-bottom: 1px dashed #eee;">
+                <td style="padding: 8px 0; color: #777;">${detailKey}:</td>
+                <td style="padding: 8px 0; text-align: right; word-break: break-all;">${detailValue}</td>
+              </tr>
+              `;
+              })
+              .join("")}
+          `
+              : ""
+          }
+          ${
+            details?.depositWalletAddress
+              ? `
+          <tr style="border-bottom: 1px dashed #e0e0e0;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Deposit To Address:</td>
+            <td style="padding: 10px 0; text-align: right; word-break: break-all;">${details.depositWalletAddress}</td>
+          </tr>
+          `
+              : ""
+          }
+          ${
+            details?.withdrawalWalletAddress
+              ? `
+          <tr style="border-bottom: 1px dashed #e0e0e0;">
+            <td style="padding: 10px 0; font-weight: 600; color: #555;">Withdrawal To Address:</td>
+            <td style="padding: 10px 0; text-align: right; word-break: break-all;">${details.withdrawalWalletAddress}</td>
+          </tr>
+          `
+              : ""
+          }
+        </table>
+        
+        <p style="text-align: center; color: #888; font-size: 12px; margin-top: 20px;">Generated on ${format(
+          new Date(),
+          "PPpp"
+        )}</p>
+        <p style="text-align: center; color: #888; font-size: 12px;">Thank you for your transaction!</p>
+      </div>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(receiptContent);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print(); // Opens the print dialog
+    } else {
+      alert("Please allow pop-ups to download the receipt."); // Using alert here for direct user instruction on pop-up blocker
+    }
+  };
+  // --- END NEW: Handle Download Receipt ---
 
   return (
     <div
@@ -184,12 +373,12 @@ const Transactions = () => {
               <div
                 key={tx._id}
                 className={`rounded-2xl shadow-lg border p-4 cursor-pointer transition-transform duration-200 hover:scale-[1.005]
-                  ${
-                    theme === "dark"
-                      ? "bg-cardBackground border-borderColor hover:bg-[#1f2937]"
-                      : "bg-white border-gray-200 hover:bg-gray-50"
-                  }
-                `}
+                ${
+                  theme === "dark"
+                    ? "bg-cardBackground border-borderColor hover:bg-[#1f2937]"
+                    : "bg-white border-gray-200 hover:bg-gray-50"
+                }
+              `}
                 onClick={() => handleOpenModal(tx._id)}
               >
                 {/* Mobile View */}
@@ -261,7 +450,7 @@ const Transactions = () => {
                       size={16}
                       className="text-textSecondary opacity-60"
                     />
-                    {format(new Date(tx.createdAt), "PPp")}{" "}
+                    {format(new Date(tx.createdAt), "PPpp")}{" "}
                   </div>
 
                   {/* Amount */}
@@ -420,19 +609,42 @@ const Transactions = () => {
                     </div>
                   )}
 
-                  {selectedTransaction.paymentProof && (
-                    <div className="pb-2">
+                  {/* Payment Proof Link for Deposits/Upgrades */}
+                  {selectedTransaction.paymentProof?.secure_url && (
+                    <div className="pb-2 border-b border-dashed border-divider">
                       <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
                         <Info size={16} /> Payment Proof
                       </p>
                       <a
-                        href={selectedTransaction.paymentProof}
+                        href={selectedTransaction.paymentProof.secure_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-blue-400 hover:underline pl-6 text-sm`}
+                        className={`text-blue-400 hover:underline pl-6 text-sm flex items-center gap-1`}
                       >
-                        View Proof
+                        View Proof <ExternalLink size={14} />
                       </a>
+                    </div>
+                  )}
+
+                  {/* Display deposit/withdrawal wallet addresses from details */}
+                  {selectedTransaction.details?.depositWalletAddress && (
+                    <div className="pb-2 border-b border-dashed border-divider">
+                      <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
+                        <Tag size={16} /> Deposit Address
+                      </p>
+                      <p className="text-base text-textPrimary pl-6 break-all">
+                        {selectedTransaction.details.depositWalletAddress}
+                      </p>
+                    </div>
+                  )}
+                  {selectedTransaction.details?.withdrawalWalletAddress && (
+                    <div className="pb-2 border-b border-dashed border-divider">
+                      <p className="text-sm font-semibold text-textSecondary flex items-center gap-2 mb-1">
+                        <Tag size={16} /> Withdrawal Address
+                      </p>
+                      <p className="text-base text-textPrimary pl-6 break-all">
+                        {selectedTransaction.details.withdrawalWalletAddress}
+                      </p>
                     </div>
                   )}
 
@@ -475,6 +687,19 @@ const Transactions = () => {
                       </>
                     )}
                 </div>
+                {/* Download Button */}
+                <button
+                  onClick={handleDownloadReceipt}
+                  className={`w-full mt-6 py-3 px-4 rounded-xl font-semibold flex items-center justify-center transition duration-200
+                  ${
+                    theme === "dark"
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }
+                  `}
+                >
+                  <Download size={20} className="mr-2" /> Download Receipt
+                </button>
               </div>
             </div>
           )}

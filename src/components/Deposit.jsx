@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Copy, Lightbulb, X } from "lucide-react";
+import {
+  Copy,
+  Lightbulb,
+  X,
+  Image,
+  FileText as FileTextIcon,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import { createTransaction } from "../features/transaction/transaction";
 import ForexRates from "./FRate";
@@ -18,15 +24,14 @@ const Deposits = () => {
   const depositOptions = [
     {
       name: "Bitcoin",
-      currency: "BTC",
-      address: "1QGgLGPNRvnRW7kX67SQw3TjNmj1ycwKcB",
+      currency: "BTC", // Symbol
+      address: "1QGgLGPNRvnRW7kX67SQw3TjNmj1ycwKcB", // Wallet address
       qrCode: "https://i.imgur.com/gK4QRgJ.png", // Replace with your actual QR code
     },
-
     {
       name: "USDT (TRC20)",
-      currency: "USDT",
-      address: "0xf8e859551b74b2a230c6fbe5300a32a2bc585e23",
+      currency: "USDT", // Symbol
+      address: "0xf8e859551b74b2a230c6fbe5300a32a2bc585e23", // Wallet address
       qrCode: "https://i.imgur.com/kS9Qj6q.png", // Replace with your actual QR code
     },
   ];
@@ -36,6 +41,7 @@ const Deposits = () => {
   );
   const [amount, setAmount] = useState("");
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null); // State for image preview
 
   const { creating, createError } = useSelector((state) => state.transaction);
   const { user } = useSelector((state) => state.auth); // Assuming user info is available here for currency
@@ -45,6 +51,53 @@ const Deposits = () => {
       setSelectedDepositCoin(depositOptions[0]);
     }
   }, [depositOptions, selectedDepositCoin]);
+
+  // Handle file selection and preview generation
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const MAX_FILE_SIZE_MB = 5; // 5MB
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "application/pdf",
+      ];
+
+      if (!allowedTypes.includes(selectedFile.type)) {
+        toast.error(
+          "Invalid file type. Only images (JPG, PNG, GIF, WebP) and PDFs are allowed."
+        );
+        setFile(null);
+        setFilePreview(null);
+        return;
+      }
+
+      if (selectedFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        toast.error(`File size should not exceed ${MAX_FILE_SIZE_MB}MB.`);
+        setFile(null);
+        setFilePreview(null);
+        return;
+      }
+
+      setFile(selectedFile);
+
+      // Generate preview for images
+      if (selectedFile.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFilePreview(reader.result);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        setFilePreview(null); // No preview for PDFs or other types
+      }
+    } else {
+      setFile(null);
+      setFilePreview(null);
+    }
+  };
 
   const handleCopy = () => {
     if (selectedDepositCoin) {
@@ -56,24 +109,31 @@ const Deposits = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!amount || !selectedDepositCoin || !file) {
-      return toast.error("Please fill in all fields.");
+      // Improved error message to be more specific
+      let missingFields = [];
+      if (!amount) missingFields.push("Amount");
+      if (!selectedDepositCoin) missingFields.push("Cryptocurrency");
+      if (!file) missingFields.push("Payment Proof");
+      return toast.error(`Please provide: ${missingFields.join(", ")}.`);
     }
 
     const formData = new FormData();
     formData.append("type", "deposit");
     formData.append("amount", amount);
-    formData.append("coin", selectedDepositCoin.currency);
-    // Crucial change: Send the selected coin's name as the method for deposits
-    formData.append("method", selectedDepositCoin.name);
+    formData.append("coin", selectedDepositCoin.currency); // e.g., "BTC" or "USDT" - this is the symbol
+    formData.append("method", selectedDepositCoin.currency); // METHOD IS NOW THE COIN SYMBOL (e.g., "BTC", "USDT")
+    formData.append("depositWalletAddress", selectedDepositCoin.address); // The platform's deposit address
     formData.append("paymentProof", file); // Append the file
 
     const action = await dispatch(createTransaction(formData));
     if (createTransaction.fulfilled.match(action)) {
       toast.success("Deposit submitted successfully! Awaiting confirmation.");
-      navigate("/transaction-history");
+      navigate("/transaction-history"); // Navigate to history on success
+      // Reset form fields
       setAmount("");
       setSelectedDepositCoin(depositOptions[0]);
       setFile(null);
+      setFilePreview(null);
     } else if (createTransaction.rejected.match(action)) {
       const errorMessage = action.payload || "Failed to submit deposit.";
       toast.error(errorMessage);
@@ -249,8 +309,8 @@ const Deposits = () => {
               <input
                 id="payment-proof"
                 type="file"
-                accept="image/*,application/pdf"
-                onChange={(e) => setFile(e.target.files[0])}
+                accept="image/*,application/pdf" // Accept images and PDFs
+                onChange={handleFileChange} // Use the new handler
                 className={`w-full p-3 rounded-lg border
                 ${
                   theme === "dark"
@@ -260,14 +320,40 @@ const Deposits = () => {
                 `}
               />
               {file && (
-                <p
-                  className={`text-sm mt-2 ${
-                    theme === "dark" ? "text-textSecondary" : "text-gray-600"
+                <div
+                  className={`mt-3 p-3 rounded-lg flex items-center ${
+                    theme === "dark"
+                      ? "bg-gray-700 text-gray-200"
+                      : "bg-gray-200 text-gray-700"
                   }`}
                 >
-                  Selected file:{" "}
-                  <span className="font-medium">{file.name}</span>
-                </p>
+                  {file.type.startsWith("image/") && filePreview ? (
+                    <img
+                      src={filePreview}
+                      alt="Proof Preview"
+                      className="w-16 h-16 object-cover rounded-md mr-3 border border-gray-600"
+                    />
+                  ) : (
+                    <FileTextIcon size={48} className="text-blue-500 mr-3" />
+                  )}
+                  <div>
+                    <p className="font-medium">{file.name}</p>
+                    <p className="text-xs">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFile(null);
+                      setFilePreview(null);
+                    }}
+                    className="ml-auto text-red-500 hover:text-red-700"
+                    title="Remove file"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
               )}
             </div>
 

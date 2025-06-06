@@ -8,7 +8,7 @@ const getToken = () => localStorage.getItem("authToken");
 export const createTransaction = createAsyncThunk(
   "transactions/createTransaction",
   async (data, thunkAPI) => {
-    // 'data' here is expected to be a FormData object
+    // 'data' here is expected to be a FormData object for deposit with paymentProof
     try {
       const token = getToken();
       const res = await axios.post(`${API_URL}/transactions/request`, data, {
@@ -64,7 +64,7 @@ export const fetchTransactions = createAsyncThunk(
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.message || "Failed to fetch"
+        err.response?.data?.message || "Failed to fetch transactions"
       );
     }
   }
@@ -86,6 +86,7 @@ export const updateTransactionStatus = createAsyncThunk(
           },
         }
       );
+      // The backend should return the updated transaction object
       return res.data.transaction;
     } catch (err) {
       return thunkAPI.rejectWithValue(
@@ -116,6 +117,7 @@ export const fetchUserTransactions = createAsyncThunk(
   }
 );
 
+// User: Fetch their deposit history (specific route)
 export const fetchUserDeposits = createAsyncThunk(
   "transactions/fetchUserDeposits",
   async (_, { rejectWithValue }) => {
@@ -134,6 +136,7 @@ export const fetchUserDeposits = createAsyncThunk(
   }
 );
 
+// Fetch single transaction by ID
 export const fetchTransactionById = createAsyncThunk(
   "transactions/fetchTransactionById",
   async (id, { rejectWithValue }) => {
@@ -152,7 +155,7 @@ export const fetchTransactionById = createAsyncThunk(
   }
 );
 
-// NEW ASYNC THUNK FOR UPGRADE DEPOSIT
+// NEW ASYNC THUNK FOR UPGRADE DEPOSIT (uses FormData for file)
 export const initiateUpgradeDeposit = createAsyncThunk(
   "transaction/initiateUpgradeDeposit",
   async (formData, thunkAPI) => {
@@ -160,14 +163,14 @@ export const initiateUpgradeDeposit = createAsyncThunk(
       const token = getToken();
       const res = await axios.post(
         `${API_URL}/transactions/upgrade-request`,
-        formData,
+        formData, // Sending FormData
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      return res.data; // Backend should return a message like { message: "Upgrade request submitted successfully!" }
+      return res.data; // Backend should return a message like { message: "Upgrade request submitted!" }
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to submit upgrade request"
@@ -176,32 +179,40 @@ export const initiateUpgradeDeposit = createAsyncThunk(
   }
 );
 
+// --- Transaction Slice Definition ---
 const transactionSlice = createSlice({
   name: "transactions",
   initialState: {
-    items: [], // Admin view
-    userTransactions: [], // User's view
-    loading: false, // General fetch/update loading
-    error: null, // General fetch/update error
-    selectedTransaction: null,
-    creating: false, // For createTransaction and createTransactionW
-    createError: null, // Error while creating for createTransaction and createTransactionW
-    // Specific state for the upgrade deposit flow
+    items: [], // Admin view: stores all transactions
+    userTransactions: [], // User's view: stores transactions for the logged-in user
+    loading: false, // General loading indicator for fetches (e.g., fetchTransactions, fetchUserTransactions)
+    error: null, // General error for fetches
+    selectedTransaction: null, // For viewing a single transaction by ID
+
+    creating: false, // Loading indicator for creating new transactions (deposits, withdrawals)
+    createError: null, // Error for transaction creation
+
+    // Specific state for the upgrade deposit flow (can be reused if desired)
     depositStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     depositError: null,
     depositMessage: null,
   },
   reducers: {
+    // Resets the status of a new deposit/upgrade request
     resetDepositStatus: (state) => {
       state.depositStatus = "idle";
       state.depositError = null;
       state.depositMessage = null;
     },
     // You can add more specific resets here if needed, e.g., resetCreateStatus
+    resetCreateStatus: (state) => {
+      state.creating = false;
+      state.createError = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      // User create (Deposit, potentially other types)
+      // --- createTransaction (User deposit/transaction creation) ---
       .addCase(createTransaction.pending, (state) => {
         state.creating = true;
         state.createError = null;
@@ -209,15 +220,17 @@ const transactionSlice = createSlice({
       .addCase(createTransaction.fulfilled, (state, action) => {
         state.creating = false;
         state.createMessage =
-          action.payload.message || "Deposit request submitted!"; // Assuming backend sends message
-        state.userTransactions.unshift(action.payload); // Add new transaction to list
+          action.payload.message ||
+          "Transaction request submitted successfully!"; // Assuming backend sends message
+        // Add new transaction to the user's list (if applicable, ensure payload is the transaction object)
+        state.userTransactions.unshift(action.payload);
       })
       .addCase(createTransaction.rejected, (state, action) => {
         state.creating = false;
         state.createError = action.payload;
       })
 
-      // User withdrawal (createTransactionW)
+      // --- createTransactionW (User withdrawal creation) ---
       .addCase(createTransactionW.pending, (state) => {
         state.creating = true; // Use 'creating' for consistency
         state.createError = null;
@@ -226,14 +239,15 @@ const transactionSlice = createSlice({
         state.creating = false;
         state.createMessage =
           action.payload.message || "Withdrawal request submitted!"; // Assuming backend sends message
-        state.userTransactions.unshift(action.payload); // Add withdrawal to list
+        // Add new withdrawal to the user's list
+        state.userTransactions.unshift(action.payload);
       })
       .addCase(createTransactionW.rejected, (state, action) => {
         state.creating = false;
         state.createError = action.payload;
       })
 
-      // Admin fetch all transactions
+      // --- fetchTransactions (Admin fetch all) ---
       .addCase(fetchTransactions.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -247,15 +261,27 @@ const transactionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Admin update transaction status
+      // --- updateTransactionStatus (Admin approve/decline) ---
       .addCase(updateTransactionStatus.fulfilled, (state, action) => {
-        const updated = action.payload;
+        const updatedTransaction = action.payload;
+        // Update the transaction in the admin's 'items' list
         state.items = state.items.map((t) =>
-          t._id === updated._id ? updated : t
+          t._id === updatedTransaction._id ? updatedTransaction : t
         );
+        // Also update if it's the selected transaction being viewed
+        if (
+          state.selectedTransaction &&
+          state.selectedTransaction._id === updatedTransaction._id
+        ) {
+          state.selectedTransaction = updatedTransaction;
+        }
+      })
+      .addCase(updateTransactionStatus.rejected, (state, action) => {
+        // Handle rejection specific to update status, if needed
+        console.error("Failed to update transaction status:", action.payload);
       })
 
-      // User fetch their own transactions
+      // --- fetchUserTransactions (User's own general transactions) ---
       .addCase(fetchUserTransactions.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -269,24 +295,25 @@ const transactionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch user deposits (specific type)
+      // --- fetchUserDeposits (User's specific deposit history) ---
       .addCase(fetchUserDeposits.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchUserDeposits.fulfilled, (state, action) => {
         state.loading = false;
-        state.userTransactions = action.payload; // This will overwrite all userTransactions, be careful
+        state.userTransactions = action.payload; // This will overwrite all userTransactions, ensure desired behavior
       })
       .addCase(fetchUserDeposits.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Fetch single transaction by ID
+      // --- fetchTransactionById ---
       .addCase(fetchTransactionById.pending, (state) => {
         state.loading = true;
         state.error = null; // Clear previous error
+        state.selectedTransaction = null;
       })
       .addCase(fetchTransactionById.fulfilled, (state, action) => {
         state.selectedTransaction = action.payload;
@@ -294,12 +321,12 @@ const transactionSlice = createSlice({
       })
       .addCase(fetchTransactionById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || action.payload?.message; // Use payload message if available
+        state.error = action.error.message || action.payload?.message;
       })
 
-      // NEW HANDLERS FOR initiateUpgradeDeposit - CORRECTED!
+      // --- initiateUpgradeDeposit ---
       .addCase(initiateUpgradeDeposit.pending, (state) => {
-        state.depositStatus = "loading"; // Correctly set the depositStatus
+        state.depositStatus = "loading"; // Correctly set the depositStatus for this specific flow
         state.depositError = null;
         state.depositMessage = null;
       })
@@ -308,9 +335,10 @@ const transactionSlice = createSlice({
         // Assuming action.payload contains a `message` property from the backend
         state.depositMessage =
           action.payload.message || "Upgrade request submitted successfully!";
-        // Optionally add the new upgrade transaction to the user's list
-        // Make sure `action.payload` is the transaction object if you're pushing it
-        // state.userTransactions.unshift(action.payload);
+        // Optionally add the new upgrade transaction to the user's list if the payload contains it
+        if (action.payload.transaction) {
+          state.userTransactions.unshift(action.payload.transaction);
+        }
       })
       .addCase(initiateUpgradeDeposit.rejected, (state, action) => {
         state.depositStatus = "failed";
@@ -321,5 +349,6 @@ const transactionSlice = createSlice({
   },
 });
 
-export const { resetDepositStatus } = transactionSlice.actions;
+export const { resetDepositStatus, resetCreateStatus } =
+  transactionSlice.actions;
 export default transactionSlice.reducer;
