@@ -1,3 +1,9 @@
+// This script tag loads the html2pdf.js library. It needs to be available globally
+// for the component to use it. In a Canvas environment, placing it here ensures
+// it's loaded before the React component attempts to call `html2pdf()`.
+// In a typical React app, this would usually be in public/index.html.
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
@@ -37,20 +43,35 @@ const formatMoney = (amount, currency = "USD") => {
   }
 };
 
-// Helper for type colors in receipt
+// Define constants for receipt styling and logic
 const receiptTypeColors = {
   deposit: "#38a169", // green-600
   withdrawal: "#e53e3e", // red-600
-  invest: "#4299e1", // blue-500
-  "referral bonus": "#9f7aea", // purple-500
+  investment: "#4299e1", // blue-500 (corrected from 'invest')
+  referral_bonus: "#9f7aea", // purple-500 (corrected from 'referral bonus')
   investment_payout: "#319795", // teal-500
   upgrade_deposit: "#ed8936", // orange-500
   profit: "#0ea5e9", // sky-500
-  "account upgrade": "#ed8936", // if your backend sends this explicitly
 };
+
+const statusMapToColor = { // For inline HTML styling in receipt
+  pending: "#fbbf24", // yellow-400
+  approved: "#34d399", // green-400
+  rejected: "#ef4444", // red-500
+  processed: "#60a5fa", // blue-400
+  completed: "#22c55e", // green-500
+  declined: "#ef4444", // red-500
+};
+
+const negativeTypes = ["withdrawal", "investment"];
+
 
 const AdminTransactions = () => {
   const dispatch = useDispatch();
+  // const navigate = useNavigate(); // Not used in this component currently
+
+  const theme = useSelector((state) => state.ui?.theme || "dark"); // Assuming theme is managed in a 'ui' slice
+
   const { items, loading, error } = useSelector((state) => state.transaction);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
@@ -94,6 +115,7 @@ const AdminTransactions = () => {
   // --- NEW: Handle Download Receipt for Admin ---
   const handleDownloadReceipt = () => {
     if (!selectedTx) {
+      toast.error("No transaction selected for receipt download.");
       return;
     }
 
@@ -104,8 +126,6 @@ const AdminTransactions = () => {
       createdAt,
       method, // Now holds coin symbol for crypto transactions
       coin, // This field will still hold the coin symbol for deposits/upgrades
-      transactionId,
-      description,
       paymentProof,
       details,
       user: transactionUser, // Rename to avoid conflict with `user` from auth slice
@@ -121,14 +141,18 @@ const AdminTransactions = () => {
       .replace(/_/g, " ")
       .replace("deposit", "Deposit")
       .replace("withdrawal", "Withdrawal")
-      .replace("invest", "Investment")
+      .replace("investment", "Investment") // Changed from 'invest'
       .replace("bonus", "Bonus")
       .replace("payout", "Payout");
     const displayMethod = method || coin || "N/A"; // Use `method` (coin symbol) or `coin` as fallback
     const userFullName = transactionUser?.fullName || "N/A";
     const userEmail = transactionUser?.email || "N/A";
+    const transactionId = selectedTx._id; // Use _id as the transaction ID for the receipt if no specific one
+    const description = selectedTx.notes || selectedTx.description || ""; // Use notes field if available
 
-    let receiptContent = `
+    // Create a temporary div element to render the HTML content for html2pdf
+    const printElement = document.createElement('div');
+    printElement.innerHTML = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 700px; margin: 20px auto; padding: 30px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: #fff; color: #333;">
         <h2 style="text-align: center; color: #2a64c0; margin-bottom: 25px; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px;">Official Transaction Receipt</h2>
         
@@ -158,17 +182,13 @@ const AdminTransactions = () => {
             <tr style="border-bottom: 1px dashed #e0e0e0;">
               <td style="padding: 10px 0; font-weight: 600; color: #555;">Amount:</td>
               <td style="padding: 10px 0; text-align: right; font-weight: bold; color: ${
-                negativeTypes.includes(type.toLowerCase())
-                  ? "#e53e3e"
-                  : "#38a169"
-              };">${
-      negativeTypes.includes(type.toLowerCase()) ? "−" : "+"
-    }${displayAmount}</td>
+                negativeTypes.includes(type.toLowerCase()) ? "#e53e3e" : "#38a169"
+              };">${negativeTypes.includes(type.toLowerCase()) ? "−" : "+"}${displayAmount}</td>
             </tr>
             <tr style="border-bottom: 1px dashed #e0e0e0;">
               <td style="padding: 10px 0; font-weight: 600; color: #555;">Status:</td>
               <td style="padding: 10px 0; text-align: right; text-transform: capitalize; color: ${
-                statusColors[status.toLowerCase()]?.split(" ")[1] || "#333"
+                statusMapToColor[status.toLowerCase()] || "#333"
               };"><strong>${status}</strong></td>
             </tr>
             <tr style="border-bottom: 1px dashed #e0e0e0;">
@@ -217,7 +237,7 @@ const AdminTransactions = () => {
               </tr>
               ${Object.entries(details)
                 .map(([key, value]) => {
-                  // Ensure wallet address and paymentProof aren't duplicated if they are in `details`
+                  // Skip keys already explicitly handled above (wallet addresses)
                   if (
                     key.toLowerCase() === "depositwalletaddress" ||
                     key.toLowerCase() === "withdrawalwalletaddress" ||
@@ -248,11 +268,11 @@ const AdminTransactions = () => {
                     }
                   }
                   return `
-                <tr style="border-bottom: 1px dashed #eee;">
-                  <td style="padding: 8px 0; color: #777;">${detailKey}:</td>
-                  <td style="padding: 8px 0; text-align: right; word-break: break-all;">${detailValue}</td>
-                </tr>
-                `;
+                  <tr style="border-bottom: 1px dashed #eee;">
+                    <td style="padding: 8px 0; color: #777;">${detailKey}:</td>
+                    <td style="padding: 8px 0; text-align: right; word-break: break-all;">${detailValue}</td>
+                  </tr>
+                  `;
                 })
                 .join("")}
             `
@@ -282,7 +302,7 @@ const AdminTransactions = () => {
         </div>
         
         <p style="text-align: center; color: #888; font-size: 12px; margin-top: 20px;">This is an automatically generated receipt.</p>
-        <p style="text-align: center; color: #888; font-size: 12px;">Generated by [Your Platform Name] on ${format(
+        <p style="text-align: center; color: #888; font-size: 12px;">Generated by TrustVest on ${format(
           new Date(),
           "PPpp"
         )}</p>
@@ -290,15 +310,29 @@ const AdminTransactions = () => {
       </div>
     `;
 
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(receiptContent);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print(); // Opens the print dialog
-    } else {
-      // Using alert here for direct user instruction on pop-up blocker (as per instructions for non-modal alerts)
-      alert("Please allow pop-ups to download the receipt.");
+    // Use html2pdf to generate and download the PDF
+    try {
+        // Check if html2pdf is available
+        if (typeof window.html2pdf === 'undefined') {
+            toast.error("PDF generation library not loaded. Please try again.");
+            console.error("html2pdf library is not defined. Ensure CDN is loaded.");
+            return;
+        }
+
+        window.html2pdf()
+            .set({ 
+                margin: 0.5, 
+                filename: `transaction_receipt_${selectedTx._id}.pdf`, 
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            })
+            .from(printElement)
+            .save();
+        toast.success("Receipt downloaded successfully!");
+    } catch (error) {
+        console.error("Error generating PDF receipt:", error);
+        toast.error("Failed to generate receipt. Please try again.");
     }
   };
   // --- END NEW: Handle Download Receipt for Admin ---
@@ -377,9 +411,10 @@ const AdminTransactions = () => {
             const isPositive = [
               "deposit",
               "referral_bonus",
-              "profit_return",
+              "investment_payout",
               "upgrade_deposit",
-            ].includes(type); // Added 'upgrade_deposit'
+              "profit" // Added "profit" for positive transactions
+            ].includes(type);
 
             const amountColorClass = isNegative
               ? "text-red-400"
@@ -399,10 +434,7 @@ const AdminTransactions = () => {
                 {/* Header Section */}
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700">
                   <div className="flex items-center gap-3">
-                    {type === "deposit" ||
-                    type === "upgrade_deposit" ||
-                    type === "referral_bonus" ||
-                    type === "profit_return" ? (
+                    {isPositive ? (
                       <ArrowDownCircle className="text-green-500" size={28} />
                     ) : (
                       <ArrowUpCircle className="text-red-500" size={28} />
