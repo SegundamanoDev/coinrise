@@ -1,8 +1,4 @@
-// This script tag loads the html2pdf.js library. It needs to be available globally
-// for the component to use it. In a Canvas environment, placing it here ensures
-// it's loaded before the React component attempts to call `html2pdf()`.
-// In a typical React app, this would usually be in public/index.html.
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

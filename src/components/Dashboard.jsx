@@ -405,7 +405,7 @@ const DashboardLayout = () => {
       <div
         className={`fixed top-0 left-0 h-full w-64 z-50 flex flex-col transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          ${theme === "dark" ? "bg-sidebarBackground" : "bg-white"}
+          ${theme === "dark" ? "bg-bg-gray-900" : "bg-white"}
           md:hidden
         `}
       >

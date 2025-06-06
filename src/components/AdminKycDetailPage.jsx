@@ -7,7 +7,7 @@ import {
   updateUserKycStatus, // Action for admin to update KYC status
   clearSelectedUser, // To clear user data when component unmounts
   resetAdminKycUpdateStatus, // To clear status messages after update
-} from "../features/users/userSlice";
+} from "../features/users/userSlice"; // Assuming updateUserKycStatus and resetAdminKycUpdateStatus are in userSlice
 import { toast } from "react-toastify";
 import {
   Loader2,
@@ -62,12 +62,19 @@ const AdminKycDetailPage = () => {
   }, [adminKycUpdateStatus, dispatch]);
 
   const handleApprove = () => {
+    // Prevent approval if no KYC documents are submitted
+    if (!selectedUser?.kycDocuments || selectedUser.kycDocuments.length === 0) {
+      toast.error("Cannot approve: No KYC documents submitted by the user.");
+      return;
+    }
     dispatch(updateUserKycStatus({ id, kycStatus: "approved" }));
   };
 
   const handleReject = () => {
-    // Toggle rejection reason input, or submit if already open
+    // If the rejection reason input is not yet shown, show it.
+    // If it is shown, proceed with rejection.
     if (showRejectionReasonInput) {
+      // Validate rejection reason only when submitting
       if (!rejectionReason.trim()) {
         toast.error("Please provide a reason for rejection.");
         return;
@@ -80,6 +87,14 @@ const AdminKycDetailPage = () => {
         })
       );
     } else {
+      // Before showing the rejection input, check if documents exist to reject
+      if (
+        !selectedUser?.kycDocuments ||
+        selectedUser.kycDocuments.length === 0
+      ) {
+        toast.error("Cannot reject: No KYC documents submitted to review.");
+        return;
+      }
       setShowRejectionReasonInput(true);
     }
   };
@@ -182,8 +197,14 @@ const AdminKycDetailPage = () => {
 
   // Determine if action buttons should be enabled/disabled
   const isUpdatingKycStatus = adminKycUpdateStatus.loading;
-  const canApprove = kycStatus !== "approved" && !isUpdatingKycStatus;
-  const canReject = kycStatus !== "rejected" && !isUpdatingKycStatus;
+  const hasKycDocuments = kycDocuments && kycDocuments.length > 0;
+
+  // Buttons are only relevant if status is pending AND documents are present
+  // Also, prevent re-approving or re-rejecting if already in that state
+  const canApprove =
+    kycStatus === "pending" && hasKycDocuments && !isUpdatingKycStatus;
+  const canReject =
+    kycStatus === "pending" && hasKycDocuments && !isUpdatingKycStatus;
 
   return (
     <div className="p-4 md:p-6 bg-[#000000] min-h-screen text-gray-200">
@@ -264,7 +285,7 @@ const AdminKycDetailPage = () => {
           <h2 className="text-2xl font-semibold mb-4 text-white">
             Uploaded Documents
           </h2>
-          {kycDocuments && kycDocuments.length > 0 ? (
+          {hasKycDocuments ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {kycDocuments.map((doc, index) => (
                 <div
@@ -335,45 +356,44 @@ const AdminKycDetailPage = () => {
             Admin Actions
           </h2>
 
-          {/* Buttons to Approve or Reject */}
-          {/* Show these buttons if KYC is pending, not_submitted, or rejected (allowing re-review/re-submission handling) */}
-          {(kycStatus === "pending" ||
-            kycStatus === "not_submitted" ||
-            kycStatus === "rejected") &&
-            !showRejectionReasonInput && (
-              <div className="mb-4">
-                <button
-                  onClick={handleApprove}
-                  className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold mr-4 hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!canApprove} // Disable if already approved or updating
-                >
-                  {isUpdatingKycStatus &&
-                  adminKycUpdateStatus.message?.includes("approved") ? ( // Check specific message for loading
-                    <Loader2 className="animate-spin w-5 h-5 inline-block mr-2" />
-                  ) : (
-                    <CheckCircle size={20} className="inline-block mr-2" />
-                  )}
-                  Approve KYC
-                </button>
-                <button
-                  onClick={handleReject}
-                  className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!canReject} // Disable if already rejected or updating
-                >
-                  {isUpdatingKycStatus &&
-                  adminKycUpdateStatus.message?.includes("rejected") ? ( // Check specific message for loading
-                    <Loader2 className="animate-spin w-5 h-5 inline-block mr-2" />
-                  ) : (
-                    <XCircle size={20} className="inline-block mr-2" />
-                  )}
-                  Reject KYC
-                </button>
-              </div>
-            )}
-
-          {kycStatus === "pending" && (
-            <p className="text-yellow-400 text-md font-medium mb-4">
-              Review documents above before deciding to Approve or Reject.
+          {/* Show Approve/Reject buttons ONLY IF there are documents AND status is pending */}
+          {hasKycDocuments &&
+          kycStatus === "pending" &&
+          !showRejectionReasonInput ? (
+            <div className="mb-4">
+              <button
+                onClick={handleApprove}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold mr-4 hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isUpdatingKycStatus}
+              >
+                {isUpdatingKycStatus &&
+                adminKycUpdateStatus.message?.includes("approved") ? (
+                  <Loader2 className="animate-spin w-5 h-5 inline-block mr-2" />
+                ) : (
+                  <CheckCircle size={20} className="inline-block mr-2" />
+                )}
+                Approve KYC
+              </button>
+              <button
+                onClick={handleReject}
+                className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isUpdatingKycStatus}
+              >
+                {isUpdatingKycStatus &&
+                adminKycUpdateStatus.message?.includes("rejected") ? (
+                  <Loader2 className="animate-spin w-5 h-5 inline-block mr-2" />
+                ) : (
+                  <XCircle size={20} className="inline-block mr-2" />
+                )}
+                Reject KYC
+              </button>
+            </div>
+          ) : (
+            // Message if actions are not available (no docs, or already processed)
+            <p className="text-md text-gray-400 mb-4">
+              {hasKycDocuments && kycStatus !== "pending"
+                ? `KYC for this user is already ${kycStatus}.`
+                : "No KYC documents submitted, or status is not pending. Actions are not available."}
             </p>
           )}
 
@@ -397,7 +417,10 @@ const AdminKycDetailPage = () => {
               ></textarea>
               <div className="flex justify-end space-x-3 mt-3">
                 <button
-                  onClick={() => setShowRejectionReasonInput(false)}
+                  onClick={() => {
+                    setShowRejectionReasonInput(false);
+                    setRejectionReason(""); // Clear reason if canceled
+                  }}
                   className="px-5 py-2 bg-gray-700 text-white rounded-lg font-semibold hover:bg-gray-600 transition duration-300"
                   disabled={isUpdatingKycStatus}
                 >
@@ -419,14 +442,6 @@ const AdminKycDetailPage = () => {
               </div>
             </div>
           )}
-
-          {/* Message when KYC is already approved or rejected */}
-          {(kycStatus === "approved" || kycStatus === "rejected") &&
-            !showRejectionReasonInput && (
-              <p className="text-md text-gray-400">
-                KYC for this user is already {kycStatus}.
-              </p>
-            )}
 
           {/* General loading indicator for KYC actions */}
           {isUpdatingKycStatus && (
