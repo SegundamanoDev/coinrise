@@ -364,29 +364,19 @@ const DashboardLayout = () => {
 
       {/* Mobile Header (Fixed at top for small screens) */}
       <div
-        className={`md:hidden fixed w-full top-0 z-40 px-4 shadow-md flex justify-between items-center h-16
-          ${theme === "dark" ? "bg-darkBackground" : "bg-white"}
-        `}
+        className={`md:hidden fixed w-full top-0 z-40 px-4 shadow-md  h-16
+              flex justify-end items-center                            
+              ${theme === "dark" ? "bg-darkBackground" : "bg-white"}
+  `}
       >
-        {/* User Avatar on Mobile Header */}
-        {profile?.avatar?.secure_url ? (
-          <img
-            src={profile.avatar.secure_url}
-            alt="User Avatar"
-            className="w-8 h-8 rounded-full object-cover mr-2"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-sm mr-2">
-            {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
-          </div>
-        )}
         <button
           onClick={() => setIsOpen(true)}
-          className={`p-2 rounded-md transition mx-2 ${
-            theme === "dark"
-              ? "hover:bg-[#1f2937] text-textPrimary"
-              : "hover:bg-gray-200 text-gray-700"
-          }`}
+          className={`p-2 flex rounded-md transition               
+                ${
+                  theme === "dark"
+                    ? "hover:bg-[#1f2937] text-textPrimary"
+                    : "hover:bg-gray-200 text-gray-700"
+                }`}
           aria-label="Open Menu"
         >
           <Menu />
@@ -405,7 +395,7 @@ const DashboardLayout = () => {
       <div
         className={`fixed top-0 left-0 h-full w-64 z-50 flex flex-col transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          ${theme === "dark" ? "bg-bg-gray-900" : "bg-white"}
+          ${theme === "dark" ? "bg-gray-900" : "bg-white"}
           md:hidden
         `}
       >
@@ -414,9 +404,9 @@ const DashboardLayout = () => {
             {" "}
             {/* Adjusted flex for avatar & close btn */}
             {/* User Avatar & Name in Mobile Sidebar */}
-            {profile?.avatar?.secure_url ? (
+            {profile?.avatar ? (
               <img
-                src={profile.avatar.secure_url}
+                src={profile.avatar}
                 alt="User Avatar"
                 className="w-12 h-12 rounded-full object-cover mr-3"
               />
@@ -695,18 +685,23 @@ const DashboardLayout = () => {
           `}
           >
             {/* User Avatar on Desktop Welcome Banner */}
-            <div className="flex items-center mb-2">
-              {profile?.avatar?.secure_url ? (
-                <img
-                  src={profile.avatar.secure_url}
-                  alt="User Avatar"
-                  className="w-10 h-10 rounded-full object-cover mr-3"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white text-sm mr-3">
-                  {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
-                </div>
-              )}
+            <div className="flex items-center">
+              {/* Avatar Container: This div now handles the rounding and overflow clipping */}
+              <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 mr-3">
+                {profile?.avatar ? (
+                  <img
+                    src={profile.avatar}
+                    alt="User Avatar"
+                    className="w-full h-full object-cover" // Image now fills its perfectly round parent
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-500 flex items-center justify-center text-white text-sm">
+                    {user?.fullName && user.fullName[0].toUpperCase()}
+                  </div>
+                )}
+              </div>
+              {/* End Avatar Container */}
+
               <h2 className="text-2xl font-bold text-textPrimary">
                 {getGreeting()}, {user?.fullName || "Trader"} 👋
               </h2>
@@ -765,25 +760,6 @@ const DashboardLayout = () => {
               <p className="font-semibold text-lg text-textPrimary">
                 Funds Secured via 2FA + Cold Wallet 🔐
               </p>
-            </div>
-            <div
-              className={`p-4 rounded-xl shadow-md flex items-center gap-3 border
-                ${
-                  theme === "dark"
-                    ? "bg-cardBackground border-borderColor"
-                    : "bg-white border-gray-200"
-                }`}
-            >
-              <Clock size={20} className="text-textSecondary" />
-              <div>
-                <p className="font-semibold text-textPrimary">Last Login:</p>
-                <p className="text-sm text-textSecondary">
-                  {formatLastLogin(user?.lastLoginAt)}
-                </p>
-                <p className="text-xs text-gray-400">
-                  {user?.lastLoginIpAddress || "N/A"}
-                </p>
-              </div>
             </div>
           </div>
           {/* Grid Layout for Main Widgets */}

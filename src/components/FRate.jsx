@@ -11,7 +11,8 @@ const ForexRates = () => {
       script.async = true;
       script.innerHTML = JSON.stringify({
         width: "100%",
-        height: "400",
+        height: 450,
+        defaultColumn: "overview",
         currencies: ["EUR", "USD", "JPY", "GBP", "CHF", "AUD", "CAD", "NZD"],
         isTransparent: false,
         colorTheme: "dark",
@@ -22,7 +23,11 @@ const ForexRates = () => {
     }
   }, []);
 
-  return <div ref={containerRef} className="p-5" />;
+  return (
+    <div className="tradingview-widget-container bg-gray-800 p-4 rounded-lg shadow-lg">
+      <div ref={containerRef} />
+    </div>
+  );
 };
 
 export default ForexRates;

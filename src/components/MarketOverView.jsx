@@ -12,9 +12,10 @@ const MarketOverview = () => {
       showChart: true,
       locale: "en",
       width: "100%",
-      height: "400",
+      height: 450,
+      defaultColumn: "overview",
       largeChartUrl: "",
-      isTransparent: false,
+
       showSymbolLogo: true,
       plotLineColorGrowing: "rgba(60, 188, 152, 1)",
       plotLineColorFalling: "rgba(255, 74, 104, 1)",
@@ -46,7 +47,11 @@ const MarketOverview = () => {
     document.getElementById("market-overview-container").appendChild(script);
   }, []);
 
-  return <div id="market-overview-container" className="w-full p-5" />;
+  return (
+    <div className="tradingview-widget-container bg-gray-800 p-4 rounded-lg shadow-lg">
+      <div id="market-overview-container" />
+    </div>
+  );
 };
 
 export default MarketOverview;

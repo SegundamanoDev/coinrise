@@ -9,8 +9,9 @@ const TechnicalAnalysis = () => {
     script.innerHTML = JSON.stringify({
       interval: "1h",
       width: "100%",
+      height: 450,
+      defaultColumn: "overview",
       isTransparent: false,
-      height: "450",
       symbol: "FX:EURUSD",
       showIntervalTabs: true,
       locale: "en",
@@ -19,7 +20,11 @@ const TechnicalAnalysis = () => {
     document.getElementById("technical-analysis-container").appendChild(script);
   }, []);
 
-  return <div id="technical-analysis-container" className="w-full p-5" />;
+  return (
+    <div className="tradingview-widget-container bg-gray-800 p-4 rounded-lg shadow-lg">
+      <div id="technical-analysis-container" />
+    </div>
+  );
 };
 
 export default TechnicalAnalysis;

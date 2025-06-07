@@ -151,16 +151,6 @@ const CertificateSection = () => {
                 "https://via.placeholder.com/400x300/1F2937/F3F4F6?text=Certificate+2";
             }} // Fallback
           />
-          <img
-            src="/images/certificate3.jpg"
-            alt="Regulatory Certificate 3"
-            className="rounded-xl shadow-2xl border border-gray-800 hover:scale-[1.02] transition-transform duration-300 hover:border-blue-500 object-cover w-full h-auto"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src =
-                "https://via.placeholder.com/400x300/1F2937/F3F4F6?text=Certificate+3";
-            }} // Fallback
-          />
         </div>
       </div>
     </section>

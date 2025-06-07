@@ -181,14 +181,17 @@ const Users = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Role
                 </th>
-                {/* NEW KYC Status Column */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   KYC Status
                 </th>
-                {/* END NEW KYC Status Column */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Account Status
                 </th>
+                {/* NEW: Last Seen At Column Header */}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Last Seen
+                </th>
+                {/* END NEW: Last Seen At Column Header */}
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
@@ -215,11 +218,9 @@ const Users = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 capitalize">
                     {user?.role}
                   </td>
-                  {/* Render KYC Status Badge */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {renderKycStatusBadge(user.kycStatus)}
                   </td>
-                  {/* End Render KYC Status Badge */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {user.isBlocked ? (
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-600 bg-opacity-30 text-red-300">
@@ -231,6 +232,13 @@ const Users = () => {
                       </span>
                     )}
                   </td>
+                  {/* NEW: Last Seen At Data Cell */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    {user.lastSeenAt
+                      ? new Date(user.lastSeenAt).toLocaleString()
+                      : "N/A"}
+                  </td>
+                  {/* END NEW: Last Seen At Data Cell */}
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
                     <button
                       onClick={() => openTopupModal(user._id)}

@@ -16,6 +16,8 @@ import TechnicalAnalysis from "./TechnicalAnalysis";
 import ForexCrossRates from "./ForexCrossRates";
 import CertificateSection from "./CertificateSection";
 import InvestmentPlanSection from "./InvestmentPlan";
+import CryptoScreener from "./CryptoScreener";
+import MarketTimeline from "./MarketTimeline";
 
 const Home = () => {
   return (
@@ -24,7 +26,7 @@ const Home = () => {
       <CryptoTicker />
       <HeroSection />
       <TrustSection />
-      <MarketOverview />
+      <CryptoScreener />
       <HowItWorksSection />
       <WhyChooseUsSection />
       <TechnicalAnalysis />
@@ -34,6 +36,7 @@ const Home = () => {
       <ForexCrossRates />
       <FAQSection />
       <CertificateSection />
+      <MarketTimeline />
       <CTACallToActionSection />
       <EarningsPopup />
     </>

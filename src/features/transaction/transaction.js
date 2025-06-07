@@ -96,6 +96,26 @@ export const updateTransactionStatus = createAsyncThunk(
   }
 );
 
+// Admin: Delete a transaction
+export const deleteTransaction = createAsyncThunk(
+  "transactions/deleteTransaction",
+  async (id, thunkAPI) => {
+    try {
+      const token = getToken();
+      const res = await axios.delete(`${API_URL}/transactions/admin/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return id; // Return the ID of the deleted transaction to update state
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Failed to delete transaction"
+      );
+    }
+  }
+);
+
 // User: Fetch their own transactions
 export const fetchUserTransactions = createAsyncThunk(
   "transactions/fetchUserTransactions",
@@ -136,7 +156,7 @@ export const fetchUserDeposits = createAsyncThunk(
   }
 );
 
-// Fetch single transaction by ID
+// Fetch single transaction by ID (for both Admin and User)
 export const fetchTransactionById = createAsyncThunk(
   "transactions/fetchTransactionById",
   async (id, { rejectWithValue }) => {
@@ -191,6 +211,10 @@ const transactionSlice = createSlice({
 
     creating: false, // Loading indicator for creating new transactions (deposits, withdrawals)
     createError: null, // Error for transaction creation
+    createMessage: null, // Message after successful creation
+
+    deleting: false, // Loading indicator for deleting transactions
+    deleteError: null, // Error for transaction deletion
 
     // Specific state for the upgrade deposit flow (can be reused if desired)
     depositStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -204,10 +228,16 @@ const transactionSlice = createSlice({
       state.depositError = null;
       state.depositMessage = null;
     },
-    // You can add more specific resets here if needed, e.g., resetCreateStatus
+    // Resets the status for general transaction creation (deposit/withdrawal)
     resetCreateStatus: (state) => {
       state.creating = false;
       state.createError = null;
+      state.createMessage = null;
+    },
+    // Resets the status for transaction deletion
+    resetDeleteStatus: (state) => {
+      state.deleting = false;
+      state.deleteError = null;
     },
   },
   extraReducers: (builder) => {
@@ -216,6 +246,7 @@ const transactionSlice = createSlice({
       .addCase(createTransaction.pending, (state) => {
         state.creating = true;
         state.createError = null;
+        state.createMessage = null;
       })
       .addCase(createTransaction.fulfilled, (state, action) => {
         state.creating = false;
@@ -234,6 +265,7 @@ const transactionSlice = createSlice({
       .addCase(createTransactionW.pending, (state) => {
         state.creating = true; // Use 'creating' for consistency
         state.createError = null;
+        state.createMessage = null;
       })
       .addCase(createTransactionW.fulfilled, (state, action) => {
         state.creating = false;
@@ -281,6 +313,26 @@ const transactionSlice = createSlice({
         console.error("Failed to update transaction status:", action.payload);
       })
 
+      // --- deleteTransaction (Admin delete) ---
+      .addCase(deleteTransaction.pending, (state) => {
+        state.deleting = true;
+        state.deleteError = null;
+      })
+      .addCase(deleteTransaction.fulfilled, (state, action) => {
+        state.deleting = false;
+        const deletedId = action.payload;
+        // Remove the deleted transaction from the admin's 'items' list
+        state.items = state.items.filter((t) => t._id !== deletedId);
+        // If the deleted transaction was currently selected, clear it
+        if (state.selectedTransaction?._id === deletedId) {
+          state.selectedTransaction = null;
+        }
+      })
+      .addCase(deleteTransaction.rejected, (state, action) => {
+        state.deleting = false;
+        state.deleteError = action.payload;
+      })
+
       // --- fetchUserTransactions (User's own general transactions) ---
       .addCase(fetchUserTransactions.pending, (state) => {
         state.loading = true;
@@ -309,7 +361,7 @@ const transactionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // --- fetchTransactionById ---
+      // --- fetchTransactionById (View single transaction by ID) ---
       .addCase(fetchTransactionById.pending, (state) => {
         state.loading = true;
         state.error = null; // Clear previous error
@@ -349,6 +401,6 @@ const transactionSlice = createSlice({
   },
 });
 
-export const { resetDepositStatus, resetCreateStatus } =
+export const { resetDepositStatus, resetCreateStatus, resetDeleteStatus } =
   transactionSlice.actions;
 export default transactionSlice.reducer;

@@ -58,6 +58,7 @@ import FAQSection from "./components/FAQSection";
 import PaymentPolicy from "./components/PaymentPolicy";
 import KYCSubmissionForm from "./components/KYCSubmissionForm";
 import AdminKycDetailPage from "./components/AdminKycDetailPage";
+import AdminTransactionDetail from "./components/admin/AdminTransactionDetail";
 
 // PrivateRoute component to protect routes
 const PrivateRoute = ({ children, roles }) => {
@@ -276,6 +277,10 @@ const AppRoutes = () => {
             element={<AdminInvestmentsDashboard />}
           />
           <Route path="/admin/transactions" element={<AdminTransactions />} />
+          <Route
+            path="/admin/transactions/:id"
+            element={<AdminTransactionDetail />}
+          />
           <Route path="/admin/settings" element={<Setting />} />
         </Routes>
       )}

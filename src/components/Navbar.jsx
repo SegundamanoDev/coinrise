@@ -65,7 +65,6 @@ const languages = [
   { code: "ha", name: "Hausa" },
   { code: "ig", name: "Igbo" },
   { code: "yo", name: "Yoruba" },
-  // Add more languages as needed, ensure correct Google Translate codes
 ];
 
 export default function Navbar() {
@@ -73,22 +72,19 @@ export default function Navbar() {
   const [isTranslateDropdownOpen, setIsTranslateDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const [isGoogleTranslateLoaded, setIsGoogleTranslateLoaded] = useState(false); // New state for widget readiness
+  const [isGoogleTranslateLoaded, setIsGoogleTranslateLoaded] = useState(false);
 
   const lastScrollY = useRef(0);
-  const translateRef = useRef(null); // Ref for translate dropdown
+  const translateRef = useRef(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  // Fetch user profile for avatar from the 'users' slice
   const { profile } = useSelector((state) => state.users);
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-  // Use useCallback to memoize this function, preventing re-renders issues
   const toggleTranslateDropdown = useCallback((event) => {
-    // Prevent event from propagating if clicked inside the dropdown itself
     event.stopPropagation();
     setIsTranslateDropdownOpen((prev) => !prev);
   }, []);
@@ -99,28 +95,20 @@ export default function Navbar() {
     navigate("/sign-in");
   };
 
-  // Handle outside clicks for translate dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if the click occurred outside the translate dropdown
       if (
         translateRef.current &&
         !translateRef.current.contains(event.target)
       ) {
         setIsTranslateDropdownOpen(false);
       }
-      // Also close mobile menu if clicking outside (and it's open)
-      // This is a common pattern, though you might want a separate backdrop for this
-      if (isMobileMenuOpen && !event.target.closest(".fixed.h-full.w-72")) {
-        // Check if click is not inside the mobile sidebar
-        // setIsMobileMenuOpen(false); // This is now handled by the backdrop overlay
-      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isMobileMenuOpen]); // Dependency on isMobileMenuOpen
+  }, []);
 
   // Google Translate Widget Initialization
   useEffect(() => {
@@ -135,61 +123,74 @@ export default function Navbar() {
         document.body.appendChild(script);
 
         window.googleTranslateElementInit = () => {
+          console.log("Google Translate global init callback fired.");
           new window.google.translate.TranslateElement(
             {
-              pageLanguage: "en", // Set your default language here
+              pageLanguage: "en",
               layout:
                 window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-              autoDisplay: false, // Prevents default banner
+              autoDisplay: false,
             },
-            "google_translate_element" // ID of the div where the widget will be rendered
+            "google_translate_element" // Targeting the HIDDEN div
           );
-          // Once the element is initialized, set the flag
           setIsGoogleTranslateLoaded(true);
-          console.log("Google Translate widget initialized.");
+          console.log("Google Translate widget initialized and flag set.");
         };
+      } else {
+        console.log("Google Translate script already exists.");
+        // If script is already there, check if the widget is already initialized
+        if (
+          window.google &&
+          window.google.translate &&
+          document.querySelector(".goog-te-combo")
+        ) {
+          setIsGoogleTranslateLoaded(true);
+          console.log("Google Translate widget found already initialized.");
+        }
       }
     };
 
     addGoogleTranslateScript();
   }, []);
 
+  // Function to programmatically change the language via Google Translate
   const changeLanguage = useCallback(
-    (langCode) => {
-      const attemptTranslate = () => {
-        // It's crucial to query for the select element *after* the widget is fully loaded
-        const googleBar = document.querySelector(".goog-te-combo");
+    (langCode, retryCount = 0) => {
+      console.log(
+        `Attempting to change language to: ${langCode}, Retry: ${retryCount}`
+      );
+      const MAX_RETRIES = 10; // Increased retries
+      const RETRY_DELAY_MS = 200; // Increased delay
 
-        if (googleBar && googleBar.options.length > 0) {
-          // Check if options are populated
-          googleBar.value = langCode; // Set the value of the select element
-          // Dispatch a 'change' event to trigger Google Translate's internal logic
-          googleBar.dispatchEvent(new Event("change"));
-          console.log(`Language changed to: ${langCode}`);
-          setIsTranslateDropdownOpen(false); // Close dropdown after successful selection
-          return true; // Indicate success
-        }
-        return false; // Indicate failure
-      };
+      const googleBar = document.querySelector(".goog-te-combo");
 
-      if (isGoogleTranslateLoaded) {
-        if (!attemptTranslate()) {
-          // If not successful immediately (e.g., options not yet populated), retry
-          console.warn(
-            "Google Translate select element not fully ready, retrying..."
-          );
-          setTimeout(() => attemptTranslate(), 100); // Small delay to allow DOM updates
-        }
-      } else {
+      if (
+        isGoogleTranslateLoaded &&
+        googleBar &&
+        googleBar.options.length > 0
+      ) {
+        console.log("Google Translate select element found and loaded.");
+        googleBar.value = langCode;
+        googleBar.dispatchEvent(new Event("change"));
+        console.log(`Language successfully changed to: ${langCode}`);
+        setIsTranslateDropdownOpen(false); // Close dropdown after successful selection
+      } else if (retryCount < MAX_RETRIES) {
         console.warn(
-          "Google Translate widget not yet loaded. Cannot set language."
+          `Google Translate select element not ready (or options missing). Retrying in ${RETRY_DELAY_MS}ms...`
         );
-        // You might want to queue the language change or show a message
-        setTimeout(() => changeLanguage(langCode), 500); // Retry after a delay if not loaded
+        setTimeout(
+          () => changeLanguage(langCode, retryCount + 1),
+          RETRY_DELAY_MS
+        );
+      } else {
+        console.error(
+          `Failed to change language to ${langCode} after ${MAX_RETRIES} retries. Widget not responsive.`
+        );
+        // Optionally show a user-facing error message here
       }
     },
     [isGoogleTranslateLoaded]
-  ); // Dependency on isGoogleTranslateLoaded
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -280,12 +281,12 @@ export default function Navbar() {
             {isTranslateDropdownOpen && (
               <div
                 className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto custom-scroll"
-                onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
+                onClick={(e) => e.stopPropagation()}
               >
-                {/* Hidden Google Translate placeholder - Critical for widget initialization */}
+                {/* Critical: The hidden div for Google Translate widget. Must be present. */}
                 <div
                   id="google_translate_element"
-                  style={{ display: "none" }}
+                  style={{ display: "none" }} // Use display:none for clean hiding
                 />
                 {languages.map((lang) => (
                   <button
@@ -322,24 +323,34 @@ export default function Navbar() {
                 className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-700 transition-colors duration-200"
                 title={user?.fullName || "Dashboard"}
               >
-                {profile?.avatar?.secure_url ? (
-                  <img
-                    src={profile?.avatar?.secure_url}
-                    alt="User Avatar"
-                    className="w-9 h-9 rounded-full object-cover border-2 border-blue-400"
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold border-2 border-blue-400">
-                    {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
-                  </div>
-                )}
-                {/* <span className="text-white text-base font-semibold hidden lg:inline-block">{user?.fullName?.split(' ')[0]}</span> */}
+                {/* Avatar Container: Ensures perfect rounding */}
+                <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-blue-400">
+                  {profile?.avatar?.secure_url ? (
+                    <img
+                      src={profile.avatar.secure_url}
+                      alt="User Avatar"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `https://placehold.co/96x96/555/FFF?text=${
+                          user?.fullName ? user.fullName[0].toUpperCase() : "U"
+                        }`;
+                        e.target.style.objectFit = "contain";
+                        e.target.style.backgroundColor = "#2563eb"; // blue-600
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold">
+                      {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+                    </div>
+                  )}
+                </div>
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button (Hamburger) */}
         <button
           className="md:hidden z-50 text-white p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md"
           onClick={() => setIsMobileMenuOpen(true)}
@@ -368,19 +379,28 @@ export default function Navbar() {
 
         {user && (
           <div className="p-6 border-b border-gray-700 bg-gray-800 flex items-center gap-4">
-            {" "}
-            {/* Changed to flex layout */}
-            {profile?.avatar?.secure_url ? (
-              <img
-                src={profile.avatar.secure_url}
-                alt="User Avatar"
-                className="w-16 h-16 rounded-full object-cover border-2 border-blue-400 shadow-md"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold border-2 border-blue-400 shadow-md">
-                {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
-              </div>
-            )}
+            {/* Avatar Container: Ensures perfect rounding */}
+            <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-blue-400 shadow-md">
+              {profile?.avatar?.secure_url ? (
+                <img
+                  src={profile.avatar.secure_url}
+                  alt="User Avatar"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://placehold.co/96x96/555/FFF?text=${
+                      user?.fullName ? user.fullName[0].toUpperCase() : "U"
+                    }`;
+                    e.target.style.objectFit = "contain";
+                    e.target.style.backgroundColor = "#2563eb"; // blue-600
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold">
+                  {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
+                </div>
+              )}
+            </div>
             <div>
               <p className="text-xl font-semibold text-white">
                 {user?.fullName || "Guest User"}
@@ -453,8 +473,13 @@ export default function Navbar() {
             {isTranslateDropdownOpen && (
               <div
                 className="mt-2 w-full bg-gray-800 rounded-md shadow-xl overflow-hidden z-50 max-h-52 overflow-y-auto custom-scroll"
-                onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
+                onClick={(e) => e.stopPropagation()}
               >
+                {/* Critical: The hidden div for Google Translate widget. Must be present. */}
+                <div
+                  id="google_translate_element_mobile"
+                  style={{ display: "none" }} // Use display:none for clean hiding
+                />
                 {languages.map((lang) => (
                   <button
                     key={lang.code}

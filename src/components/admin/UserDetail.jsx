@@ -11,7 +11,7 @@ import AdminLayout from "../../components/admin/AdminLayout";
 import { toast } from "react-toastify";
 import {
   Loader2,
-  User, // Keep User icon for initials fallback
+  User,
   Mail,
   Globe,
   Phone,
@@ -29,6 +29,7 @@ import {
   Info,
   Edit,
   Landmark,
+  Briefcase, // Import Briefcase icon for occupation
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -72,15 +73,9 @@ const UserDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const {
-    selectedUser,
-    loading, // General loading for fetchUserById
-    error, // General error for fetchUserById
-    statusMessage, // General success message
-    adminUpdateUserStatus, // Use the new dedicated status for updateUser
-  } = useSelector((state) => state.users);
+  const { selectedUser, loading, error, statusMessage, adminUpdateUserStatus } =
+    useSelector((state) => state.users);
 
-  // Destructure the specific update status
   const {
     loading: updateLoading,
     error: updateError,
@@ -96,6 +91,7 @@ const UserDetail = () => {
     address: "",
     city: "",
     zip: "",
+    occupation: "", // Added occupation to form data
     currentPlan: "",
     role: "",
     isBlocked: false,
@@ -119,6 +115,7 @@ const UserDetail = () => {
         address: selectedUser.address || "",
         city: selectedUser.city || "",
         zip: selectedUser.zip || "",
+        occupation: selectedUser.occupation || "", // Initialize occupation from selectedUser
         currentPlan: selectedUser.currentPlan || "free",
         role: selectedUser.role || "user",
         isBlocked: selectedUser.isBlocked || false,
@@ -127,24 +124,21 @@ const UserDetail = () => {
   }, [selectedUser]);
 
   useEffect(() => {
-    // Handle success message from any action, including update
     if (statusMessage) {
       toast.success(statusMessage);
-      dispatch(clearStatusMessage()); // Clear the general status message
+      dispatch(clearStatusMessage());
     }
 
-    // Handle success specifically for adminUpdateUserStatus
     if (updateSuccess) {
-      setEditMode(false); // Exit edit mode on successful update
-      dispatch(resetAdminUpdateUserStatus()); // Reset the update status
+      setEditMode(false);
+      dispatch(resetAdminUpdateUserStatus());
     }
 
-    // Handle error specifically for adminUpdateUserStatus
     if (updateError) {
       toast.error(`Update failed: ${updateError}`);
-      dispatch(resetAdminUpdateUserStatus()); // Reset the update status
+      dispatch(resetAdminUpdateUserStatus());
     }
-  }, [statusMessage, updateSuccess, updateError, dispatch]); // Depend on new update states
+  }, [statusMessage, updateSuccess, updateError, dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -155,7 +149,7 @@ const UserDetail = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     if (id) {
       dispatch(updateUser({ id, updates: formData }));
     }
@@ -337,6 +331,24 @@ const UserDetail = () => {
                   className="w-full p-3 rounded-md bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              {/* NEW: Occupation input field */}
+              <div>
+                <label
+                  htmlFor="occupation"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
+                  Occupation
+                </label>
+                <input
+                  type="text"
+                  id="occupation"
+                  name="occupation"
+                  value={formData.occupation}
+                  onChange={handleInputChange}
+                  className="w-full p-3 rounded-md bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              {/* END NEW: Occupation input field */}
               <div>
                 <label
                   htmlFor="currentPlan"
@@ -408,6 +420,7 @@ const UserDetail = () => {
                       address: selectedUser.address || "",
                       city: selectedUser.city || "",
                       zip: selectedUser.zip || "",
+                      occupation: selectedUser.occupation || "", // Reset occupation
                       currentPlan: selectedUser.currentPlan || "free",
                       role: selectedUser.role || "user",
                       isBlocked: selectedUser.isBlocked || false,
@@ -456,7 +469,7 @@ const UserDetail = () => {
                       e.target.onerror = null;
                       e.target.src = `https://placehold.co/96x96/555/FFF?text=${getInitials(
                         selectedUser?.fullName
-                      )}`; // Fallback to initials placeholder
+                      )}`;
                       e.target.style.objectFit = "contain";
                       e.target.style.backgroundColor = "#2563eb"; // blue-600
                     }}
@@ -503,6 +516,12 @@ const UserDetail = () => {
                 <Tag size={20} className="text-blue-400" />
                 <strong>ZIP Code:</strong> {selectedUser?.zip || "N/A"}
               </p>
+              {/* NEW: Display Occupation */}
+              <p className="flex items-center gap-2">
+                <Briefcase size={20} className="text-blue-400" />
+                <strong>Occupation:</strong> {selectedUser?.occupation || "N/A"}
+              </p>
+              {/* END NEW: Display Occupation */}
               <p className="flex items-center gap-2">
                 <Settings size={20} className="text-blue-400" />
                 <strong>Current Plan:</strong>{" "}
@@ -562,6 +581,15 @@ const UserDetail = () => {
                 <strong>Last Login IP:</strong>{" "}
                 {selectedUser?.lastLoginIpAddress || "N/A"}
               </p>
+              {/* NEW: Display Last Seen At */}
+              <p className="flex items-center gap-2">
+                <Clock size={20} className="text-gray-400" />
+                <strong>Last Seen:</strong>{" "}
+                {selectedUser?.lastSeenAt
+                  ? new Date(selectedUser.lastSeenAt).toLocaleString()
+                  : "N/A"}
+              </p>
+              {/* END NEW: Display Last Seen At */}
               <p className="flex items-center gap-2">
                 <Clock size={20} className="text-gray-400" />
                 <strong>Member Since:</strong>{" "}
