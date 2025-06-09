@@ -50,7 +50,7 @@ const CertificateSection = () => {
             />
             <span>
               Registered by **Companies House**, The Registrar of Companies for
-              England and Wales (since 1999).
+              England and Wales (since **2016**).
             </span>
           </li>
           <li
@@ -64,7 +64,7 @@ const CertificateSection = () => {
             />
             <span>
               Regulated by the **Cyprus Securities and Exchange Commission
-              (CySEC)** (since 2014).
+              (CySEC)** (since **2014**).
             </span>
           </li>
           <li
@@ -78,7 +78,7 @@ const CertificateSection = () => {
             />
             <span>
               Accredited by the **Financial Conduct Authority (FCA)** in the UK
-              (since 2015).
+              (since **2015**).
             </span>
           </li>
           <li
@@ -92,7 +92,7 @@ const CertificateSection = () => {
             />
             <span>
               Authorized and registered with the **U.S. National Futures
-              Association (NFA)** – ID: 0308926 (since 2001).
+              Association (NFA)** – ID: 0308926 (since **2017**).
             </span>
           </li>
           <li
@@ -120,13 +120,13 @@ const CertificateSection = () => {
             />
             <span>
               Holds a **USA Markets Limited License** under Section 14 of the
-              Financial Services Act (since 2000).
+              Financial Services Act (since **2016**).
             </span>
           </li>
         </ul>
 
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-16"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 max-w-2xl mx-auto" // Adjusted classes
           data-aos="fade-up"
           data-aos-delay="600"
         >

@@ -13,9 +13,12 @@ import {
   Legend,
 } from "recharts";
 import { Users, DollarSign, TrendingUp, BarChart2, Zap } from "lucide-react"; // Icons for stats
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const { stats, snapshot, charts, recentLogs, loading, error } = useSelector(
     (state) => state.admin
   );
@@ -25,6 +28,12 @@ const AdminDashboard = () => {
   useEffect(() => {
     dispatch(fetchAdminDashboard());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   // Helper function to format currency
   const formatCurrency = (amount) => {

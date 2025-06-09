@@ -123,6 +123,13 @@ const AdminTransactionDetail = () => {
     }
   }, [dispatch, id]);
 
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
   const handleAction = async (action) => {
     if (!selectedTransaction) return;
 

@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { logout } from "../features/users/authSlice"; // Adjust path if necessary
 
-import { Menu, X, User, LogOut, ChevronDown, Globe } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import {
   Home as HomeIcon,
   Info as InfoIcon,
@@ -15,67 +15,12 @@ import {
 
 import logo from "../assets/trustvest.png"; // Assuming this path is correct
 
-// Define supported languages for Google Translate (using the actual codes)
-const languages = [
-  { code: "en", name: "English" },
-  { code: "es", name: "Español" },
-  { code: "fr", name: "Français" },
-  { code: "de", name: "Deutsch" },
-  { code: "zh-CN", name: "中文 (简体)" },
-  { code: "hi", name: "हिन्दी" },
-  { code: "ar", name: "العربية" },
-  { code: "pt", name: "Português" },
-  { code: "ru", name: "Русский" },
-  { code: "ja", name: "日本語" },
-  { code: "ko", name: "한국어" },
-  { code: "it", name: "Italiano" },
-  { code: "nl", name: "Nederlands" },
-  { code: "sv", name: "Svenska" },
-  { code: "pl", name: "Polski" },
-  { code: "tr", name: "Türkçe" },
-  { code: "vi", name: "Tiếng Việt" },
-  { code: "th", name: "ไทย" },
-  { code: "id", name: "Bahasa Indonesia" },
-  { code: "uk", name: "Українська" },
-  { code: "he", name: "עברית" },
-  { code: "da", name: "Dansk" },
-  { code: "fi", name: "Suomi" },
-  { code: "no", name: "Norsk" },
-  { code: "hu", name: "Magyar" },
-  { code: "cs", name: "Čeština" },
-  { code: "el", name: "Ελληνικά" },
-  { code: "ro", name: "Română" },
-  { code: "sk", name: "Slovenčina" },
-  { code: "bg", name: "Български" },
-  { code: "hr", name: "Hrvatski" },
-  { code: "fa", name: "فارسی" },
-  { code: "ur", name: "اردو" },
-  { code: "bn", name: "বাংলা" },
-  { code: "pa", name: "ਪੰਜਾਬੀ" },
-  { code: "gu", name: "ગુજરાતી" },
-  { code: "ta", name: "தமிழ்" },
-  { code: "te", name: "తెలుగు" },
-  { code: "kn", name: "ಕನ್ನಡ" },
-  { code: "ml", name: "മലയാളം" },
-  { code: "my", name: "မြန်မာ" },
-  { code: "ka", name: "ქართული" },
-  { code: "am", name: " አማርኛ" },
-  { code: "sw", name: "Kiswahili" },
-  { code: "zu", name: "IsiZulu" },
-  { code: "ha", name: "Hausa" },
-  { code: "ig", name: "Igbo" },
-  { code: "yo", name: "Yoruba" },
-];
-
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isTranslateDropdownOpen, setIsTranslateDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const [isGoogleTranslateLoaded, setIsGoogleTranslateLoaded] = useState(false);
 
   const lastScrollY = useRef(0);
-  const translateRef = useRef(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -84,113 +29,11 @@ export default function Navbar() {
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-  const toggleTranslateDropdown = useCallback((event) => {
-    event.stopPropagation();
-    setIsTranslateDropdownOpen((prev) => !prev);
-  }, []);
-
   const handleLogout = () => {
     dispatch(logout());
     closeMobileMenu();
     navigate("/sign-in");
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        translateRef.current &&
-        !translateRef.current.contains(event.target)
-      ) {
-        setIsTranslateDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  // Google Translate Widget Initialization
-  useEffect(() => {
-    const addGoogleTranslateScript = () => {
-      if (!document.getElementById("google-translate-script")) {
-        const script = document.createElement("script");
-        script.id = "google-translate-script";
-        script.type = "text/javascript";
-        script.src =
-          "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-        script.async = true;
-        document.body.appendChild(script);
-
-        window.googleTranslateElementInit = () => {
-          console.log("Google Translate global init callback fired.");
-          new window.google.translate.TranslateElement(
-            {
-              pageLanguage: "en",
-              layout:
-                window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-              autoDisplay: false,
-            },
-            "google_translate_element" // Targeting the HIDDEN div
-          );
-          setIsGoogleTranslateLoaded(true);
-          console.log("Google Translate widget initialized and flag set.");
-        };
-      } else {
-        console.log("Google Translate script already exists.");
-        // If script is already there, check if the widget is already initialized
-        if (
-          window.google &&
-          window.google.translate &&
-          document.querySelector(".goog-te-combo")
-        ) {
-          setIsGoogleTranslateLoaded(true);
-          console.log("Google Translate widget found already initialized.");
-        }
-      }
-    };
-
-    addGoogleTranslateScript();
-  }, []);
-
-  // Function to programmatically change the language via Google Translate
-  const changeLanguage = useCallback(
-    (langCode, retryCount = 0) => {
-      console.log(
-        `Attempting to change language to: ${langCode}, Retry: ${retryCount}`
-      );
-      const MAX_RETRIES = 10; // Increased retries
-      const RETRY_DELAY_MS = 200; // Increased delay
-
-      const googleBar = document.querySelector(".goog-te-combo");
-
-      if (
-        isGoogleTranslateLoaded &&
-        googleBar &&
-        googleBar.options.length > 0
-      ) {
-        console.log("Google Translate select element found and loaded.");
-        googleBar.value = langCode;
-        googleBar.dispatchEvent(new Event("change"));
-        console.log(`Language successfully changed to: ${langCode}`);
-        setIsTranslateDropdownOpen(false); // Close dropdown after successful selection
-      } else if (retryCount < MAX_RETRIES) {
-        console.warn(
-          `Google Translate select element not ready (or options missing). Retrying in ${RETRY_DELAY_MS}ms...`
-        );
-        setTimeout(
-          () => changeLanguage(langCode, retryCount + 1),
-          RETRY_DELAY_MS
-        );
-      } else {
-        console.error(
-          `Failed to change language to ${langCode} after ${MAX_RETRIES} retries. Widget not responsive.`
-        );
-        // Optionally show a user-facing error message here
-      }
-    },
-    [isGoogleTranslateLoaded]
-  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -209,12 +52,12 @@ export default function Navbar() {
       {/* Navbar */}
       <nav
         className={`fixed top-0 w-full z-50 px-4 py-3 sm:px-6 transition-all duration-300 flex items-center justify-between font-montserrat text-white
-        ${
-          scrolled
-            ? "bg-gray-900/80 backdrop-blur-md shadow-lg"
-            : "bg-transparent"
-        }
-        ${hidden ? "-translate-y-full" : "translate-y-0"}`}
+          ${
+            scrolled
+              ? "bg-gray-900/80 backdrop-blur-md shadow-lg"
+              : "bg-transparent"
+          }
+          ${hidden ? "-translate-y-full" : "translate-y-0"}`}
       >
         <Link to="/" className="flex-shrink-0">
           <img
@@ -260,47 +103,8 @@ export default function Navbar() {
           </li>
         </ul>
 
-        {/* Desktop Auth and Translate */}
+        {/* Desktop Auth */}
         <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
-          {/* Google Translate Dropdown */}
-          <div className="relative" ref={translateRef}>
-            <button
-              onClick={toggleTranslateDropdown}
-              className="flex items-center gap-1 px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition-colors duration-200 text-base"
-              aria-haspopup="true"
-              aria-expanded={isTranslateDropdownOpen ? "true" : "false"}
-            >
-              <Globe size={18} /> Translate{" "}
-              <ChevronDown
-                size={18}
-                className={`transition-transform duration-200 ${
-                  isTranslateDropdownOpen ? "rotate-180" : "rotate-0"
-                }`}
-              />
-            </button>
-            {isTranslateDropdownOpen && (
-              <div
-                className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto custom-scroll"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Critical: The hidden div for Google Translate widget. Must be present. */}
-                <div
-                  id="google_translate_element"
-                  style={{ display: "none" }} // Use display:none for clean hiding
-                />
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => changeLanguage(lang.code)}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white transition-colors duration-150"
-                  >
-                    {lang.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
           {!user ? (
             <Link
               to="/sign-in"
@@ -454,47 +258,7 @@ export default function Navbar() {
             </Link>
           </li>
 
-          {/* Mobile Google Translate Dropdown */}
-          <li className="relative">
-            <button
-              onClick={toggleTranslateDropdown}
-              className="flex items-center justify-between w-full gap-3 py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-left"
-            >
-              <div className="flex items-center gap-3">
-                <Globe size={24} className="text-cyan-400" /> Translate
-              </div>
-              <ChevronDown
-                size={20}
-                className={`transition-transform duration-200 ${
-                  isTranslateDropdownOpen ? "rotate-180" : "rotate-0"
-                }`}
-              />
-            </button>
-            {isTranslateDropdownOpen && (
-              <div
-                className="mt-2 w-full bg-gray-800 rounded-md shadow-xl overflow-hidden z-50 max-h-52 overflow-y-auto custom-scroll"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Critical: The hidden div for Google Translate widget. Must be present. */}
-                <div
-                  id="google_translate_element_mobile"
-                  style={{ display: "none" }} // Use display:none for clean hiding
-                />
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      changeLanguage(lang.code);
-                      closeMobileMenu();
-                    }}
-                    className="block w-full text-left px-6 py-2 text-base text-gray-200 hover:bg-gray-700 hover:text-white transition-colors duration-150"
-                  >
-                    {lang.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </li>
+          {/* Removed Google Translate Widget for Mobile Menu */}
 
           {!user ? (
             <li>

@@ -8,6 +8,7 @@ import {
 import moment from "moment";
 import AdminLayout from "./AdminLayout";
 import { DollarSign, Users, CheckCircle, Wallet } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AdminInvestmentsDashboard = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,13 @@ const AdminInvestmentsDashboard = () => {
     dispatch(fetchAdminInvestments(filters));
   }, [dispatch, filters]);
 
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
   // Handle opening the complete confirmation modal
   const handleCompleteClick = (investment) => {
     setInvestmentToComplete(investment);

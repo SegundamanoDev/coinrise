@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link, useNavigate } from "react-router-dom"; // Import Link for navigation
 import {
   fetchTransactions,
   updateTransactionStatus,
@@ -75,6 +75,14 @@ const AdminTransactions = () => {
     // When the component mounts, fetch all transactions for the admin view.
     dispatch(fetchTransactions());
   }, [dispatch]);
+
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const openModal = (txn, action) => {
     setSelectedTx(txn);

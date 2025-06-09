@@ -28,7 +28,7 @@ const faqs = {
     {
       question: "What is the minimum deposit amount?",
       answer:
-        "The minimum deposit amount required to start investing with us is $950. This allows us to ensure meaningful participation in our trading strategies.",
+        "The minimum deposit amount required to start investing with us is $250. This allows us to ensure meaningful participation in our trading strategies.",
     },
   ],
   Payment: [

@@ -41,29 +41,12 @@ const features = [
     description:
       "Benefit from strategically managed investments designed to deliver impressive and consistent returns, helping your wealth grow.",
   },
-  {
-    icon: <Award />, // Changed to Award for 'regulated' feel, aligns with a badge/award
-    title: "Globally Regulated & Insured", // More formal, less direct claim
-    description:
-      "Operating under robust global regulatory frameworks, we offer an insured investment environment for your peace of mind.",
-  },
+
   {
     icon: <Users />,
     title: "Rewarding Referral Program",
     description:
       "Expand your network and earn. Our generous referral program allows you to benefit by inviting others to join our community.",
-  },
-  {
-    icon: <BookOpen />,
-    title: "Comprehensive Educational Resources",
-    description:
-      "Empower your trading journey with extensive tutorials, mentorship programs, and advanced strategies from our expert guides.",
-  },
-  {
-    icon: <LineChart />,
-    title: "Exclusive Trading Advantages",
-    description:
-      "Unlock special benefits like cashback and other unique advantages designed to enhance your trading comfort and profitability.",
   },
 ];
 

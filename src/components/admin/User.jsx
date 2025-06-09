@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   fetchUsers,
   deleteUser,
@@ -37,6 +37,7 @@ const formatMoney = (amount, currency = "USD") => {
 
 const Users = () => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const { users, loading, error, statusMessage } = useSelector(
     (state) => state.users
   );
@@ -50,6 +51,8 @@ const Users = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUserToDelete, setSelectedUserToDelete] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
@@ -61,6 +64,11 @@ const Users = () => {
     }
   }, [statusMessage, dispatch]);
 
+  useEffect(() => {
+    if (user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
   const openTopupModal = (userId) => {
     setTopupUserId(userId);
     setTopupAmount(""); // Clear previous amount

@@ -9,6 +9,7 @@ import depositReducer from "../features/deposit/deposit";
 import transactionsReducer from "../features/transaction/transaction";
 import withdrawalsReducer from "../features/withdraw/withdraw";
 import investmentPlansReducer from "../features/investmentPlan/investmentPlan";
+import contactReducer from "../features/contact/contact";
 export const store = configureStore({
   reducer: {
     admin: adminReducer,
@@ -21,5 +22,6 @@ export const store = configureStore({
     transaction: transactionsReducer,
     withdraw: withdrawalsReducer,
     investmentPlan: investmentPlansReducer,
+    contact: contactReducer,
   },
 });

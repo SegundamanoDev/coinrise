@@ -731,7 +731,7 @@ const DashboardLayout = () => {
             </div>
           </div>
           {/* Trust Banners & Last Login Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div
               className={`p-4 rounded-xl shadow-md flex items-center justify-center gap-2 border
               ${
@@ -763,7 +763,7 @@ const DashboardLayout = () => {
             </div>
           </div>
           {/* Grid Layout for Main Widgets */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Column 1 (e.g., Chart, Stats) */}
             <div className="lg:col-span-2 space-y-6">
               {/* Stat Cards */}
@@ -860,7 +860,7 @@ const DashboardLayout = () => {
             </div>
 
             {/* Column 2 (e.g., P&L, Trending Coins, News) */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="flex space-y-6">
               {/* Trending Coins Card */}
               <div
                 className={`p-6 rounded-2xl shadow-lg border

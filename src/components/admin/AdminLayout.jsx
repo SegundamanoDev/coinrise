@@ -11,7 +11,7 @@ const AdminLayout = ({ children }) => {
     { name: "Users", path: "/admin/users" },
     { name: "Investments", path: "/admin/investments" },
     { name: "Transactions", path: "/admin/transactions" },
-    { name: "Settings", path: "/admin/settings" },
+    { name: "Create Plan", path: "/admin/create-investmentplan" },
     { name: "Back to Site", path: "/" },
   ];
 

@@ -1,28 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Pagination, Autoplay } from "swiper/modules"; // Import Autoplay for continuous slide
+import { Pagination, Autoplay } from "swiper/modules";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Quote, Send, User, Mail, MessageSquare } from "lucide-react"; // Lucide icons for quotes and form
+import { Quote, Send, User, Mail, MessageSquare, Loader2 } from "lucide-react"; // Import Loader2 for submit button
+import { useDispatch, useSelector } from "react-redux"; // Import Redux hooks
+import { toast } from "react-toastify"; // Assuming react-toastify is configured
+
+// Import the async thunk and action from your contact slice
+import {
+  sendContactMessage,
+  clearContactStatus,
+} from "../features/contact/contact";
 
 const testimonials = [
   {
     name: "Greg Greenwood",
     country: "USA",
     flag: "🇺🇸",
-    image:
-      "https://images.unsplash.com/photo-1506748686213-1e8e99c9f6d7?auto=format&fit=crop&q=80&w=100&h=100", // Adjusted for better cropping
+    image: "images/1749460915462.jpg",
     feedback:
       "It was my first time investing in crypto and forex. I was a bit scared, but thanks to the excellent customer support, I understood everything perfectly. I just received my payout today and I am very happy! I will not only continue investing but will also refer my friends. Thank you.",
   },
   {
-    name: "Emily Clark",
+    name: "Mason Clark",
     country: "Canada",
     flag: "🇨🇦",
-    image:
-      "https://images.unsplash.com/photo-1594851328428-c7b0cce72b7e?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749461202076.jpg",
     feedback:
       "I've been trading forex for 3 years, and in all my experience, I've never found a platform that makes it so simple and easy for everyone to join. I totally recommend it to anyone out there looking for a way to make passive income.",
   },
@@ -30,17 +36,15 @@ const testimonials = [
     name: "Michael Smith",
     country: "UK",
     flag: "🇬🇧",
-    image:
-      "https://images.unsplash.com/photo-1569732199-6a7046d5994a?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749461004081.jpg",
     feedback:
       "I never believed in online investment after a friend was scammed. But then I was convinced to give TrustVest a trial, and to my greatest surprise, I got my payouts with no stress. Thank you for your openness!",
   },
   {
-    name: "Sophia Johnson",
+    name: "Chris Johnson",
     country: "Australia",
     flag: "🇦🇺",
-    image:
-      "https://images.unsplash.com/photo-1512561251284-d017568dc5c7?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749461138611.jpg",
     feedback:
       "I let TrustVest manage my trading because they know what they are doing, and the returns are great. I just walk to the bank with a big smile across my face every Friday. TrustVest deserves my full endorsement.",
   },
@@ -48,8 +52,7 @@ const testimonials = [
     name: "Lucas White",
     country: "Germany",
     flag: "🇩🇪",
-    image:
-      "https://images.unsplash.com/photo-1606287653512-ef55a8285d65?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749461085975.jpg",
     feedback:
       "Overall, one of the easiest platforms to use. I recommend it to anyone. Awesome broker, great withdrawals, and the Customer Support is second to none! Fair, caring, knowledgeable, and quick to respond. Been here about a year, and support staff is patient and respectful... Love these guys!",
   },
@@ -57,8 +60,7 @@ const testimonials = [
     name: "Olivia Brown",
     country: "New Zealand",
     flag: "🇳🇿",
-    image:
-      "https://images.unsplash.com/photo-1516835031164-d51e77dbff8e?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749459185922.jpg",
     feedback:
       "I am having the best experience using TrustVest. I like the concept behind the investments. The only broker that helps you to trade and earn money, I would recommend this platform for beginners.",
   },
@@ -66,8 +68,7 @@ const testimonials = [
     name: "Ethan Wilson",
     country: "USA",
     flag: "🇺🇸",
-    image:
-      "https://images.unsplash.com/photo-1491295152030-3be5be945c73?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749460874265.jpg",
     feedback:
       "TrustVest has a very friendly user-interface, which helps you see your trade progress and open/close trades all at once. The copy feature, when used, can add to generous passive income. I would recommend TrustVest to all.",
   },
@@ -75,8 +76,7 @@ const testimonials = [
     name: "Ava Taylor",
     country: "Canada",
     flag: "🇨🇦",
-    image:
-      "https://images.unsplash.com/photo-1583403352208-08d0e1bdb5be?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749460535123.jpg",
     feedback:
       "I trust TrustVest Fx for all my trades. They offer some of the best investment opportunities in the market.",
   },
@@ -84,8 +84,7 @@ const testimonials = [
     name: "James Harris",
     country: "UK",
     flag: "🇬🇧",
-    image:
-      "https://images.unsplash.com/photo-1502922057084-31a1380fd8a0?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749460798237.jpg",
     feedback:
       "Great returns on my investments with TrustVest Fx! The platform is user-friendly, and withdrawals are quick.",
   },
@@ -93,8 +92,7 @@ const testimonials = [
     name: "Charlotte Martinez",
     country: "Spain",
     flag: "🇪🇸",
-    image:
-      "https://images.unsplash.com/photo-1587758926704-57365c6bc54f?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749459328559.jpg",
     feedback:
       "I love how easy it is to trade with TrustVest Fx. The market insights are incredibly helpful for making decisions.",
   },
@@ -102,8 +100,7 @@ const testimonials = [
     name: "Benjamin Lewis",
     country: "USA",
     flag: "🇺🇸",
-    image:
-      "https://images.unsplash.com/photo-1518711770430-87bb1a7f4f5f?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749460677455.jpg",
     feedback:
       "Hello friends, TrustVest is the only broker I can trust... best support team ever!",
   },
@@ -111,8 +108,7 @@ const testimonials = [
     name: "Mia Robinson",
     country: "Canada",
     flag: "🇨🇦",
-    image:
-      "https://images.unsplash.com/photo-1524748832474-d63f6749da04?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749459308527.jpg",
     feedback:
       "Since starting with TrustVest Fx, my portfolio has grown steadily. I’m more confident with my investments.",
   },
@@ -120,8 +116,7 @@ const testimonials = [
     name: "Daniel Lee",
     country: "Australia",
     flag: "🇦🇺",
-    image:
-      "https://images.unsplash.com/photo-1600185059241-b29a30e9a315?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749460697252.jpg",
     feedback:
       "Fantastic trading platform with a lot of tools to help you succeed. TrustVest Fx has been amazing!",
   },
@@ -129,8 +124,7 @@ const testimonials = [
     name: "Amelia Walker",
     country: "UK",
     flag: "🇬🇧",
-    image:
-      "https://images.unsplash.com/photo-1572495921167-cb3a290a1b9c?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749459148113.jpg",
     feedback:
       "Highly satisfied with TrustVest Fx! I’ve seen incredible profits from my trades in a short amount of time.",
   },
@@ -138,8 +132,7 @@ const testimonials = [
     name: "Sebastian Young",
     country: "Germany",
     flag: "🇩🇪",
-    image:
-      "https://images.unsplash.com/photo-1572105221559-618d11095db6?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749461345735.jpg",
     feedback:
       "TrustVest Fx offers an intuitive platform that’s perfect for both new and experienced traders. Highly recommend!",
   },
@@ -147,8 +140,7 @@ const testimonials = [
     name: "Isla King",
     country: "New Zealand",
     flag: "🇳🇿",
-    image:
-      "https://images.unsplash.com/photo-1509382120716-10588a3b5f88?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749459125377.jpg",
     feedback:
       "I’ve learned so much since joining TrustVest Fx. Their tools and customer support have been exceptional.",
   },
@@ -156,8 +148,7 @@ const testimonials = [
     name: "Henry Scott",
     country: "USA",
     flag: "🇺🇸",
-    image:
-      "https://images.unsplash.com/photo-1552440152-c9702b6f02f0?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749460620915.jpg",
     feedback:
       "The tools and resources provided by TrustVest Fx have helped me stay on top of the market and make smart decisions.",
   },
@@ -165,8 +156,7 @@ const testimonials = [
     name: "Grace Adams",
     country: "Canada",
     flag: "🇨🇦",
-    image:
-      "https://images.unsplash.com/photo-1548098324-b84c37069cc6?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749459086791.jpg",
     feedback:
       "TrustVest Fx has given me the confidence to invest in the forex market. Their platform is secure and easy to use.",
   },
@@ -174,8 +164,7 @@ const testimonials = [
     name: "Samuel Carter",
     country: "Australia",
     flag: "🇦🇺",
-    image:
-      "https://images.unsplash.com/photo-1587614313213-f8c37fc4a33b?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "images/1749460611022.jpg",
     feedback:
       "I’ve made great returns on my trades with TrustVest Fx, and their support team is always ready to help.",
   },
@@ -183,23 +172,103 @@ const testimonials = [
     name: "Ella Thomas",
     country: "UK",
     flag: "🇬🇧",
-    image:
-      "https://images.unsplash.com/photo-1529209827745-c16fd65069c8?auto=format&fit=crop&q=80&w=100&h=100",
+    image: "/images/1749459029035.jpg",
     feedback:
       "I highly recommend TrustVest Fx for anyone looking to trade forex. The platform is reliable and easy to navigate.",
   },
 ];
 
 export default function TestimonialSlider() {
+  // Initialize AOS (Animate On Scroll) library
   useEffect(() => {
     AOS.init({ once: true, offset: 50, duration: 800 });
   }, []);
 
   const defaultImage = "https://placehold.co/100x100/334155/E2E8F0?text=User"; // Placeholder image
 
+  // Redux hooks for feedback form
+  const dispatch = useDispatch();
+  const { loading, success, error, statusMessage } = useSelector(
+    (state) => state.contact
+  );
+
+  // Local state for the feedback form
+  const [feedbackFormData, setFeedbackFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    subject: "New Feedback Submission", // Default subject for feedback
+  });
+  const [feedbackFormErrors, setFeedbackFormErrors] = useState({});
+
+  // Handler for feedback form input changes
+  const handleFeedbackChange = (e) => {
+    const { name, value } = e.target;
+    setFeedbackFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear the specific error for the field as the user types
+    if (feedbackFormErrors[name]) {
+      setFeedbackFormErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // Client-side validation for the feedback form
+  const validateFeedbackForm = () => {
+    let errors = {};
+    if (!feedbackFormData.name.trim()) errors.name = "Your Name is required.";
+    if (!feedbackFormData.email.trim()) {
+      errors.email = "Email Address is required.";
+    } else if (!/\S+@\S+\.\S+/.test(feedbackFormData.email)) {
+      errors.email = "Please enter a valid email address.";
+    }
+    if (!feedbackFormData.message.trim())
+      errors.message = "Feedback Message is required.";
+
+    setFeedbackFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Handler for feedback form submission
+  const handleFeedbackSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validateFeedbackForm()) {
+      toast.error("Please correct the errors in the feedback form.");
+      return;
+    }
+
+    // Dispatch the sendContactMessage async thunk with feedback form data
+    dispatch(sendContactMessage(feedbackFormData));
+  };
+
+  // useEffect to react to Redux state changes for the feedback form
+  useEffect(() => {
+    if (success) {
+      toast.success("Thank you for your feedback! It has been sent.");
+      // Clear the feedback form fields upon successful submission
+      setFeedbackFormData({
+        name: "",
+        email: "",
+        message: "",
+        subject: "",
+      });
+      setFeedbackFormErrors({}); // Clear any form errors
+
+      dispatch(clearContactStatus()); // Clear Redux status after displaying toast
+    }
+
+    if (error) {
+      toast.error("Failed to submit feedback. Please try again.");
+
+      dispatch(clearContactStatus());
+    }
+  }, [success, error, statusMessage, dispatch]);
+
   return (
-    <div className="bg-gray-950 text-white py-20 px-4 font-montserrat relative overflow-hidden">
-      {/* Background Gradients/Shapes for visual interest */}
+    <div className="bg-gray-950 text-white font-montserrat relative overflow-hidden">
+      {/* Background Gradients/Shapes */}
       <div
         className="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"
         style={{ animationDelay: "-2s" }}
@@ -211,7 +280,7 @@ export default function TestimonialSlider() {
 
       <h2
         className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 text-center relative z-10
-                   before:content-[''] before:absolute before:bottom-[-8px] before:left-1/2 before:-translate-x-1/2 before:w-36 before:h-1.5 before:bg-gradient-to-r before:from-blue-500 before:to-purple-600 before:rounded-full"
+                    before:content-[''] before:absolute before:bottom-[-8px] before:left-1/2 before:-translate-x-1/2 before:w-36 before:h-1.5 before:bg-gradient-to-r before:from-blue-500 before:to-purple-600 before:rounded-full"
         data-aos="fade-up"
         data-aos-duration="1000"
       >
@@ -236,20 +305,19 @@ export default function TestimonialSlider() {
           className="w-full"
         >
           <Swiper
-            spaceBetween={30} // Increased space between slides
+            spaceBetween={30}
             slidesPerView={1}
             pagination={{ clickable: true }}
-            modules={[Pagination, Autoplay]} // Added Autoplay module
+            modules={[Pagination, Autoplay]}
             autoplay={{
-              delay: 5000, // 5 seconds delay
-              disableOnInteraction: false, // Keep autoplaying even after user interaction
+              delay: 5000,
+              disableOnInteraction: false,
             }}
-            className="w-full h-full pb-12" // Added padding-bottom for pagination dots
+            className="w-full h-full pb-12"
           >
             {testimonials.map((user, index) => (
               <SwiperSlide key={index} className="!h-auto">
                 {" "}
-                {/* !h-auto to allow content to dictate height */}
                 <div className="bg-gray-900 rounded-2xl shadow-xl p-8 text-center flex flex-col items-center justify-between h-full border border-gray-800 hover:border-blue-500 transition-all duration-300 transform hover:scale-[1.01]">
                   <img
                     src={user.image}
@@ -258,7 +326,7 @@ export default function TestimonialSlider() {
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = defaultImage;
-                    }} // Fallback image
+                    }}
                   />
                   <h3 className="text-2xl font-semibold text-white mb-2">
                     {user.name}
@@ -322,11 +390,15 @@ export default function TestimonialSlider() {
           <h3 className="text-3xl font-bold text-white mb-8 text-center">
             Send Us Your Feedback
           </h3>
-          <form className="space-y-6 flex-grow flex flex-col justify-between">
+          <form
+            onSubmit={handleFeedbackSubmit}
+            className="space-y-6 flex-grow flex flex-col justify-between"
+          >
+            {/* Name Input Field */}
             <div>
               <label
                 htmlFor="feedback-name"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-gray-300 mb-2 sr-only"
               >
                 Name
               </label>
@@ -338,15 +410,30 @@ export default function TestimonialSlider() {
                 <input
                   type="text"
                   id="feedback-name"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  name="name" // Important: matches formData key
+                  required
+                  className={`w-full pl-10 pr-4 py-3 bg-gray-800 border ${
+                    feedbackFormErrors.name
+                      ? "border-red-500"
+                      : "border-gray-700"
+                  } rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                   placeholder="Your Full Name"
+                  value={feedbackFormData.name}
+                  onChange={handleFeedbackChange}
                 />
+                {feedbackFormErrors.name && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {feedbackFormErrors.name}
+                  </p>
+                )}
               </div>
             </div>
+
+            {/* Email Input Field */}
             <div>
               <label
                 htmlFor="feedback-email"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-gray-300 mb-2 sr-only"
               >
                 Email
               </label>
@@ -358,15 +445,30 @@ export default function TestimonialSlider() {
                 <input
                   type="email"
                   id="feedback-email"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  name="email" // Important: matches formData key
+                  required
+                  className={`w-full pl-10 pr-4 py-3 bg-gray-800 border ${
+                    feedbackFormErrors.email
+                      ? "border-red-500"
+                      : "border-gray-700"
+                  } rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                   placeholder="your@email.com"
+                  value={feedbackFormData.email}
+                  onChange={handleFeedbackChange}
                 />
+                {feedbackFormErrors.email && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {feedbackFormErrors.email}
+                  </p>
+                )}
               </div>
             </div>
+
+            {/* Message Textarea */}
             <div>
               <label
                 htmlFor="feedback-message"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-gray-300 mb-2 sr-only"
               >
                 Message
               </label>
@@ -377,17 +479,36 @@ export default function TestimonialSlider() {
                 />
                 <textarea
                   id="feedback-message"
+                  name="message" // Important: matches formData key
                   rows={5}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-y"
+                  required
+                  className={`w-full pl-10 pr-4 py-3 bg-gray-800 border ${
+                    feedbackFormErrors.message
+                      ? "border-red-500"
+                      : "border-gray-700"
+                  } rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-y`}
                   placeholder="Share your experience..."
-                />
+                  value={feedbackFormData.message}
+                  onChange={handleFeedbackChange}
+                ></textarea>
+                {feedbackFormErrors.message && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {feedbackFormErrors.message}
+                  </p>
+                )}
               </div>
             </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
-              className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+              disabled={loading} // Disable button when Redux is loading
+              className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Send size={20} /> Submit Feedback
+              {loading && <Loader2 className="animate-spin h-5 w-5 mr-2" />}
+              {!loading ? <Send size={20} /> : null}{" "}
+              {/* Send icon when not loading */}
+              {loading ? "Submitting..." : "Submit Feedback"}
             </button>
           </form>
         </div>

@@ -16,13 +16,15 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // Destructure relevant state from Redux auth slice
-  const { loading, error, statusMessage, token } = useSelector(
+  const { user, loading, error, statusMessage, token } = useSelector(
     (state) => state.auth
   );
 
   // Redirect to dashboard on successful sign-in (token presence)
   useEffect(() => {
-    if (token) {
+    if (token && user && user.role === "admin") {
+      navigate("/admin");
+    } else if (token) {
       navigate("/dashboard");
     }
   }, [token, navigate]);

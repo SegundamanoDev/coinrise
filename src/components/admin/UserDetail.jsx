@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserById,
@@ -103,7 +103,13 @@ const UserDetail = () => {
       dispatch(fetchUserById(id));
     }
   }, [id, dispatch]);
-
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
   useEffect(() => {
     if (selectedUser) {
       setFormData({
