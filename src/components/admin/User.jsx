@@ -6,7 +6,9 @@ import {
   deleteUser,
   topupUserProfit,
   clearStatusMessage,
-} from "../../features/users/userSlice"; // Assuming this path is correct
+  toggleUserBlockStatus, // Import the new async thunk
+  resetBlockUserStatus, // Import the new reset action
+} from "../../features/users/userSlice";
 import { toast } from "react-toastify";
 import {
   AlertTriangle,
@@ -16,10 +18,12 @@ import {
   Info,
   Loader2,
   XCircle,
-  ShieldCheck, // For approved KYC
-  Clock, // For pending KYC
-  ShieldAlert, // For unverified/rejected KYC
-  FileText, // For KYC actions
+  ShieldCheck,
+  Clock,
+  ShieldAlert,
+  FileText,
+  Lock, // Icon for Block
+  Unlock, // Icon for Unblock
 } from "lucide-react";
 
 const formatMoney = (amount, currency = "USD") => {
@@ -37,10 +41,17 @@ const formatMoney = (amount, currency = "USD") => {
 
 const Users = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Selectors for Redux state
   const { user } = useSelector((state) => state.auth);
-  const { users, loading, error, statusMessage } = useSelector(
-    (state) => state.users
-  );
+  const {
+    users,
+    loading,
+    error,
+    statusMessage,
+    blockUserStatus, // NEW: Select blockUserStatus
+  } = useSelector((state) => state.users);
 
   // State for top-up modal
   const [isTopupModalOpen, setIsTopupModalOpen] = useState(false);
@@ -51,24 +62,45 @@ const Users = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUserToDelete, setSelectedUserToDelete] = useState(null);
 
-  const navigate = useNavigate();
+  // NEW: State for block/unblock confirmation modal
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
+  const [selectedUserToToggleBlock, setSelectedUserToToggleBlock] =
+    useState(null);
 
+  // Effect to fetch all users on component mount
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
 
+  // Effect to display general status messages (e.g., from topup, delete)
   useEffect(() => {
     if (statusMessage) {
       toast.success(statusMessage);
-      dispatch(clearStatusMessage());
+      dispatch(clearStatusMessage()); // Clear message after displaying
     }
   }, [statusMessage, dispatch]);
 
+  // NEW: Effect to handle block/unblock specific status messages
   useEffect(() => {
-    if (user.role !== "admin") {
-      navigate("/dashboard");
+    if (blockUserStatus.success) {
+      toast.success(blockUserStatus.message);
+      dispatch(resetBlockUserStatus()); // Reset status after displaying toast
+      dispatch(fetchUsers()); // Re-fetch users to ensure data consistency
     }
-  }, [navigate]);
+    if (blockUserStatus.error) {
+      toast.error(blockUserStatus.message);
+      dispatch(resetBlockUserStatus()); // Reset status after displaying toast
+    }
+  }, [blockUserStatus, dispatch]);
+
+  // Effect for admin role check (client-side protection, server-side is crucial too)
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      navigate("/dashboard"); // Redirect if not admin
+    }
+  }, [user, navigate]);
+
+  // --- Top-up Modal Functions ---
   const openTopupModal = (userId) => {
     setTopupUserId(userId);
     setTopupAmount(""); // Clear previous amount
@@ -90,6 +122,7 @@ const Users = () => {
     closeTopupModal();
   };
 
+  // --- Delete Modal Functions ---
   const confirmDeleteUser = () => {
     if (!selectedUserToDelete) return;
     dispatch(deleteUser(selectedUserToDelete._id));
@@ -97,7 +130,28 @@ const Users = () => {
     setSelectedUserToDelete(null);
   };
 
-  // Helper function to render KYC status in table
+  // --- NEW: Block/Unblock Modal Functions ---
+  const openBlockModal = (user) => {
+    setSelectedUserToToggleBlock(user);
+    setIsBlockModalOpen(true);
+  };
+
+  const closeBlockModal = () => {
+    setIsBlockModalOpen(false);
+    setSelectedUserToToggleBlock(null);
+  };
+
+  const confirmToggleBlock = () => {
+    if (!selectedUserToToggleBlock) return;
+    const { _id: userId, isBlocked } = selectedUserToToggleBlock;
+    const actionType = isBlocked ? "unblock" : "block"; // Determine action based on current status
+
+    // Dispatch the toggleUserBlockStatus async thunk
+    dispatch(toggleUserBlockStatus({ id: userId, action: actionType }));
+    closeBlockModal();
+  };
+
+  // Helper function to render KYC status badge
   const renderKycStatusBadge = (kycStatus) => {
     let text = "";
     let colorClass = "";
@@ -195,11 +249,9 @@ const Users = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Account Status
                 </th>
-                {/* NEW: Last Seen At Column Header */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Last Seen
                 </th>
-                {/* END NEW: Last Seen At Column Header */}
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
@@ -240,14 +292,42 @@ const Users = () => {
                       </span>
                     )}
                   </td>
-                  {/* NEW: Last Seen At Data Cell */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                     {user.lastSeenAt
                       ? new Date(user.lastSeenAt).toLocaleString()
                       : "N/A"}
                   </td>
-                  {/* END NEW: Last Seen At Data Cell */}
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
+                    {/* Block/Unblock Button */}
+                    <button
+                      onClick={() => openBlockModal(user)}
+                      className={`inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white transition duration-150 ease-in-out ${
+                        user.isBlocked
+                          ? "bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500" // Green for Unblock
+                          : "bg-red-600 hover:bg-red-700 focus:ring-red-500" // Red for Block
+                      } focus:outline-none focus:ring-2 focus:ring-offset-2`}
+                      title={user.isBlocked ? "Unblock User" : "Block User"}
+                      disabled={
+                        blockUserStatus.loading &&
+                        selectedUserToToggleBlock?._id === user._id
+                      } // Disable if this specific user is being processed
+                    >
+                      {blockUserStatus.loading &&
+                      selectedUserToToggleBlock?._id === user._id ? (
+                        <Loader2 className="animate-spin w-4 h-4 mr-1" />
+                      ) : user.isBlocked ? (
+                        <Unlock size={16} className="mr-1" />
+                      ) : (
+                        <Lock size={16} className="mr-1" />
+                      )}
+                      {blockUserStatus.loading &&
+                      selectedUserToToggleBlock?._id === user._id
+                        ? "Processing..."
+                        : user.isBlocked
+                        ? "Unblock"
+                        : "Block"}
+                    </button>
+
                     <button
                       onClick={() => openTopupModal(user._id)}
                       className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
@@ -255,7 +335,6 @@ const Users = () => {
                     >
                       <PlusCircle size={16} className="mr-1" /> Top Up
                     </button>
-                    {/* Link to Edit User Details (existing) */}
                     <Link
                       to={`/admin/users/${user._id}`}
                       className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
@@ -263,7 +342,6 @@ const Users = () => {
                     >
                       <Edit size={16} className="mr-1" /> Edit
                     </Link>
-                    {/* NEW Link to View KYC Details */}
                     <Link
                       to={`/admin/users/kyc-details/${user._id}`}
                       className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out"
@@ -271,7 +349,6 @@ const Users = () => {
                     >
                       <FileText size={16} className="mr-1" /> View KYC
                     </Link>
-                    {/* End NEW Link */}
                     <button
                       onClick={() => {
                         setSelectedUserToDelete(user);
@@ -359,6 +436,68 @@ const Users = () => {
                 className="px-5 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition duration-200 font-semibold"
               >
                 Delete User
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Block/Unblock Confirmation Modal */}
+      {isBlockModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center p-4">
+          <div className="bg-gray-900 rounded-xl shadow-lg p-6 w-full max-w-sm transform scale-in-center border border-blue-500">
+            <div className="flex items-center mb-4">
+              {selectedUserToToggleBlock?.isBlocked ? (
+                <Unlock className="w-7 h-7 text-emerald-500 mr-3" />
+              ) : (
+                <Lock className="w-7 h-7 text-red-500 mr-3" />
+              )}
+              <h3 className="text-xl font-semibold text-white">
+                {selectedUserToToggleBlock?.isBlocked
+                  ? "Confirm Unblock"
+                  : "Confirm Block"}{" "}
+                User
+              </h3>
+            </div>
+            <p className="mb-6 text-gray-300">
+              Are you sure you want to{" "}
+              <strong
+                className={`font-semibold ${
+                  selectedUserToToggleBlock?.isBlocked
+                    ? "text-emerald-400"
+                    : "text-red-400"
+                }`}
+              >
+                {selectedUserToToggleBlock?.isBlocked ? "unblock" : "block"}
+              </strong>{" "}
+              <strong className="text-blue-400">
+                {selectedUserToToggleBlock?.fullName}
+              </strong>
+              ?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={closeBlockModal}
+                className="px-5 py-2 rounded-md bg-gray-700 text-white hover:bg-gray-600 transition duration-200 font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmToggleBlock}
+                className={`px-5 py-2 rounded-md text-white transition duration-200 font-semibold ${
+                  selectedUserToToggleBlock?.isBlocked
+                    ? "bg-emerald-600 hover:bg-emerald-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
+                disabled={blockUserStatus.loading} // Disable confirm button during processing
+              >
+                {blockUserStatus.loading ? (
+                  <Loader2 className="animate-spin w-4 h-4 mr-1" />
+                ) : selectedUserToToggleBlock?.isBlocked ? (
+                  "Unblock"
+                ) : (
+                  "Block"
+                )}
               </button>
             </div>
           </div>

@@ -79,7 +79,7 @@ export const deleteUser = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      return id;
+      return id; // Return the ID of the deleted user to filter it out
     } catch (err) {
       return thunkAPI.rejectWithValue(
         err.response?.data?.message || "Failed to delete user"
@@ -103,7 +103,7 @@ export const topupUserProfit = createAsyncThunk(
           },
         }
       );
-      return res.data.user;
+      return res.data.user; // Assuming backend returns the updated user object
     } catch (err) {
       return thunkAPI.rejectWithValue(
         err.response?.data?.message || "Failed to top up profit"
@@ -181,21 +181,18 @@ export const updateProfile = createAsyncThunk(
 );
 
 // 9. Submit KYC Documents (from user frontend)
-// This thunk expects FormData, which is necessary for file uploads
 export const submitKYCDocuments = createAsyncThunk(
   "users/submitKYCDocuments",
   async (formData, thunkAPI) => {
     try {
       const token = getToken();
       const res = await axios.post(`${API_URL}/users/kyc/submit`, formData, {
-        // Targeting the base /users POST route
         headers: {
           Authorization: `Bearer ${token}`,
-          // When sending FormData, browsers automatically set the Content-Type to multipart/form-data
+          // Axios automatically sets Content-Type to multipart/form-data for FormData
         },
       });
-      // The backend should return the updated user profile or a success message
-      return res.data;
+      return res.data; // Backend should return the updated user profile or a success message
     } catch (err) {
       return thunkAPI.rejectWithValue(
         err.response?.data?.message || "Failed to submit KYC documents."
@@ -248,39 +245,69 @@ export const uploadAvatar = createAsyncThunk(
   }
 );
 
+// 12. NEW: Toggle User Block Status (Admin action)
+export const toggleUserBlockStatus = createAsyncThunk(
+  "users/toggleBlockStatus",
+  async ({ id, action }, thunkAPI) => {
+    // action will be 'block' or 'unblock'
+    try {
+      const token = getToken();
+      // Use PATCH or PUT as it's an update to a user's status
+      const res = await axios.patch(
+        `${API_URL}/users/${id}/block-status`,
+        { action },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Backend should return the updated user object or a success message
+      return res.data; // Assuming it returns { message: "...", user: { ...updatedUser } }
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || `Failed to ${action} user.`
+      );
+    }
+  }
+);
+
 // =====================
 // Initial State
 // =====================
 
 const initialState = {
-  users: [], // Array for all users (Admin view)
-  selectedUser: null, // For viewing/editing a specific user by ID (Admin view)
-  profile: null, // For the currently logged-in user's profile
+  users: [],
+  selectedUser: null,
+  profile: null,
 
-  loading: false, // General loading indicator for main fetches (e.g., fetchProfile, fetchUsers)
-  error: null, // General error for main fetches
-  statusMessage: null, // General success/info message to display (e.g., in toasts)
+  loading: false,
+  error: null,
+  statusMessage: null,
 
-  // Specific status objects for various async operations
-  passwordStatus: { loading: false, success: null, error: null }, // For changePassword
-  adminUpdateUserStatus: { loading: false, success: null, error: null }, // For updateUser (Admin)
-  updateStatus: { loading: false, success: null, error: null }, // For updateProfile (User's own profile)
+  passwordStatus: { loading: false, success: null, error: null },
+  adminUpdateUserStatus: { loading: false, success: null, error: null },
+  updateStatus: { loading: false, success: null, error: null },
   kycSubmissionStatus: {
-    // For user submitting KYC documents
     loading: false,
-    success: null, // true on success, false on failure
+    success: null,
     error: null,
-    message: null, // specific success/error message
+    message: null,
   },
   adminKycUpdateStatus: {
-    // For admin updating a user's KYC status
     loading: false,
     success: null,
     error: null,
     message: null,
   },
   avatarUploadStatus: {
-    // For user uploading their profile picture
+    loading: false,
+    success: null,
+    error: null,
+    message: null,
+  },
+  // NEW: Status for block/unblock operations
+  blockUserStatus: {
     loading: false,
     success: null,
     error: null,
@@ -296,15 +323,12 @@ const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    // Reducer to clear the general status message
     clearStatusMessage: (state) => {
       state.statusMessage = null;
     },
-    // Reducer to clear the selected user from state (e.g., after leaving admin user edit page)
     clearSelectedUser: (state) => {
       state.selectedUser = null;
     },
-    // Reducers to reset specific operation statuses
     resetAdminUpdateUserStatus: (state) => {
       state.adminUpdateUserStatus = {
         loading: false,
@@ -342,6 +366,15 @@ const userSlice = createSlice({
         message: null,
       };
     },
+    // NEW: Reducer to reset blockUserStatus
+    resetBlockUserStatus: (state) => {
+      state.blockUserStatus = {
+        loading: false,
+        success: null,
+        error: null,
+        message: null,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -363,7 +396,7 @@ const userSlice = createSlice({
       .addCase(fetchUserById.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.selectedUser = null; // Clear previous selected user
+        state.selectedUser = null;
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
         state.loading = false;
@@ -383,8 +416,7 @@ const userSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         state.adminUpdateUserStatus.loading = false;
         state.adminUpdateUserStatus.success = true;
-        state.selectedUser = action.payload; // Update selected user with new data
-        // Also update the user in the main 'users' array if it exists
+        state.selectedUser = action.payload;
         const index = state.users.findIndex(
           (user) => user._id === action.payload._id
         );
@@ -407,7 +439,7 @@ const userSlice = createSlice({
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.loading = false;
         state.statusMessage = "User deleted successfully";
-        state.users = state.users.filter((user) => user._id !== action.payload); // Remove deleted user
+        state.users = state.users.filter((user) => user._id !== action.payload);
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;
@@ -421,7 +453,6 @@ const userSlice = createSlice({
       })
       .addCase(topupUserProfit.fulfilled, (state, action) => {
         state.loading = false;
-        // Update selected user and users array if a match is found
         if (
           state.selectedUser &&
           state.selectedUser._id === action.payload._id
@@ -458,13 +489,13 @@ const userSlice = createSlice({
       // --- updateProfile (Logged-in user's own profile) ---
       .addCase(updateProfile.pending, (state) => {
         state.updateStatus.loading = true;
-        state.updateStatus.success = null;
         state.updateStatus.error = null;
+        state.updateStatus.success = null;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.updateStatus.loading = false;
         state.updateStatus.success = true;
-        state.profile = action.payload; // Update profile with new data
+        state.profile = action.payload;
         state.statusMessage = "Profile updated successfully!";
       })
       .addCase(updateProfile.rejected, (state, action) => {
@@ -503,11 +534,10 @@ const userSlice = createSlice({
         state.kycSubmissionStatus.message =
           action.payload.message ||
           "KYC documents submitted successfully for review.";
-        // Update profile with the new kycStatus (should be 'pending' from backend)
         if (action.payload.user) {
           state.profile = action.payload.user;
         } else if (state.profile) {
-          state.profile.kycStatus = "pending"; // Fallback if backend doesn't send user object
+          state.profile.kycStatus = "pending";
         }
         state.statusMessage = state.kycSubmissionStatus.message;
       })
@@ -517,6 +547,7 @@ const userSlice = createSlice({
         state.kycSubmissionStatus.error = action.payload;
         state.kycSubmissionStatus.message =
           action.payload || "Failed to submit KYC documents.";
+        state.statusMessage = state.kycSubmissionStatus.message;
       })
 
       // --- updateUserKycStatus (Admin action) ---
@@ -531,24 +562,21 @@ const userSlice = createSlice({
         state.adminKycUpdateStatus.success = true;
         state.adminKycUpdateStatus.message = `KYC status updated to ${action.payload.kycStatus}.`;
 
-        // Update the 'users' array (for admin list views)
         state.users = state.users.map((user) =>
           user._id === action.payload._id
             ? { ...user, ...action.payload }
             : user
         );
-        // Update 'selectedUser' if the currently viewed user is the one updated
         if (
           state.selectedUser &&
           state.selectedUser._id === action.payload._id
         ) {
           state.selectedUser = { ...state.selectedUser, ...action.payload };
         }
-        // If the admin is updating their *own* profile, update the 'profile' state as well
         if (state.profile && state.profile._id === action.payload._id) {
           state.profile = { ...state.profile, ...action.payload };
         }
-        state.statusMessage = state.adminKycUpdateStatus.message; // Use general status message for toasts
+        state.statusMessage = state.adminKycUpdateStatus.message;
       })
       .addCase(updateUserKycStatus.rejected, (state, action) => {
         state.adminKycUpdateStatus.loading = false;
@@ -556,7 +584,7 @@ const userSlice = createSlice({
         state.adminKycUpdateStatus.error = action.payload;
         state.adminKycUpdateStatus.message =
           action.payload || "Failed to update KYC status.";
-        state.statusMessage = state.adminKycUpdateStatus.message; // Use general status message for toasts
+        state.statusMessage = state.adminKycUpdateStatus.message;
       })
 
       // --- uploadAvatar ---
@@ -571,11 +599,10 @@ const userSlice = createSlice({
         state.avatarUploadStatus.success = true;
         state.avatarUploadStatus.message =
           action.payload.message || "Profile picture updated!";
-        // Update the profile with the new avatar URL returned from the backend
         if (action.payload.user && action.payload.user.avatar) {
           state.profile.avatar = action.payload.user.avatar;
         }
-        state.statusMessage = state.avatarUploadStatus.message; // Use general status message for toast
+        state.statusMessage = state.avatarUploadStatus.message;
       })
       .addCase(uploadAvatar.rejected, (state, action) => {
         state.avatarUploadStatus.loading = false;
@@ -583,7 +610,47 @@ const userSlice = createSlice({
         state.avatarUploadStatus.error = action.payload;
         state.avatarUploadStatus.message =
           action.payload || "Failed to update profile picture.";
-        state.statusMessage = state.avatarUploadStatus.message; // Use general status message for toast
+        state.statusMessage = state.avatarUploadStatus.message;
+      })
+
+      // --- NEW: toggleUserBlockStatus (Admin action) ---
+      .addCase(toggleUserBlockStatus.pending, (state) => {
+        state.blockUserStatus.loading = true;
+        state.blockUserStatus.success = null;
+        state.blockUserStatus.error = null;
+        state.blockUserStatus.message = null;
+      })
+      .addCase(toggleUserBlockStatus.fulfilled, (state, action) => {
+        state.blockUserStatus.loading = false;
+        state.blockUserStatus.success = true;
+        // The payload is typically { message: "...", user: { ...updatedUser } }
+        state.blockUserStatus.message =
+          action.payload.message || "User status updated.";
+
+        // Update the specific user in the 'users' array
+        state.users = state.users.map((user) =>
+          user._id === action.payload.user._id
+            ? action.payload.user // Replace with the updated user object from backend
+            : user
+        );
+
+        // Update the 'selectedUser' if it's the one being toggled
+        if (
+          state.selectedUser &&
+          state.selectedUser._id === action.payload.user._id
+        ) {
+          state.selectedUser = action.payload.user;
+        }
+
+        state.statusMessage = state.blockUserStatus.message; // Use general status message for toasts
+      })
+      .addCase(toggleUserBlockStatus.rejected, (state, action) => {
+        state.blockUserStatus.loading = false;
+        state.blockUserStatus.success = false;
+        state.blockUserStatus.error = action.payload; // Error message from rejectWithValue
+        state.blockUserStatus.message =
+          action.payload || "Failed to toggle user status.";
+        state.statusMessage = state.blockUserStatus.message; // Use general status message for toasts
       });
   },
 });
@@ -601,6 +668,7 @@ export const {
   resetKYCSubmissionStatus,
   resetAdminKycUpdateStatus,
   resetAvatarUploadStatus,
+  resetBlockUserStatus, // NEW: Export the reset action for block status
 } = userSlice.actions;
 
 export default userSlice.reducer;

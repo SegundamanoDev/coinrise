@@ -63,6 +63,7 @@ const PrivateRoute = ({ children, roles }) => {
   }, [dispatch]);
   const { user, token } = useSelector((state) => state.auth);
   const { profile } = useSelector((state) => state.users);
+  console.log(profile)
   const location = useLocation();
 
   if (!token || !user) {
