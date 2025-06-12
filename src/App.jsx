@@ -14,10 +14,7 @@ import SignIn from "./components/SignIn";
 import DashboardLayout from "./components/Dashboard";
 import Transactions from "./components/Transaction";
 import Deposit from "./components/Deposit";
-import Profile from "./components/Profile"; // Note: You have Profile and ProfilePage, check which one is correct
-import Settings from "./components/Settings";
 import Withdraw from "./components/Withdraw";
-import ConfirmInvestment from "./components/ConfirmInvest";
 import SuccessModal from "./components/SuccMsg";
 import ActivityOverview from "./components/ActivityOverview";
 import StickySupportBar from "./components/SupportChat"; // Corrected component name to SupportChat
@@ -29,7 +26,7 @@ import UserDetail from "./components/admin/UserDetail";
 import AdminTransactions from "./components/admin/Transaction";
 import ScrollToTops from "./components/ScrollToTop";
 import { store } from "./redux/store";
-import { Provider, useSelector } from "react-redux"; // Keep useSelector
+import { Provider, useDispatch, useSelector } from "react-redux"; // Keep useSelector
 import LoadingSpinner from "./components/LoadingSpinner";
 import TermsAndConditions from "./components/TermsAndConditions";
 import PrivacyPolicy from "./components/PrivacyPolicy";
@@ -55,10 +52,17 @@ import PaymentPolicy from "./components/PaymentPolicy";
 import KYCSubmissionForm from "./components/KYCSubmissionForm";
 import AdminKycDetailPage from "./components/AdminKycDetailPage";
 import AdminTransactionDetail from "./components/admin/AdminTransactionDetail";
+import BlockedAccountPage from "./components/LockedAccountPage";
+import { fetchProfile } from "./features/users/userSlice";
 
 // PrivateRoute component to protect routes
 const PrivateRoute = ({ children, roles }) => {
-  const { user, token } = useSelector((state) => state.auth); // Access auth state from Redux
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+  const { user, token } = useSelector((state) => state.auth);
+  const { profile } = useSelector((state) => state.users);
   const location = useLocation();
 
   if (!token || !user) {
@@ -72,20 +76,12 @@ const PrivateRoute = ({ children, roles }) => {
     return <Navigate to="/dashboard" replace />;
   }
 
+  if (profile?.isBlocked) {
+    return <Navigate to="/account-blocked" replace />;
+  }
   return children;
 };
 
-const AdminRoutes = () => {
-  const { user, token } = useSelector((state) => state.auth);
-  const location = useLocation();
-
-  if (!token || !user) {
-    // Redirect to sign-in page if not authenticated
-    return <Navigate to="/sign-in" replace state={{ from: location }} />;
-  } else if (!token && !user.role === "admin") {
-    return <Navigate to="/dashboard" replace />;
-  }
-};
 const AppRoutes = () => {
   useEffect(() => {
     AOS.init({ once: true });
@@ -143,6 +139,7 @@ const AppRoutes = () => {
           <Route path="/aml-policy" element={<AMLPolicy />} />
           <Route path="/payment-policy" element={<PaymentPolicy />} />
           <Route path="/faq" element={<FAQSection />} />
+          <Route path="/account-blocked" element={<BlockedAccountPage />} />
           <Route path="/confirm-success" element={<SuccessModal />} />{" "}
           {/* Consider if this should be public or private */}
           {/* Authenticated User Routes */}
@@ -231,14 +228,6 @@ const AppRoutes = () => {
             element={
               <PrivateRoute>
                 <ActivityOverview />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/invest/confirm/:planId"
-            element={
-              <PrivateRoute>
-                <ConfirmInvestment />
               </PrivateRoute>
             }
           />

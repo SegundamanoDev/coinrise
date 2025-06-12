@@ -9,10 +9,9 @@ const InvestmentPlanSection = () => {
   const { plans, loading, error } = useSelector(
     (state) => state.investmentPlan
   );
-  console.log(plans);
 
   useEffect(() => {
-    dispatch(getAllPlans()); // Fetch plans when the component mounts
+    dispatch(getAllPlans());
   }, [dispatch]);
 
   return (
