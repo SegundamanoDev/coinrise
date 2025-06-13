@@ -8,9 +8,9 @@ import "slick-carousel/slick/slick-theme.css";
 const slides = [
   {
     image: "/images/file_00000000f2d0620a91ca2fb1d36a2755.png", // Original path
-    title: "Unlock Your Financial Future with AI",
+    title: "Maximize Your Returns: Smart Trading & Investment Solutions",
     description:
-      "Leverage cutting-edge artificial intelligence for smarter investments and optimized returns across diverse markets.",
+      "Navigate global markets and grow your capital with our intuitive trading platforms and diversified investment opportunities, designed for enhanced financial performance.",
   },
   {
     image: "/images/file_0000000019dc62468b0cf45585d91e12.png", // Original path

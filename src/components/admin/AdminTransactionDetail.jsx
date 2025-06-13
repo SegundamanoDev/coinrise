@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react"; // Import useState for modal
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
 import {
   fetchTransactionById,
   updateTransactionStatus,
-  deleteTransaction, // Import the deleteTransaction thunk
+  deleteTransaction,
 } from "../../features/transaction/transaction";
 import { toast } from "react-toastify";
 import {
@@ -21,10 +21,10 @@ import {
   Download,
   User as UserIcon,
   Mail as MailIcon,
-  Trash2, // Import Trash2 icon for delete
+  Trash2,
 } from "lucide-react";
 
-// Helper function for formatting money (copy for consistency)
+// Helper function for formatting money
 const formatMoney = (amount, currency = "USD") => {
   try {
     return new Intl.NumberFormat("en", {
@@ -94,7 +94,6 @@ const receiptTypeColors = {
 };
 
 const statusMapToColor = {
-  // For inline HTML styling in receipt
   pending: "#fbbf24", // yellow-400
   approved: "#34d399", // green-400
   rejected: "#ef4444", // red-500
@@ -106,16 +105,15 @@ const statusMapToColor = {
 const negativeTypes = ["withdrawal", "investment"];
 
 const AdminTransactionDetail = () => {
-  const { id } = useParams(); // Get transaction ID from URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { selectedTransaction, loading, error, deleting } = useSelector(
-    // Added 'deleting' state
     (state) => state.transaction
   );
 
-  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false); // State for delete modal
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -126,10 +124,12 @@ const AdminTransactionDetail = () => {
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user.role !== "admin") {
+    // Client-side role check (backend also enforces this)
+    if (user && user.role !== "admin") {
       navigate("/dashboard");
     }
-  }, [navigate]);
+  }, [user, navigate]);
+
   const handleAction = async (action) => {
     if (!selectedTransaction) return;
 
@@ -145,17 +145,14 @@ const AdminTransactionDetail = () => {
     }
   };
 
-  // Function to open the delete confirmation modal
   const openDeleteConfirmModal = () => {
     setShowDeleteConfirmModal(true);
   };
 
-  // Function to close the delete confirmation modal
   const closeDeleteConfirmModal = () => {
     setShowDeleteConfirmModal(false);
   };
 
-  // Function to confirm and dispatch delete transaction
   const handleDeleteConfirm = async () => {
     if (!selectedTransaction) return;
 
@@ -163,10 +160,10 @@ const AdminTransactionDetail = () => {
       await dispatch(deleteTransaction(selectedTransaction._id)).unwrap();
       toast.success("Transaction deleted successfully!");
       closeDeleteConfirmModal();
-      navigate("/admin/transactions"); // Navigate back to the transactions list after deletion
+      navigate("/admin/transactions");
     } catch (err) {
       toast.error(err || "Failed to delete transaction.");
-      closeDeleteConfirmModal(); // Close modal even on error
+      closeDeleteConfirmModal();
     }
   };
 
@@ -370,6 +367,11 @@ const AdminTransactionDetail = () => {
       </div>
     `;
 
+    // NEW: Temporarily append the element to the DOM (off-screen)
+    printElement.style.position = "absolute";
+    printElement.style.left = "-9999px"; // Move it far off-screen
+    document.body.appendChild(printElement);
+
     try {
       if (typeof window.html2pdf === "undefined") {
         toast.error("PDF generation library not loaded. Please allow pop-ups.");
@@ -387,11 +389,29 @@ const AdminTransactionDetail = () => {
           jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
         })
         .from(printElement)
-        .save();
-      toast.success("Receipt downloaded successfully!");
+        .save()
+        .then(() => {
+          toast.success("Receipt downloaded successfully!");
+        })
+        .catch((error) => {
+          console.error("Error generating PDF receipt:", error);
+          toast.error("Failed to generate receipt. Please try again.");
+        })
+        .finally(() => {
+          // Ensure the element is removed from the DOM after processing
+          if (document.body.contains(printElement)) {
+            document.body.removeChild(printElement);
+          }
+        });
     } catch (error) {
-      console.error("Error generating PDF receipt:", error);
-      toast.error("Failed to generate receipt. Please try again.");
+      console.error("Unexpected error during PDF generation setup:", error);
+      toast.error(
+        "An unexpected error occurred during receipt generation setup."
+      );
+      // Ensure cleanup for synchronous errors too
+      if (document.body.contains(printElement)) {
+        document.body.removeChild(printElement);
+      }
     }
   };
 
@@ -462,7 +482,6 @@ const AdminTransactionDetail = () => {
   const displayType = type ? type.replace(/_/g, " ") : "N/A";
   const displayMethod = method || coin || "N/A";
 
-  // Condition to enable "Download Receipt" button
   const canDownloadReceipt = ["approved", "completed"].includes(
     status?.toLowerCase()
   );
@@ -747,7 +766,7 @@ const AdminTransactionDetail = () => {
             <button
               onClick={openDeleteConfirmModal}
               className="mt-4 sm:mt-0 flex-1 px-6 py-3 bg-gray-700 text-white rounded-lg font-semibold hover:bg-gray-600 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={loading || deleting} // Disable if loading or currently deleting
+              disabled={loading || deleting}
             >
               {deleting ? (
                 <Loader2 className="animate-spin w-5 h-5 mr-2" />
