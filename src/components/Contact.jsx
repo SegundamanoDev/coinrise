@@ -172,14 +172,13 @@ const Contact = () => {
               <h3 className="text-xl font-semibold text-white mb-2">
                 Email Support
               </h3>
-              <p className="text-gray-400 text-base">support@trustvest.com</p>
+              <p className="text-gray-400 text-base">trustvestinfo@.com</p>
               <p className="text-gray-500 text-sm mt-1">
                 Response within 24 hours
               </p>
             </div>
 
-            {/* Phone Support Card (Added for completeness, assuming you might have one) */}
-            <div
+            {/* <div
               className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 flex flex-col items-center text-center"
               data-aos="fade-up"
               data-aos-delay="400"
@@ -191,12 +190,11 @@ const Contact = () => {
                 Phone Support
               </h3>
               <p className="text-gray-400 text-base">+1 (555) 123-4567</p>{" "}
-              {/* Replace with actual phone number */}
+             
               <p className="text-gray-500 text-sm mt-1">
                 Mon-Fri, 9 AM - 5 PM EST
               </p>
-            </div>
-
+            </div> */}
             {/* Office Location Card */}
             <div
               className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 flex flex-col items-center text-center"
