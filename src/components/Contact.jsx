@@ -172,7 +172,7 @@ const Contact = () => {
               <h3 className="text-xl font-semibold text-white mb-2">
                 Email Support
               </h3>
-              <p className="text-gray-400 text-base">trustvestinfo@.com</p>
+              <p className="text-gray-400 text-base">trustvestinfo@gmail.com</p>
               <p className="text-gray-500 text-sm mt-1">
                 Response within 24 hours
               </p>

@@ -23,7 +23,7 @@ const Footer = () => {
           </p>
           <p className="flex items-center gap-2 mt-3">
             <FontAwesomeIcon icon={faEnvelope} />
-            info@trustvestfx.com
+            trustvestinfo@gmail.com
           </p>
           {/* Removed duplicate email address for clarity */}
         </div>
