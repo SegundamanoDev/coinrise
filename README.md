@@ -1,12 +1,27 @@
-# React + Vite
+# Crypto Investment Simulation Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A production ready MERN stack application focused on secure transaction
+management, authentication workflows, and real time market data integration.
 
-Currently, two official plugins are available:
+⚠ Disclaimer  
+This project is a simulation built for educational and demonstration purposes.
+No real financial transactions are performed.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Key Engineering Focus
+- Secure deposit and withdrawal workflows
+- JWT based authentication and role based access control
+- Transaction validation and balance integrity
+- Real time crypto and forex market data integration
+- Modular and scalable React architecture
 
-## Expanding the ESLint configuration
+## Tech Stack
+- React (Vite)
+- Tailwind CSS
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Purpose
+This project demonstrates how financial style applications handle
+transactions, permissions, and real time data in a secure and scalable way.
